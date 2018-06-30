@@ -1,0 +1,13 @@
+spring:
+  #main:
+    #banner-mode: off	refs #47
+
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:postgresql://localhost/demo
+    username: ENC(...)
+    password: ENC(...)
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      mazimum-pool-size: 3
+      minimum-idle: 1
