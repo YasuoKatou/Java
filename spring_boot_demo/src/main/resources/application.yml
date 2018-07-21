@@ -11,3 +11,5 @@ spring:
     hikari:
       mazimum-pool-size: 3
       minimum-idle: 1
+  logging:
+    config: "classpath:logback-spring.xml"

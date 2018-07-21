@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <include resource="org/springframework/boot/logging/logback/base.xml" />
+
+  <!-- パッケージ指定でログレベルを設定 -->
+  <logger name="yksolution.demo.core.filter" level="trace"/>
+  <logger name="yksolution.demo.services"    level="trace"/>
+</configuration>

@@ -12,31 +12,32 @@ import javax.servlet.ServletResponse;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import yksolution.demo.core.FilterBase;
 import yksolution.demo.entity.UserMasterEntity;
 
 @Component
 @Order(Integer.MIN_VALUE + 1)
-public class AuthorityFilter implements Filter {
+public class AuthorityFilter extends FilterBase implements Filter {
 
   private String myName = this.getClass().getSimpleName();
 
   @Override
   public void init(FilterConfig filterConfig) throws ServletException {
-    System.out.println("[" + myName +"] init!!");
+	  logger.info("[" + myName +"] init!!");
   }
 
   @Override
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-    System.out.println("[" + myName +"] Before!!");
+    logger.trace("[" + myName +"] Before!!");
     UserMasterEntity userMaster = (UserMasterEntity) request.getAttribute("UserMasterEntity");
-    System.out.println("[" + myName +"] UserMasterDao -> " + userMaster);
+    logger.trace("[" + myName +"] UserMasterDao -> " + userMaster);
     chain.doFilter(request, response);
-    System.out.println("[" + myName +"] after!!");
+    logger.trace("[" + myName +"] after!!");
   }
 
   @Override
   public void destroy() {
-    System.out.println("[" + myName +"] destroy!!");
+	  logger.info("[" + myName +"] destroy!!");
   }
 }

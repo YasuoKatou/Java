@@ -13,12 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import yksolution.demo.core.FilterBase;
 import yksolution.demo.dao.UserMasterDao;
 import yksolution.demo.entity.UserMasterEntity;
 
 @Component
 @Order(Integer.MIN_VALUE)
-public class LoginFilter implements Filter {
+public class LoginFilter extends FilterBase implements Filter {
 
   @Autowired
   private UserMasterDao userMasterDao;
@@ -27,22 +28,22 @@ public class LoginFilter implements Filter {
 
   @Override
   public void init(FilterConfig filterConfig) throws ServletException {
-    System.out.println("[" + myName +"] init!!");
+	  logger.info("[" + myName +"] init!!");
   }
 
   @Override
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-    System.out.println("[" + myName +"] Before!!");
+    logger.trace("[" + myName +"] Before!!");
     UserMasterEntity userMaster = userMasterDao.findUser("demo_user1");
-    System.out.println("[" + myName +"] UserMasterDao -> " + userMaster);
+    logger.trace("[" + myName +"] UserMasterDao -> " + userMaster);
     request.setAttribute("UserMasterEntity", userMaster);
     chain.doFilter(request, response);
-    System.out.println("[" + myName +"] after!!");
+    logger.trace("[" + myName +"] after!!");
   }
 
   @Override
   public void destroy() {
-    System.out.println("[" + myName +"] destroy!!");
+	  logger.info("[" + myName +"] destroy!!");
   }
 }
