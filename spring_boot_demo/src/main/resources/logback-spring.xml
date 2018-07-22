@@ -1,8 +1,71 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-  <include resource="org/springframework/boot/logging/logback/base.xml" />
+  <!--include resource="org/springframework/boot/logging/logback/base.xml" /-->
+
+  <property name="logDir" value="./logs/" />
+
+  <property name="apLogFileName" value="demo_application.log" />
+  <property name="fwLogFileName" value="framework.log" />
+  <property name="format1" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%-6p] [%t] %c{10} %m%n" />
+  <property name="archives" value="3" />
+
+  <appender name="FILE_AP" class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+    <!-- ログファイル名 -->
+    <file>${logDir}${apLogFileName}</file>
+
+     <!-- ローテーションの設定 -->
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+
+       <!-- 日ごとで圧縮 -->
+      <fileNamePattern>${logDir}${apLogFileName}.%d{yyyyMMdd}.zip</fileNamePattern>
+
+       <!-- 最大保持数 -->
+      <maxHistory>${archives}</maxHistory>
+    </rollingPolicy>
+
+    <encoder>
+      <pattern>${format1}</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="FILE_FW" class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+    <!-- ログファイル名 -->
+    <file>${logDir}${fwLogFileName}</file>
+
+     <!-- ローテーションの設定 -->
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+
+       <!-- 日ごとで圧縮 -->
+      <fileNamePattern>${logDir}${fwLogFileName}.%d{yyyyMMdd}.zip</fileNamePattern>
+
+       <!-- 最大保持数 -->
+      <maxHistory>${archives}</maxHistory>
+    </rollingPolicy>
+
+    <encoder>
+      <pattern>${format1}</pattern>
+    </encoder>
+  </appender>
+
+  
+  <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>${format1}</pattern>
+    </encoder>
+  </appender>
+
 
   <!-- パッケージ指定でログレベルを設定 -->
+  <logger name="yksolution.demo" additivity="false">
+    <appender-ref ref="FILE_AP" />
+  </logger>
   <logger name="yksolution.demo.core.filter" level="trace"/>
   <logger name="yksolution.demo.services"    level="trace"/>
+
+  <root level="INFO">
+    <!-- appender-ref ref="CONSOLE" /-->
+    <appender-ref ref="FILE_FW" />
+  </root>
 </configuration>
