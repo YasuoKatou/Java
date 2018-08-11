@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:derby:/{DBパス}/demo.db
+    username: APP
+    password:
+    driver-class-name: org.apache.derby.jdbc.EmbeddedDriver
+    hikari:
+      mazimum-pool-size: 3
+      minimum-idle: 1
