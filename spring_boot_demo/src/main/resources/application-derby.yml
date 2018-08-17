@@ -2,7 +2,7 @@ spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     url: jdbc:derby:/{DBパス}/demo.db
-    username: APP
+    username: demo
     password:
     driver-class-name: org.apache.derby.jdbc.EmbeddedDriver
     hikari:

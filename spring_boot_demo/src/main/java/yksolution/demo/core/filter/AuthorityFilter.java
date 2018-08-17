@@ -13,7 +13,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import yksolution.demo.core.FilterBase;
-import yksolution.demo.entity.UserMasterEntity;
+import yksolution.demo.core.dto.RequestDto;
 
 @Component
 @Order(Integer.MIN_VALUE + 1)
@@ -23,21 +23,21 @@ public class AuthorityFilter extends FilterBase implements Filter {
 
   @Override
   public void init(FilterConfig filterConfig) throws ServletException {
-	  logger.info("[" + myName +"] init!!");
+    logger.info("[" + myName +"] init!!");
   }
 
   @Override
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-            throws IOException, ServletException {
+  throws IOException, ServletException {
     logger.trace("[" + myName +"] Before!!");
-    UserMasterEntity userMaster = (UserMasterEntity) request.getAttribute("UserMasterEntity");
-    logger.trace("[" + myName +"] UserMasterDao -> " + userMaster);
+    RequestDto requestDto = (RequestDto) request.getAttribute("RequestDto");
+    logger.trace("[" + myName +"] UserMasterDao -> " + requestDto.getUserMaster());
     chain.doFilter(request, response);
     logger.trace("[" + myName +"] after!!");
   }
 
   @Override
   public void destroy() {
-	  logger.info("[" + myName +"] destroy!!");
+    logger.info("[" + myName +"] destroy!!");
   }
 }

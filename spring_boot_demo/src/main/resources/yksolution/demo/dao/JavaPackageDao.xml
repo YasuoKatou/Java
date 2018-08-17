@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="yksolution.demo.dao.JavaPackageDao">
+
+  <resultMap id="javaPackageResultMap" type="yksolution.demo.entity.JavaPackageEntity" autoMapping="true"/>
+
+  <select id="findByClassName" resultMap="javaPackageResultMap">
+    select T1.package_name packageName
+          ,T2.repo_path repositoryPath
+          ,T2.jar_file_name jarFileName
+    from java.class_list T1
+    inner join java.jar_list T2 on T2.jar_id = T1.jar_id
+    where T1.class_name = #{className}
+  </select>
+</mapper>

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import yksolution.demo.core.ControllerBase;
-import yksolution.demo.entity.UserMasterEntity;
+import yksolution.demo.core.dto.RequestDto;
 
 @Controller
 public class HelloWorld extends ControllerBase {
@@ -16,8 +16,8 @@ public class HelloWorld extends ControllerBase {
 
   @RequestMapping(value="/helloworld", method=RequestMethod.GET)
   @ResponseBody
-  public String helloworld(@RequestAttribute("UserMasterEntity") UserMasterEntity userMaster) {
-    logger.trace("[" + myName +"] UserMasterDao -> " + userMaster);
+  public String helloworld(@RequestAttribute("RequestDto") RequestDto requestDto) {
+    logger.trace("[" + myName +"] UserMasterDao -> " + requestDto.getUserMaster());
     return "Hello World !!";
   }
 
