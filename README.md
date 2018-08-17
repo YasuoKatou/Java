@@ -27,18 +27,5 @@ DBにDerbyを使用する場合、「-Dspring.profiles.active=derby」を追加�
 <pre>$ ./mvnw -Dspring.main.banner-mode=off -Djasypt.encryptor.password=$PASSWORD test -Dtest=HelloWorldTest</pre><br/><br/>
 
 ### Derbyの初期化<br/>
-<pre>$ /usr/lib/jvm/oracle-java8-jdk-i386/db/bin/ij
-ijバージョン10.11
-（初回接続）
-ij> connect 'jdbc:derby:/home/pi/Develop/workspaces/java_fws/demo/src/test/resources/derby/demo.db;create=true';
-（２回目以降接続）
-ij> connect 'jdbc:derby:/home/pi/Develop/workspaces/java_fws/demo/src/test/resources/derby/demo.db';
-
-CREATE TABLE demo_user (
- user_id varchar(64)
-,passwd varchar(64)
-,authority varchar(64)
-,PRIMARY KEY (user_id)
-);
-
-insert into demo_user (user_id,passwd,authority) values ('demo_user1', 'hoge', 'demo');</pre>
+- DEMO本体は、spring_boot_demoプロジェクトのtables.mdを参照
+- パッケージ検索アプリで使用するテーブル等は、ImportSearcherプロジェクトのREADME.mdを参照
