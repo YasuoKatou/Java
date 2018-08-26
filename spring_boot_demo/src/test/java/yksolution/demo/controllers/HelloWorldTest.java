@@ -21,7 +21,7 @@ public class HelloWorldTest extends ControllerTestBase {
     } catch (Exception e) {
       e.printStackTrace();
       fail("HelloWorld　コントローラ異常終了");
-	}
+	  }
   }
 
   @Test
@@ -33,7 +33,7 @@ public class HelloWorldTest extends ControllerTestBase {
     } catch (Exception e) {
       e.printStackTrace();
       fail("HelloWorld　コントローラ異常終了");
-	}
+    }
   }
 
   @BeforeClass
