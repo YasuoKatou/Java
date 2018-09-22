@@ -6,15 +6,15 @@
 	<insert id="createProjectMaster">
 		create table m_project (
 			  id bigint primary key				--識別子（自動付番）
-			, name varchar(256)					--プロジェクト名
+			, name varchar(256) not null		--プロジェクト名
 			, description varchar(1048)			--プロジェクトの説明
-			, manager_id bigint					--プロジェクトの管理者
-			, opened varchar(10) default 'no'  --第三者に公開
-			, createDate TIMESTAMP default CURRENT_TIMESTAMP	--作成日時
-			, createUserId bigint not null						--作成者ID
-			, updateDate TIMESTAMP								--更新日時
-			, updateUserId bigint								--更新者ID
-			, versionNo	int not null							--バージョンNo
+			, manager_id bigint not null		--プロジェクトの管理者
+			, opened varchar(10) default 'no' not null	--第三者に公開
+			, createDate TIMESTAMP not null default CURRENT_TIMESTAMP	--作成日時
+			, createUserId bigint not null								--作成者ID
+			, updateDate TIMESTAMP										--更新日時
+			, updateUserId bigint										--更新者ID
+			, versionNo	int not null									--バージョンNo
 		)
 	</insert>
 	<delete id="dropProjectMaster">
@@ -29,11 +29,11 @@
 			, name2 varchar(256) not null		--名
 			, email varchar(256) not null		--メールアドレス
 			, language_id bigint not null		--言語ID
-			, createDate TIMESTAMP default CURRENT_TIMESTAMP	--作成日時
-			, createUserId bigint not null						--作成者ID
-			, updateDate TIMESTAMP								--更新日時
-			, updateUserId bigint								--更新者ID
-			, versionNo	int not null							--バージョンNo
+			, createDate TIMESTAMP not null default CURRENT_TIMESTAMP	--作成日時
+			, createUserId bigint not null								--作成者ID
+			, updateDate TIMESTAMP										--更新日時
+			, updateUserId bigint										--更新者ID
+			, versionNo	int not null									--バージョンNo
 		)
 	</insert>
 	<delete id="dropUserMaster">
@@ -45,11 +45,11 @@
 			, name varchar(64) not null			--言語名
 			, country varchar(64) not null		--国名
 			, remarks varchar(64)				--説明
-			, createDate TIMESTAMP default CURRENT_TIMESTAMP	--作成日時
-			, createUserId bigint not null						--作成者ID
-			, updateDate TIMESTAMP								--更新日時
-			, updateUserId bigint								--更新者ID
-			, versionNo	int not null							--バージョンNo
+			, createDate TIMESTAMP not null default CURRENT_TIMESTAMP	--作成日時
+			, createUserId bigint not null								--作成者ID
+			, updateDate TIMESTAMP										--更新日時
+			, updateUserId bigint										--更新者ID
+			, versionNo	int not null									--バージョンNo
 		)
 	</insert>
 	<delete id="dropLanguageMaster">

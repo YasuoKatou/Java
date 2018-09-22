@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="yks.ticket.lite.dao.master.ProjectMasterDao">
+  <insert id="insert">
+    insert into m_project (
+        id       --識別子
+      , name     --プロジェクト名
+      <if test="description != null">
+      , description  --プロジェクトの説明
+      </if>
+      , manager_id  --プロジェクトの管理者
+      <if test="opened != null">
+      , opened      --公開
+      </if>
+      , createUserId  --作成者ID
+      , versionNo     --バージョンNo
+    ) values (
+      <if test="id == null">
+        coalesce((select max(id) from m_project), 0) + 1
+      </if>
+      <if test="id != null">
+        #{id}
+      </if>
+      , #{name}
+      <if test="description != null">
+      , #{description}
+      </if>
+      , #{manager_id}
+      <if test="opened != null">
+      , #{opened}
+      </if>
+      , #{createUserId}
+      , 1
+    )
+  </insert>
+</mapper>

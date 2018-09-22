@@ -5,7 +5,7 @@ import lombok.Data;
 import yks.ticket.lite.entity.CommonEntity;
 
 /**
- * ユーザマスタエンティティ
+ * ユーザマスタエンティティ.
  * 
  * @author yasuokatou (YKS)
  * @since 0.0.1

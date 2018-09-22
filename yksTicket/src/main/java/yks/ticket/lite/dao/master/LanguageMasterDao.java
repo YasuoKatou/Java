@@ -3,7 +3,7 @@ package yks.ticket.lite.dao.master;
 import yks.ticket.lite.entity.master.LanguageMasterEntity;
 
 /**
- * 言語マスタDao
+ * 言語マスタDao.
  * 
  * @author yasuokatou (YKS)
  * @since 0.0.1
