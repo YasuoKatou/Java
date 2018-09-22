@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="yks.ticket.lite.dao.master.UserMasterDao">
+  <insert id="insert">
+    insert into m_user (
+        id       --識別子
+      , login_id --ログインID
+      , passwd   --パスワード
+      , name1    --性
+      , name2    --名
+      , email    --メールアドレス
+      , language_id  --言語ID
+      , createUserId  --作成者ID
+      , versionNo     --バージョンNo
+    ) values (
+      <if test="id == null">
+        coalesce((select max(id) from m_user), 0) + 1
+      </if>
+      <if test="id != null">
+        #{id}
+      </if>
+      , #{login_id}
+      , #{passwd}
+      , #{name1}
+      , #{name2}
+      , #{email}
+      , #{language_id}
+      , #{createUserId}
+      , 1
+    )
+  </insert>
+</mapper>

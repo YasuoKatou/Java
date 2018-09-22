@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="yks.ticket.lite.dao.DBInitDao">
+	<insert id="createProjectMaster">
+		create table m_project (
+			  id bigint primary key				--識別子（自動付番）
+			, name varchar(256)					--プロジェクト名
+			, description varchar(1048)			--プロジェクトの説明
+			, manager_id bigint					--プロジェクトの管理者
+			, opened varchar(10) default 'no'  --第三者に公開
+			, createDate TIMESTAMP default CURRENT_TIMESTAMP	--作成日時
+			, createUserId bigint not null						--作成者ID
+			, updateDate TIMESTAMP								--更新日時
+			, updateUserId bigint								--更新者ID
+			, versionNo	int not null							--バージョンNo
+		)
+	</insert>
+	<delete id="dropProjectMaster">
+		drop table m_project
+	</delete>
+	<insert id="createUserMaster">
+		create table m_user (
+			  id bigint	primary key				--識別子（自動付番）
+			, login_id varchar(256) not null	--ログインID
+			, passwd varchar(256) not null		--パスワード（暗号化）
+			, name1 varchar(256) not null		--性
+			, name2 varchar(256) not null		--名
+			, email varchar(256) not null		--メールアドレス
+			, language_id bigint not null		--言語ID
+			, createDate TIMESTAMP default CURRENT_TIMESTAMP	--作成日時
+			, createUserId bigint not null						--作成者ID
+			, updateDate TIMESTAMP								--更新日時
+			, updateUserId bigint								--更新者ID
+			, versionNo	int not null							--バージョンNo
+		)
+	</insert>
+	<delete id="dropUserMaster">
+		drop table m_user
+	</delete>
+	<insert id="createLanguageMaster">
+		create table m_language (
+			  id bigint	primary key				--識別子（自動付番）
+			, name varchar(64) not null			--言語名
+			, country varchar(64) not null		--国名
+			, remarks varchar(64)				--説明
+			, createDate TIMESTAMP default CURRENT_TIMESTAMP	--作成日時
+			, createUserId bigint not null						--作成者ID
+			, updateDate TIMESTAMP								--更新日時
+			, updateUserId bigint								--更新者ID
+			, versionNo	int not null							--バージョンNo
+		)
+	</insert>
+	<delete id="dropLanguageMaster">
+		drop table m_language
+	</delete>
+</mapper>
