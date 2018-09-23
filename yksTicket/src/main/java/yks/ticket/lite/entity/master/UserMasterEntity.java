@@ -1,7 +1,9 @@
 package yks.ticket.lite.entity.master;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import yks.ticket.lite.entity.CommonEntity;
 
 /**
@@ -12,6 +14,8 @@ import yks.ticket.lite.entity.CommonEntity;
  */
 @Builder
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserMasterEntity extends CommonEntity {
 	/** ユーザ識別子 */
 	private Long id;
@@ -26,5 +30,5 @@ public class UserMasterEntity extends CommonEntity {
 	/** EMail */
 	private String email;
 	/** 言語ID */
-	private long language_id;
+	private Long language_id;
 }

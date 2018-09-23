@@ -6,10 +6,11 @@
 	<insert id="createProjectMaster">
 		create table m_project (
 			  id bigint primary key				--識別子（自動付番）
-			, name varchar(256) not null		--プロジェクト名
-			, description varchar(1048)			--プロジェクトの説明
-			, manager_id bigint not null		--プロジェクトの管理者
-			, opened varchar(10) default 'no' not null	--第三者に公開
+			, name varchar(256) not null		--プロジェクト名称
+			, description varchar(1024)			--プロジェクトの説明
+			, manager_id bigint not null		--プロジェクト管理者
+			, terminated varchar(10) not null default 'no'	--プロジェクト完了
+			, opened varchar(10) not null default 'no'	--第三者に公開
 			, createDate TIMESTAMP not null default CURRENT_TIMESTAMP	--作成日時
 			, createUserId bigint not null								--作成者ID
 			, updateDate TIMESTAMP										--更新日時

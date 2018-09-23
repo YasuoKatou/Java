@@ -1,7 +1,9 @@
 package yks.ticket.lite.entity.master;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import yks.ticket.lite.entity.CommonEntity;
 
 /**
@@ -12,6 +14,8 @@ import yks.ticket.lite.entity.CommonEntity;
  */
 @Builder
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class ProjectMasterEntity extends CommonEntity {
 	/** プロジェクト識別子 */
 	private Long id;
@@ -19,8 +23,13 @@ public class ProjectMasterEntity extends CommonEntity {
 	private String name;
 	/** プロジェクトの説明 */
 	private String description;
-	/** プロジェクトの管理者 */
-	private long manager_id;
+	/** プロジェクト管理者 */
+	private Long manager_id;
+	/** プロジェクト完了 */
+	private String terminated;
 	/** 公開 */
 	private String opened;
+
+	/** プロジェクト管理者情報 */
+	private UserMasterEntity manager;
 }

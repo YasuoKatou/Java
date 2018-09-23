@@ -1,5 +1,9 @@
 package yks.ticket.lite.dao.master;
 
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
 import yks.ticket.lite.entity.master.ProjectMasterEntity;
 
 /**
@@ -17,4 +21,13 @@ public interface ProjectMasterDao {
 	 * @since 0.0.1
 	 */
 	int insert(ProjectMasterEntity entity);
+
+	/**
+	 * プロジェクトの一覧を取得する.
+	 * 
+	 * @param terminated 終了したプロジェクトを含む／含まないを制御
+	 * @return プロジェクトマスタエンティティ一覧
+	 * @since 0.0.1
+	 */
+	List<ProjectMasterEntity> findProjects(@Param("terminated") String terminated);
 }
