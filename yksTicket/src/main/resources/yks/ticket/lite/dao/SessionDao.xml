@@ -19,4 +19,17 @@
       , 1
     )
   </insert>
+
+  <select id="findUserBySessionId" resultMap="yks.ticket.lite.dao.master.UserMasterDao.userMasterResultMap">
+    select
+        M.id       --識別子
+      , M.name1    --性
+      , M.name2    --名
+      , M.email    --メールアドレス
+      , M.language_id  --言語ID
+    from t_session T
+    inner join m_user M
+        on M.id = T.user_id
+    where T.session_id = #{session_id}
+  </select>
 </mapper>

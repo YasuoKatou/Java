@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import yks.ticket.lite.controller.ControllerBase;
 import yks.ticket.lite.dao.master.ProjectListRequestDto;
+import yks.ticket.lite.dto.LoginDto;
 import yks.ticket.lite.dto.StatusResponseDto;
 import yks.ticket.lite.dto.master.ProjectDto;
 import yks.ticket.lite.service.mater.ProjectService;
@@ -22,7 +24,7 @@ import yks.ticket.lite.service.mater.ProjectService;
  */
 @Controller
 @RequestMapping(value="/yksticket/maintenance")
-public class ProjectMasterController {
+public class ProjectMasterController extends ControllerBase {
 	/** プロジェクトマスタメンテナンスサービス */
 	@Autowired private ProjectService projectService;
 
@@ -48,8 +50,9 @@ public class ProjectMasterController {
 	@PostMapping(value="/newproject", consumes = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public StatusResponseDto addProject(@RequestBody ProjectDto projectDto) {
+		LoginDto login = super.getLogin(projectDto);
 		// 新規プロジェクトの登録
-		this.projectService.appendProject(projectDto);
+		this.projectService.appendProject(login, projectDto);
 		// 正常終了を戻す
 		return StatusResponseDto.builder()
 				.status(StatusResponseDto.SUCCESS)

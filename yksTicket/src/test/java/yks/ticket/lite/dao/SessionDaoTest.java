@@ -1,6 +1,7 @@
 package yks.ticket.lite.dao;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
@@ -16,10 +17,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.TransactionDbUnitTestExecutionListener;
+import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.github.springtestdbunit.annotation.DbUnitConfiguration;
 
 import yks.ticket.lite.common.CsvDataSetLoader;
 import yks.ticket.lite.entity.SessionEntity;
+import yks.ticket.lite.entity.master.UserMasterEntity;
 
 /**
  * セッション管理Daoテストクラス.
@@ -57,4 +60,23 @@ public class SessionDaoTest {
 		}
 	}
 
+	/**
+	 * セッションIDからユーザ情報を取する.
+	 * @since 0.0.1
+	 */
+	@Test
+	@DatabaseSetup("classpath:SessionDaoTest_D01/")
+	public void test_findUserBySessionId() {
+		try {
+			UserMasterEntity entity = sessionDao.findUserBySessionId("SESSIONID-002");
+			assertNotNull("取得データあり", entity);
+			assertEquals("ID", entity.getId(), Long.valueOf(101L));
+			assertEquals("性", entity.getName1(), "Ａｂｂｏｔ");
+			assertEquals("名", entity.getName2(), "Ａａｒｏｎ");
+			assertEquals("メールアドレス", entity.getEmail(), "hoge@example.com");
+			assertEquals("言語ID", entity.getLanguage_id(), Long.valueOf(201L));
+		} catch (Exception ex) {
+			fail("insert error¥n" + ex.toString());
+		}
+	}
 }

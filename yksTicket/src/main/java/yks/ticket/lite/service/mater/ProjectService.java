@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import yks.ticket.lite.dao.master.ProjectListRequestDto;
 import yks.ticket.lite.dao.master.ProjectMasterDao;
+import yks.ticket.lite.dto.LoginDto;
 import yks.ticket.lite.dto.master.ProjectDto;
 import yks.ticket.lite.entity.master.ProjectMasterEntity;
 import yks.ticket.lite.entity.master.UserMasterEntity;
@@ -58,17 +59,20 @@ public class ProjectService {
 
 	/**
 	 * プロジェクトの登録を行う.
+	 * @param login ログイン情報
 	 * @param inDto プロジェクトDto
 	 * @since 0.0.1
 	 */
-	public void appendProject(ProjectDto inDto) {
-		int count = projectMasterDao.insert(ProjectMasterEntity.builder()
+	public void appendProject(LoginDto login, ProjectDto inDto) {
+		ProjectMasterEntity entity = ProjectMasterEntity.builder()
 				.name(inDto.getName())
 				.description(inDto.getDescription())
 				.manager_id(inDto.getManager_id())
 				.alive(inDto.getAlive())
 				.opened(inDto.getOpened())
-				.build());
+				.build();
+		entity.setCreateUserId(login.getId());
+		int count = projectMasterDao.insert(entity);
 		logger.info("プロジェクトを追加 : " + count);
 	}
 }

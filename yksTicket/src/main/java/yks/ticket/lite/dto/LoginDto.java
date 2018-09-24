@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * ログインリクエストDto.
+ * ログインDto.
  * 
  * @author yasuokatou (YKS)
  * @since 0.0.1
@@ -15,11 +15,15 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class LoginRequestDto extends RequestHeaderDto {
-	/** ログインID */
-	private String login_id;
-	/** パスワード */
-	private String passwd;
-	/** セッションID */
-	private String session_id;
+public class LoginDto {
+	/** ユーザ識別子 */
+	private Long id;
+	/** 性 */
+	private String name1;
+	/** 名 */
+	private String name2;
+	/** EMail */
+	private String email;
+	/** 言語ID */
+	private Long language_id;
 }

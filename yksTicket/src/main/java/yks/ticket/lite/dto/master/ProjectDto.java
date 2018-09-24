@@ -2,6 +2,7 @@ package yks.ticket.lite.dto.master;
 
 import lombok.Builder;
 import lombok.Data;
+import yks.ticket.lite.dto.RequestHeaderDto;
 
 /**
  * プロジェクトDTO.
@@ -10,7 +11,7 @@ import lombok.Data;
  */
 @Builder
 @Data
-public class ProjectDto {
+public class ProjectDto extends RequestHeaderDto {
 	/** プロジェクト識別子 */
 	private Long id;
 	/** プロジェクト名称 */
