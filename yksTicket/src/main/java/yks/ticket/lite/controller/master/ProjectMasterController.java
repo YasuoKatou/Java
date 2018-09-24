@@ -5,9 +5,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import yks.ticket.lite.dao.master.ProjectListRequestDto;
@@ -32,7 +32,7 @@ public class ProjectMasterController {
 	 * @return プロジェクトDtoリスト
 	 * @since 0.0.1
 	 */
-	@RequestMapping(value="/projects", method=RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(value="/projects", consumes = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public List<ProjectDto> getProjects(@RequestBody ProjectListRequestDto inDto) {
 		// プロジェクトの一覧を取得
@@ -45,7 +45,7 @@ public class ProjectMasterController {
 	 * @return
 	 * @since 0.0.1
 	 */
-	@RequestMapping(value="/newproject", method=RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(value="/newproject", consumes = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public StatusResponseDto addProject(@RequestBody ProjectDto projectDto) {
 		// 新規プロジェクトの登録
