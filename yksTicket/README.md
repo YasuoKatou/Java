@@ -19,6 +19,7 @@
 1. 形式のパラメータを設定  
 	curl -H 'Content-Type:application/json' -d '{"alive":null}' ...
 1. 使えるサンプル（テストで使用）  
-	curl -v -X GET  -s localhost:8080//yksticket/admin/dbinit
-	curl -v -X POST -s localhost:8080//yksticket/maintenance/projects  -H 'Content-Type:application/json' -d '{"alive":null}'  
-	curl -v -X POST -s localhost:8080//yksticket/maintenance/newproject  -H 'Content-Type:application/json' -d '{"name":"チケット管理","description":"このシステム","manager_id":"1","opened":"yes","alive":"yes"}'
+	curl -v -X GET  -s localhost:8080/yksticket/admin/dbinit  
+	curl -v -X POST -s localhost:8080/yksticket/login -H 'Content-Type:application/json' -d '{"login_id":"admin", "passwd":"admin"}'  
+	curl -v -X POST -s localhost:8080/yksticket/maintenance/projects -H 'Content-Type:application/json' -d '{"alive":null}'  
+	curl -v -X POST -s localhost:8080/yksticket/maintenance/newproject -H 'Content-Type:application/json' -d '{"name":"チケット管理","description":"このシステム","manager_id":"1","opened":"yes","alive":"yes"}'

@@ -2,6 +2,7 @@ package yks.ticket.lite.dao.master;
 
 import static org.junit.Assert.fail;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -82,6 +83,29 @@ public class UserMasterDaoTest {
 			assertEquals("登録数", 1, count);
 		} catch (Exception ex) {
 			fail("insert error¥n" + ex.toString());
+		}
+	}
+
+	/**
+	 * ログインIDでユーザマスタを取得する.
+	 * @since 0.0.1
+	 */
+	@Test
+	public void test_findByLoginId() {
+		try {
+			UserMasterEntity in = UserMasterEntity.builder()
+					.login_id("admin")
+					.build();
+			UserMasterEntity entity = userMasterDao.findByLoginId(in);
+			assertNotNull("該当レコードあり", entity);
+			assertEquals("識別子", entity.getId(), Long.valueOf(1L));
+			assertEquals("パスワード", entity.getPasswd(), "admin");		// TODO 暗号化
+			assertEquals("性", entity.getName1(), "Katou");
+			assertEquals("名", entity.getName2(), "Yasuo");
+			assertEquals("メールアドレス", entity.getEmail(), "yasuokatou@gmail.com");
+			assertEquals("使用言語ID", entity.getLanguage_id(), Long.valueOf(1L));
+		} catch (Exception ex) {
+			fail("findByLoginId error¥n" + ex.toString());
 		}
 	}
 }

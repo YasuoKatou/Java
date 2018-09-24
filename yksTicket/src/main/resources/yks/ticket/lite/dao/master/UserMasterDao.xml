@@ -34,4 +34,21 @@
       , 1
     )
   </insert>
+
+  <select id="findByLoginId" resultMap="userMasterResultMap">
+    select
+        id       --識別子
+      , login_id --ログインID
+      , passwd   --パスワード
+      , name1    --性
+      , name2    --名
+      , email    --メールアドレス
+      , language_id  --言語ID
+      , createUserId  --作成者ID
+      , updateDate    --更新日時
+      , updateUserId  --更新者ID
+      , versionNo     --バージョンNo
+    from m_user
+    where login_id = #{login_id}
+  </select>
 </mapper>

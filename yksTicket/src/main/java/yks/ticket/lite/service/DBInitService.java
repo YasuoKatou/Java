@@ -100,6 +100,9 @@ public class DBInitService {
 		// 言語マスタ
 		dbInitDao.createLanguageMaster();
 		logger.info("created Language master table");
+		// セッション管理
+		dbInitDao.createSessionTran();
+		logger.info("created sesion table");
 	}
 
 	/**
@@ -112,21 +115,28 @@ public class DBInitService {
 			dbInitDao.dropProjectMaster();
 			logger.info("dropped Project master table");
 		} catch (Exception ex) {
-			logger.debug("Project master table can't drop case by " + ex.getMessage());
+			logger.debug("Project master table can't drop cause by " + ex.getMessage());
 		}
 		// ユーザマスタ
 		try {
 			dbInitDao.dropUserMaster();
 			logger.info("dropped User master table");
 		} catch (Exception ex) {
-			logger.debug("User master table can't drop case by " + ex.getMessage());
+			logger.debug("User master table can't drop cause by " + ex.getMessage());
 		}
 		// 言語マスタ
 		try {
 			dbInitDao.dropLanguageMaster();
 			logger.info("dropped Language master table");
 		} catch (Exception ex) {
-			logger.debug("Language master table can't drop case by " + ex.getMessage());
+			logger.debug("Language master table can't drop cause by " + ex.getMessage());
+		}
+		// セッション管理テーブル
+		try {
+			dbInitDao.dropSessionTran();
+			logger.info("dropped session table");
+		} catch (Exception ex) {
+			logger.debug("session table can't drop cause by " + ex.getMessage());
 		}
 	}
 }

@@ -56,4 +56,19 @@
 	<delete id="dropLanguageMaster">
 		drop table m_language
 	</delete>
+
+	<insert id="createSessionTran">
+		create table t_session (
+			  session_id varchar(64) primary key	--セッションID
+			, user_id bigint not null				--ユーザ識別子
+			, createDate TIMESTAMP not null default CURRENT_TIMESTAMP	--作成日時
+			, createUserId bigint not null								--作成者ID
+			, updateDate TIMESTAMP										--更新日時
+			, updateUserId bigint										--更新者ID
+			, versionNo	int not null									--バージョンNo
+		)
+	</insert>
+	<delete id="dropSessionTran">
+		drop table t_session
+	</delete>
 </mapper>

@@ -17,4 +17,12 @@ public interface UserMasterDao {
 	 * @since 0.0.1
 	 */
 	int insert(UserMasterEntity entity);
+
+	/**
+	 * ユーザマスタをログインIDで取得する.
+	 * @param entity ユーザマスタエンティティ
+	 * @return ユーザマスタエンティティ
+	 * @since 0.0.1
+	 */
+	UserMasterEntity findByLoginId(UserMasterEntity entity);
 }
