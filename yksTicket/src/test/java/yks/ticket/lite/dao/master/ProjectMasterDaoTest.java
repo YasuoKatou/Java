@@ -102,8 +102,8 @@ public class ProjectMasterDaoTest {
 			assertEquals("プロジェクト名称", e.getName(), "テストプロジェクト");
 			assertEquals("プロジェクトの説明", e.getDescription(), "単体テストデータ#1");
 			assertEquals("プロジェクト管理者", e.getManager_id(), Long.valueOf(101L));
-			assertEquals("プロジェクト完了", e.getTerminated(), "no");
-			assertEquals("オープンプロジェクト", e.getOpened(), "yes");
+			assertEquals("プロジェクト進行中", e.getAlive(), "yes");
+			assertEquals("オープンプロジェクト", e.getOpened(), "no");
 			UserMasterEntity um = e.getManager();
 			assertNotNull("管理者情報", um);
 			assertEquals("管理者名（性）", um.getName1(), "Ａｂｂｏｔ");
@@ -114,8 +114,8 @@ public class ProjectMasterDaoTest {
 			assertEquals("プロジェクト名称", e.getName(), "プロジェクト Ｘ");
 			assertEquals("プロジェクトの説明", e.getDescription(), "単体テストデータ#2");
 			assertEquals("プロジェクト管理者", e.getManager_id(), Long.valueOf(102L));
-			assertEquals("プロジェクト完了", e.getTerminated(), "yes");
-			assertEquals("オープンプロジェクト", e.getOpened(), "no");
+			assertEquals("プロジェクト進行中", e.getAlive(), "no");
+			assertEquals("オープンプロジェクト", e.getOpened(), "yes");
 			um = e.getManager();
 			assertNotNull("管理者情報", um);
 			assertEquals("管理者名（性）", um.getName1(), "Ａｂｉｔｂｏｌ");
@@ -132,13 +132,13 @@ public class ProjectMasterDaoTest {
 	@DatabaseSetup("classpath:ProjectMasterDaoTest_D01/")
 	public void test_findProjects_02() {
 		try {
-			List<ProjectMasterEntity> list = projectMasterDao.findProjects("no");
+			List<ProjectMasterEntity> list = projectMasterDao.findProjects("yes");
 			assertEquals("レコード数", 1, list.size());
 			// #1
 			ProjectMasterEntity e = list.get(0);
 			assertEquals("プロジェクト識別子", e.getId(), Long.valueOf(11L));
 			assertEquals("プロジェクト名称", e.getName(), "テストプロジェクト");
-			// 以下省略（test_Insert_03で確認済み）
+			// 以下省略（test_findProjects_01で確認済み）
 		} catch (Exception ex) {
 			fail("findProjects error¥n" + ex.toString());
 		}

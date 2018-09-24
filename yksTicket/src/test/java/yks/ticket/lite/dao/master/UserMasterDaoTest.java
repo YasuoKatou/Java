@@ -16,7 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.TransactionDbUnitTestExecutionListener;
+import com.github.springtestdbunit.annotation.DbUnitConfiguration;
 
+import yks.ticket.lite.common.CsvDataSetLoader;
 import yks.ticket.lite.entity.master.UserMasterEntity;
 
 /**
@@ -33,7 +35,7 @@ import yks.ticket.lite.entity.master.UserMasterEntity;
   DirtiesContextTestExecutionListener.class,
   TransactionDbUnitTestExecutionListener.class,
   DbUnitTestExecutionListener.class})
-//@DbUnitConfiguration(dataSetLoader = CsvDataSetLoader.class)
+@DbUnitConfiguration(dataSetLoader = CsvDataSetLoader.class)
 public class UserMasterDaoTest {
 	/** ユーザマスタDao. */
 	@Autowired private UserMasterDao userMasterDao;

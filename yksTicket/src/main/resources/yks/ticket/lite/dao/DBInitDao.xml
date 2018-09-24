@@ -9,7 +9,7 @@
 			, name varchar(256) not null		--プロジェクト名称
 			, description varchar(1024)			--プロジェクトの説明
 			, manager_id bigint not null		--プロジェクト管理者
-			, terminated varchar(10) not null default 'no'	--プロジェクト完了
+			, alive varchar(10) not null default 'yes'	--プロジェクト進行中
 			, opened varchar(10) not null default 'no'	--第三者に公開
 			, createDate TIMESTAMP not null default CURRENT_TIMESTAMP	--作成日時
 			, createUserId bigint not null								--作成者ID

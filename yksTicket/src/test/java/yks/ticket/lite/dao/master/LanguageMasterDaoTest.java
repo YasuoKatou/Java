@@ -35,7 +35,7 @@ import yks.ticket.lite.entity.master.LanguageMasterEntity;
   DirtiesContextTestExecutionListener.class,
   TransactionDbUnitTestExecutionListener.class,
   DbUnitTestExecutionListener.class})
-//@DbUnitConfiguration(dataSetLoader = CsvDataSetLoader.class)
+@DbUnitConfiguration(dataSetLoader = CsvDataSetLoader.class)
 public class LanguageMasterDaoTest {
 	/** 言語マスタDao. */
 	@Autowired private LanguageMasterDao languageMasterDao;

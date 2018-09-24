@@ -19,7 +19,8 @@ import yks.ticket.lite.entity.master.UserMasterEntity;
  */
 @Service
 public class DBInitService {
-	protected Logger logger = LoggerFactory.getLogger(this.getClass());
+	/** ログ出力 */
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	/** プロジェクトマスタDao. */
 	@Autowired private DBInitDao dbInitDao;
 	/** 言語マスタDao. */

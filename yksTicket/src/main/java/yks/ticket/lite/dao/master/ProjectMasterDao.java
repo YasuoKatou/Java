@@ -25,9 +25,9 @@ public interface ProjectMasterDao {
 	/**
 	 * プロジェクトの一覧を取得する.
 	 * 
-	 * @param terminated 終了したプロジェクトを含む／含まないを制御
+	 * @param alive プロジェクトの進行中／完了を制御する文字列
 	 * @return プロジェクトマスタエンティティ一覧
 	 * @since 0.0.1
 	 */
-	List<ProjectMasterEntity> findProjects(@Param("terminated") String terminated);
+	List<ProjectMasterEntity> findProjects(@Param("alive") String alive);
 }

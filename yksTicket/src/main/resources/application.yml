@@ -4,11 +4,12 @@ spring:
 
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:derby:/mnt/hdd500/home/yasuokatou/develop/workspaces/DBs/yksTicketDB
-    username: yksTicket
-    password:
-    driver-class-name: org.apache.derby.jdbc.EmbeddedDriver
+    #url: jdbc:derby:/mnt/hdd500/home/yasuokatou/develop/workspaces/DBs/yksTicketDB
+    url: jdbc:postgresql://localhost:5432/yksTicket
+    username: ENC(aUSWoecd3NuR366bbQmbN0QxQX4bcUkv)
+    password: ENC(rcqfQv/SdbXi4+Qu6lnnHbFqiRpwxvuc)
+    #driver-class-name: org.apache.derby.jdbc.EmbeddedDriver
+    driver-class-name: org.postgresql.Driver
     hikari:
-      mazimum-pool-size: 3
-      minimum-idle: 1
-      
+      mazimum-pool-size: 10
+      minimum-idle: 5

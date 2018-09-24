@@ -46,7 +46,7 @@
       , PJ.name          --プロジェクト名称
       , PJ.description   --プロジェクトの説明
       , PJ.manager_id    --プロジェクト管理者
-      , PJ.terminated    --プロジェクト完了
+      , PJ.alive         --プロジェクト進行中
       , PJ.opened        --第三者に公開
       , PJ.createDate    --作成日時
       , PJ.createUserId  --作成者ID
@@ -58,8 +58,8 @@
     from m_project PJ
     left outer join m_user U1
       on U1.id = PJ.manager_id
-    <if test="terminated != null">
-    where terminated = #{terminated}
+    <if test="alive != null">
+    where alive = #{alive}
     </if>
     order by name
   </select>

@@ -1,22 +1,16 @@
-package yks.ticket.lite.entity.master;
+package yks.ticket.lite.dto.master;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import yks.ticket.lite.entity.CommonEntity;
 
 /**
- * プロジェクトマスタエンティティ.
- * 
+ * プロジェクトDTO.
  * @author yasuokatou (YKS)
  * @since 0.0.1
  */
 @Builder
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class ProjectMasterEntity extends CommonEntity {
+public class ProjectDto {
 	/** プロジェクト識別子 */
 	private Long id;
 	/** プロジェクト名称 */
@@ -29,7 +23,8 @@ public class ProjectMasterEntity extends CommonEntity {
 	private String alive;
 	/** 公開 */
 	private String opened;
-
-	/** プロジェクト管理者情報 */
-	private UserMasterEntity manager;
+	/** プロジェクト管理者（性） */
+	private String manager_name1;
+	/** プロジェクト管理者（名） */
+	private String manager_name2;
 }
