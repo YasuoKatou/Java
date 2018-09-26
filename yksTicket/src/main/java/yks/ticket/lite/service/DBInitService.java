@@ -21,7 +21,7 @@ import yks.ticket.lite.entity.master.UserMasterEntity;
 public class DBInitService {
 	/** ログ出力 */
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
-	/** プロジェクトマスタDao. */
+	/** ＤＢ初期化Dao. */
 	@Autowired private DBInitDao dbInitDao;
 	/** 言語マスタDao. */
 	@Autowired private LanguageMasterDao languageMasterDao;
@@ -100,6 +100,12 @@ public class DBInitService {
 		// 言語マスタ
 		dbInitDao.createLanguageMaster();
 		logger.info("created Language master table");
+		// ロールグループマスタ
+		dbInitDao.createRollGroupMaster();
+		logger.info("created Roll Group master table");
+		// ロールマスタ
+		dbInitDao.createRollMaster();
+		logger.info("created Roll master table");
 		// セッション管理
 		dbInitDao.createSessionTran();
 		logger.info("created sesion table");
@@ -130,6 +136,20 @@ public class DBInitService {
 			logger.info("dropped Language master table");
 		} catch (Exception ex) {
 			logger.debug("Language master table can't drop cause by " + ex.getMessage());
+		}
+		// ロールグループマスタ
+		try {
+			dbInitDao.dropRollGroupMaster();
+			logger.info("dropped Roll Group master table");
+		} catch (Exception ex) {
+			logger.debug("Roll Group master table can't drop cause by " + ex.getMessage());
+		}
+		// ロールマスタ
+		try {
+			dbInitDao.dropRollMaster();
+			logger.info("dropped Roll master table");
+		} catch (Exception ex) {
+			logger.debug("Roll master table can't drop cause by " + ex.getMessage());
 		}
 		// セッション管理テーブル
 		try {

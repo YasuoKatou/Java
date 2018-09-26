@@ -57,6 +57,37 @@
 		drop table m_language
 	</delete>
 
+	<insert id="createRollGroupMaster">
+		create table m_rollGroup (
+			  id bigint	primary key				--識別子（自動付番）
+			, name varchar(64) not null			--ロールグループ名
+			, createDate TIMESTAMP not null default CURRENT_TIMESTAMP	--作成日時
+			, createUserId bigint not null								--作成者ID
+			, updateDate TIMESTAMP										--更新日時
+			, updateUserId bigint										--更新者ID
+			, versionNo	int not null									--バージョンNo
+		)
+	</insert>
+	<delete id="dropRollGroupMaster">
+		drop table m_rollGroup
+	</delete>
+
+	<insert id="createRollMaster">
+		create table m_roll (
+			  id bigint	primary key				--識別子（自動付番）
+			, name varchar(64) not null			--ロール名
+			, group_id bigint not null			--ロールグループ識別子
+			, createDate TIMESTAMP not null default CURRENT_TIMESTAMP	--作成日時
+			, createUserId bigint not null								--作成者ID
+			, updateDate TIMESTAMP										--更新日時
+			, updateUserId bigint										--更新者ID
+			, versionNo	int not null									--バージョンNo
+		)
+	</insert>
+	<delete id="dropRollMaster">
+		drop table m_roll
+	</delete>
+
 	<insert id="createSessionTran">
 		create table t_session (
 			  session_id varchar(64) primary key	--セッションID

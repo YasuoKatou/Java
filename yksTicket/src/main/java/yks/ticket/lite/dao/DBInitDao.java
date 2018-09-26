@@ -38,6 +38,30 @@ public interface DBInitDao {
 	void dropLanguageMaster();
 
 	/**
+	 * ロールグループマスタを生成する.
+	 * @since 0.0.1
+	 */
+	void createRollGroupMaster();
+
+	/**
+	 * ロールグループマスタを削除する.
+	 * @since 0.0.1
+	 */
+	void dropRollGroupMaster();
+
+	/**
+	 * ロールグループマスタを生成する.
+	 * @since 0.0.1
+	 */
+	void createRollMaster();
+
+	/**
+	 * ロールグループマスタを削除する.
+	 * @since 0.0.1
+	 */
+	void dropRollMaster();
+
+	/**
 	 * セッション管理テーブルを生成する.
 	 * @since 0.0.1
 	 */

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="yks.ticket.lite.dao.master.RollMasterDao">
+  <resultMap id="rollMasterResultMap" type="yks.ticket.lite.entity.master.RollMasterEntity" autoMapping="true">
+  </resultMap>
+
+  <insert id="insert">
+    insert into m_roll (
+        id       --識別子
+      , name     --ロール名
+      , group_id --ロールグループ識別子
+      , createUserId  --作成者ID
+      , versionNo     --バージョンNo
+    ) values (
+      <if test="id == null">
+        coalesce((select max(id) from m_roll), 0) + 1
+      </if>
+      <if test="id != null">
+        #{id}
+      </if>
+      , #{name}
+      , #{group_id}
+      , #{createUserId}
+      , 1
+    )
+  </insert>
+</mapper>
