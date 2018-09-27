@@ -20,7 +20,7 @@ import com.github.springtestdbunit.TransactionDbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DbUnitConfiguration;
 
 import yks.ticket.lite.common.CsvDataSetLoader;
-import yks.ticket.lite.entity.master.RollMasterEntity;
+import yks.ticket.lite.entity.master.RollItemMasterEntity;
 
 /**
  * ロールマスタDaoテストクラス.
@@ -37,9 +37,9 @@ import yks.ticket.lite.entity.master.RollMasterEntity;
   TransactionDbUnitTestExecutionListener.class,
   DbUnitTestExecutionListener.class})
 @DbUnitConfiguration(dataSetLoader = CsvDataSetLoader.class)
-public class RollMasterDaoTest {
+public class RollItemMasterDaoTest {
 	/** ロールマスタDao. */
-	@Autowired private RollMasterDao rollMasterDao;
+	@Autowired private RollItemMasterDao rollItemMasterDao;
 
 	/**
 	 * ロールマスタ登録（IDの自動採番）
@@ -48,12 +48,12 @@ public class RollMasterDaoTest {
 	@Test
 	public void test_Insert_01() {
 		try {
-			RollMasterEntity entity = RollMasterEntity.builder()
+			RollItemMasterEntity entity = RollItemMasterEntity.builder()
 					.name("ロール名")
 					.group_id(Long.valueOf(101L))
 					.build();
 			entity.setCreateUserId(1L);
-			int count = rollMasterDao.insert(entity);
+			int count = rollItemMasterDao.insert(entity);
 			assertEquals("登録数", 1, count);
 		} catch (Exception ex) {
 			fail("insert error¥n" + ex.toString());
@@ -67,13 +67,13 @@ public class RollMasterDaoTest {
 	@Test
 	public void test_Insert_02() {
 		try {
-			RollMasterEntity entity = RollMasterEntity.builder()
+			RollItemMasterEntity entity = RollItemMasterEntity.builder()
 					.id(Long.MAX_VALUE)
 					.name("ロール名")
 					.group_id(Long.valueOf(101L))
 					.build();
 			entity.setCreateUserId(1L);
-			int count = rollMasterDao.insert(entity);
+			int count = rollItemMasterDao.insert(entity);
 			assertEquals("登録数", 1, count);
 		} catch (Exception ex) {
 			fail("insert error¥n" + ex.toString());

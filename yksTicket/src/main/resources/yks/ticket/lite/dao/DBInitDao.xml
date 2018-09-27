@@ -72,8 +72,8 @@
 		drop table m_rollGroup
 	</delete>
 
-	<insert id="createRollMaster">
-		create table m_roll (
+	<insert id="createRollItemMaster">
+		create table m_rollItem (
 			  id bigint	primary key				--識別子（自動付番）
 			, name varchar(64) not null			--ロール名
 			, group_id bigint not null			--ロールグループ識別子
@@ -84,8 +84,8 @@
 			, versionNo	int not null									--バージョンNo
 		)
 	</insert>
-	<delete id="dropRollMaster">
-		drop table m_roll
+	<delete id="dropRollItemMaster">
+		drop table m_rollItem
 	</delete>
 
 	<insert id="createSessionTran">

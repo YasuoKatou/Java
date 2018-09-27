@@ -50,16 +50,16 @@ public interface DBInitDao {
 	void dropRollGroupMaster();
 
 	/**
-	 * ロールグループマスタを生成する.
+	 * ロール項目マスタを生成する.
 	 * @since 0.0.1
 	 */
-	void createRollMaster();
+	void createRollItemMaster();
 
 	/**
-	 * ロールグループマスタを削除する.
+	 * ロール項目マスタを削除する.
 	 * @since 0.0.1
 	 */
-	void dropRollMaster();
+	void dropRollItemMaster();
 
 	/**
 	 * セッション管理テーブルを生成する.

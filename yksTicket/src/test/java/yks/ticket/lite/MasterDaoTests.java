@@ -7,7 +7,7 @@ import org.junit.runners.Suite.SuiteClasses;
 import yks.ticket.lite.dao.master.LanguageMasterDaoTest;
 import yks.ticket.lite.dao.master.ProjectMasterDaoTest;
 import yks.ticket.lite.dao.master.RollGroupMasterDaoTest;
-import yks.ticket.lite.dao.master.RollMasterDaoTest;
+import yks.ticket.lite.dao.master.RollItemMasterDaoTest;
 import yks.ticket.lite.dao.master.UserMasterDaoTest;
 
 /**
@@ -22,6 +22,6 @@ import yks.ticket.lite.dao.master.UserMasterDaoTest;
 	, UserMasterDaoTest.class 			// ユーザマスタ
 	, ProjectMasterDaoTest.class		// プロジェクトマスタ
 	, RollGroupMasterDaoTest.class		// ロールグループマスタ
-	, RollMasterDaoTest.class			// ロールマスタ
+	, RollItemMasterDaoTest.class			// ロールマスタ
 	})
 public class MasterDaoTests {}

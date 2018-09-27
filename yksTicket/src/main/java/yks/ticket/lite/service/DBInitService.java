@@ -103,8 +103,8 @@ public class DBInitService {
 		// ロールグループマスタ
 		dbInitDao.createRollGroupMaster();
 		logger.info("created Roll Group master table");
-		// ロールマスタ
-		dbInitDao.createRollMaster();
+		// ロール項目マスタ
+		dbInitDao.createRollItemMaster();
 		logger.info("created Roll master table");
 		// セッション管理
 		dbInitDao.createSessionTran();
@@ -144,9 +144,9 @@ public class DBInitService {
 		} catch (Exception ex) {
 			logger.debug("Roll Group master table can't drop cause by " + ex.getMessage());
 		}
-		// ロールマスタ
+		// ロール項目マスタ
 		try {
-			dbInitDao.dropRollMaster();
+			dbInitDao.dropRollItemMaster();
 			logger.info("dropped Roll master table");
 		} catch (Exception ex) {
 			logger.debug("Roll master table can't drop cause by " + ex.getMessage());

@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import yks.ticket.lite.entity.CommonEntity;
 
 /**
- * ロールマスタエンティティ.
+ * ロール項目マスタエンティティ.
  * 
  * @author yasuokatou (YKS)
  * @since 0.0.1
@@ -16,7 +16,7 @@ import yks.ticket.lite.entity.CommonEntity;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RollMasterEntity extends CommonEntity {
+public class RollItemMasterEntity extends CommonEntity {
 	/** ロール識別子 */
 	private Long id;
 	/** ロール名称 */
