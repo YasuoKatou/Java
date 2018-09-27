@@ -7,7 +7,7 @@
   </resultMap>
 
   <insert id="insert">
-    insert into m_roll (
+    insert into m_rollItem (
         id       --識別子
       , name     --ロール名
       , group_id --ロールグループ識別子
@@ -15,7 +15,7 @@
       , versionNo     --バージョンNo
     ) values (
       <if test="id == null">
-        coalesce((select max(id) from m_roll), 0) + 1
+        coalesce((select max(id) from m_rollItem), 0) + 1
       </if>
       <if test="id != null">
         #{id}
