@@ -32,4 +32,14 @@
         on M.id = T.user_id
     where T.session_id = #{session_id}
   </select>
+
+  <delete id="deleteBySessionId">
+    delete from t_session
+    where session_id = #{session_id}
+  </delete>
+
+  <delete id="deleteByUserId">
+    delete from t_session
+    where user_id = #{user_id}
+  </delete>
 </mapper>

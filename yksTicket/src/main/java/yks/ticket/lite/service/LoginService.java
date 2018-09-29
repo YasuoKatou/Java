@@ -9,6 +9,8 @@ import yks.ticket.lite.dao.SessionDao;
 import yks.ticket.lite.dao.master.UserMasterDao;
 import yks.ticket.lite.dto.LoginRequestDto;
 import yks.ticket.lite.dto.LoginResponseDto;
+import yks.ticket.lite.dto.LogoutRequestDto;
+import yks.ticket.lite.dto.StatusResponseDto;
 import yks.ticket.lite.entity.SessionEntity;
 import yks.ticket.lite.entity.master.UserMasterEntity;
 
@@ -21,6 +23,13 @@ public class LoginService {
 	/** セッション管理テーブルDao. */
 	@Autowired private SessionDao sessionDao;
 
+	/**
+	 * ログイン処理
+	 * 
+	 * @param inDto ログインリクエストDto.
+	 * @return ログインレスポンスDto.
+	 * @since 0.0.1
+	 */
 	public LoginResponseDto doLogin(LoginRequestDto inDto) {
 		// ユーザテーブルを確認
 		// TODO パスワードの暗号化を実装
@@ -32,12 +41,17 @@ public class LoginService {
 					.status(LoginResponseDto.FAIL)
 					.build();
 		}
+		// 過去のセッション情報を削除
+		int count = this.sessionDao.deleteByUserId(userMaster.getId());
+		if (count > 0) {
+			logger.info("過去のセッション情報を削除 : " + count);
+		}
 		// セッションテーブルを作成
 		SessionEntity session = SessionEntity.builder()
 				.session_id(inDto.getSession_id())
 				.user_id(userMaster.getId())
 				.build();
-		int count = sessionDao.insert(session);
+		count = this.sessionDao.insert(session);
 		if (count != 1) {
 			logger.error("セッション管理登録失敗 " + session.toString());
 		}
@@ -45,6 +59,27 @@ public class LoginService {
 		return LoginResponseDto.builder()
 				.status(LoginResponseDto.SUCCESS)
 				.session_id(inDto.getSession_id())
+				.build();
+	}
+
+	/**
+	 * ログアウト処理
+	 * 
+	 * @param inDto ログアウトリクエストDto.
+	 * @return 処理結果を戻すDto.
+	 * @since 0.0.1
+	 */
+	public StatusResponseDto doLogout(LogoutRequestDto inDto) {
+		logger.info("delete session : " + inDto.getSession_id());
+		int count = this.sessionDao.deleteBySessionId(inDto.getSession_id());
+		if (count != 1) {
+			logger.error("セッション管理削除失敗 " + inDto.getSession_id());
+			return StatusResponseDto.builder()
+					.status(StatusResponseDto.FAIL)
+					.build();
+		}
+		return StatusResponseDto.builder()
+				.status(StatusResponseDto.SUCCESS)
 				.build();
 	}
 }

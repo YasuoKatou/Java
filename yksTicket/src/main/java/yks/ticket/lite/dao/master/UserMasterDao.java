@@ -20,6 +20,7 @@ public interface UserMasterDao {
 
 	/**
 	 * ユーザマスタをログインIDで取得する.
+	 * 
 	 * @param entity ユーザマスタエンティティ
 	 * @return ユーザマスタエンティティ
 	 * @since 0.0.1
