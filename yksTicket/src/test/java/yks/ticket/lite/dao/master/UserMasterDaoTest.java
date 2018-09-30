@@ -20,6 +20,7 @@ import com.github.springtestdbunit.TransactionDbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DbUnitConfiguration;
 
 import yks.ticket.lite.common.CsvDataSetLoader;
+import yks.ticket.lite.entity.master.LanguageMasterEntity;
 import yks.ticket.lite.entity.master.UserMasterEntity;
 
 /**
@@ -104,6 +105,10 @@ public class UserMasterDaoTest {
 			assertEquals("名", entity.getName2(), "Yasuo");
 			assertEquals("メールアドレス", entity.getEmail(), "yasuokatou@gmail.com");
 			assertEquals("使用言語ID", entity.getLanguage_id(), Long.valueOf(1L));
+			LanguageMasterEntity language = entity.getLanguage();
+			assertNotNull("言語情報", language);
+			assertEquals("言語名", language.getName(), "日本語");
+			assertEquals("言語国名", language.getCountry(), "japan");
 		} catch (Exception ex) {
 			fail("findByLoginId error¥n" + ex.toString());
 		}

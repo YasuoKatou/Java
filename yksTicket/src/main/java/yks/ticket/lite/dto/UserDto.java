@@ -30,4 +30,8 @@ public class UserDto extends RequestHeaderDto {
 	private String email;
 	/** 言語ID */
 	private Long language_id;
+	/** 言語名 */
+	private String language_name;
+	/** 言語国名 */
+	private String language_country;
 }

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import yks.ticket.lite.dto.LoginRequestDto;
 import yks.ticket.lite.dto.LoginResponseDto;
-import yks.ticket.lite.dto.LogoutRequestDto;
+import yks.ticket.lite.dto.RequestDto;
 import yks.ticket.lite.dto.StatusResponseDto;
 import yks.ticket.lite.service.LoginService;
 
@@ -55,7 +55,7 @@ public class Login {
 	 */
 	@PostMapping(value="/logout", consumes = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public StatusResponseDto logout(@RequestBody LogoutRequestDto inDto) {
+	public StatusResponseDto logout(@RequestBody RequestDto inDto) {
 		// ログアウト処理
 		return this.loginService.doLogout(inDto);
 	}

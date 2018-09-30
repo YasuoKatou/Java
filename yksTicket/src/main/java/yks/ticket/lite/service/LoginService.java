@@ -9,7 +9,7 @@ import yks.ticket.lite.dao.SessionDao;
 import yks.ticket.lite.dao.master.UserMasterDao;
 import yks.ticket.lite.dto.LoginRequestDto;
 import yks.ticket.lite.dto.LoginResponseDto;
-import yks.ticket.lite.dto.LogoutRequestDto;
+import yks.ticket.lite.dto.RequestDto;
 import yks.ticket.lite.dto.StatusResponseDto;
 import yks.ticket.lite.entity.SessionEntity;
 import yks.ticket.lite.entity.master.UserMasterEntity;
@@ -69,11 +69,12 @@ public class LoginService {
 	 * @return 処理結果を戻すDto.
 	 * @since 0.0.1
 	 */
-	public StatusResponseDto doLogout(LogoutRequestDto inDto) {
-		logger.info("delete session : " + inDto.getSession_id());
-		int count = this.sessionDao.deleteBySessionId(inDto.getSession_id());
+	public StatusResponseDto doLogout(RequestDto inDto) {
+		String sessionId = inDto.getHeader().getSession_id();
+		logger.info("delete session : " + sessionId);
+		int count = this.sessionDao.deleteBySessionId(sessionId);
 		if (count != 1) {
-			logger.error("セッション管理削除失敗 " + inDto.getSession_id());
+			logger.error("セッション管理削除失敗 " + sessionId);
 			return StatusResponseDto.builder()
 					.status(StatusResponseDto.FAIL)
 					.build();

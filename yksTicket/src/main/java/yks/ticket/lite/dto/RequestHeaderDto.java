@@ -2,6 +2,12 @@ package yks.ticket.lite.dto;
 
 import lombok.Data;
 
+/**
+ * リクエストヘッダーDto.
+ * 
+ * @author yasuokatou (YKS)
+ * @since 0.0.1
+ */
 @Data
 public class RequestHeaderDto {
 	@Data

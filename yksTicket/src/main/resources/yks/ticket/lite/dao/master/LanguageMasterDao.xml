@@ -3,6 +3,9 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="yks.ticket.lite.dao.master.LanguageMasterDao">
+  <resultMap id="languageMasterResultMap" type="yks.ticket.lite.entity.master.LanguageMasterEntity" autoMapping="true">
+  </resultMap>
+
   <insert id="insert">
     insert into m_language (
         id       --識別子

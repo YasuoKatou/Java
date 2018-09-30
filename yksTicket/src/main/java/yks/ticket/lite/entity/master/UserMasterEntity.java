@@ -31,4 +31,7 @@ public class UserMasterEntity extends CommonEntity {
 	private String email;
 	/** 言語ID */
 	private Long language_id;
+
+	/** 言語情報 */
+	private LanguageMasterEntity language;
 }
