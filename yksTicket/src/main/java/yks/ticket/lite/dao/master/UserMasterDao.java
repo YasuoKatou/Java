@@ -39,6 +39,15 @@ public interface UserMasterDao {
 	UserMasterEntity findByLoginId(UserMasterEntity entity);
 
 	/**
+	 * ユーザマスタをユーザIDで取得する.
+	 * 
+	 * @param entity ユーザマスタエンティティ
+	 * @return ユーザマスタエンティティ
+	 * @since 0.0.1
+	 */
+	UserMasterEntity findById(UserMasterEntity entity);
+
+	/**
 	 * ユーザの一覧を取得する.
 	 * 
 	 * @return ユーザマスタエンティティ一覧

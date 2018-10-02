@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import yks.ticket.lite.controller.ControllerBase;
 import yks.ticket.lite.dto.LoginDto;
 import yks.ticket.lite.dto.RequestDto;
+import yks.ticket.lite.dto.StatusResponseDto;
 import yks.ticket.lite.dto.UserDto;
 import yks.ticket.lite.service.mater.UserService;
 
@@ -69,15 +70,30 @@ public class UserMasterController extends ControllerBase {
 
 	/**
 	 * ユーザ情報の更新を行う.
-	 * @param userDto
-	 * @return
+	 * @param userDto ユーザ情報
+	 * @return 更新結果
+	 * @throws Exception 更新失敗
 	 */
 	@PostMapping(value="/update", consumes = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public StatusResponseDto updateUser(@RequestBody UserDto userDto) {
+	public StatusResponseDto updateUser(@RequestBody UserDto userDto) throws Exception {
 		// ログイン情報を取得
 		LoginDto login = super.getLogin(userDto);
 		// ユーザ情報を更新する
 		return this.userService.updateUser(login, userDto);
+	}
+
+	/**
+	 * ユーザ情報を取得する.
+	 * 
+	 * @param userDto ユーザ情報取得リクエスト
+	 * @return ユーザ情報
+	 * @throws Exception 取得失敗
+	 * @since 0.0.1
+	 */
+	@PostMapping(value="", consumes = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public UserDto getUserInfo(@RequestBody UserDto userDto) throws Exception {
+		return this.userService.getUserInfo(userDto);
 	}
 }

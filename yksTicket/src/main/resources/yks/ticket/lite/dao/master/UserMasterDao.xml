@@ -57,6 +57,27 @@
     where T1.login_id = #{login_id}
   </select>
 
+  <select id="findById" resultMap="userMasterResultMap">
+    select
+        T1.id       --識別子
+      , T1.login_id --ログインID
+      , T1.passwd   --パスワード
+      , T1.name1    --性
+      , T1.name2    --名
+      , T1.email    --メールアドレス
+      , T1.language_id  --言語ID
+      , T1.createUserId  --作成者ID
+      , T1.updateDate    --更新日時
+      , T1.updateUserId  --更新者ID
+      , T1.versionNo     --バージョンNo
+      , M1.name lang_name        --言語名
+      , M1.country lang_country  --国名
+    from m_user T1
+    inner join m_language M1
+       on T1.language_id = M1.id
+    where T1.id = #{id}
+  </select>
+
   <select id="findListAll" resultMap="userMasterResultMap">
     select
         T1.id       --識別子

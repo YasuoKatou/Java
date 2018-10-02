@@ -32,4 +32,15 @@
       , 1
     )
   </insert>
+
+  <select id="findAll" resultMap="languageMasterResultMap">
+    select
+        id       --識別子
+      , name     --言語名
+      , country  --国名
+      , remarks  --説明
+      , versionNo     --バージョンNo
+    from m_language
+    order by name
+  </select>
 </mapper>

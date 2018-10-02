@@ -137,4 +137,39 @@ public class UserService {
 				.status(StatusResponseDto.SUCCESS)
 				.build();
 	}
+
+	/**
+	 * ユーザ情報を取得する.
+	 * 
+	 * @param inDto ユーザ情報取得要求
+	 * @return ユーザ情報
+	 * @throws Exception 取得失敗
+	 * @since 0.0.1
+	 */
+	public UserDto getUserInfo(UserDto inDto) throws Exception {
+		UserMasterEntity entity;
+		try {
+			entity = this.userMasterDao.findById(UserMasterEntity.builder()
+				.id(inDto.getId())
+				.build());
+		} catch (Exception ex) {
+			logger.error("取得失敗(DB異常) : " + inDto.toString());
+			throw new Exception("取得失敗(DB異常)");
+		}
+		if (entity == null) {
+			logger.error("取得失敗 : " + inDto.toString());
+			throw new Exception("取得失敗");
+		}
+		return UserDto.builder()
+				.id(entity.getId())
+				.login_id(entity.getLogin_id())
+				.passwd(entity.getPasswd())
+				.name1(entity.getName1())
+				.name2(entity.getName2())
+				.email(entity.getEmail())
+				.language_id(entity.getLanguage_id())
+				.language_name(entity.getLanguage().getName())
+				.language_country(entity.getLanguage().getCountry())
+				.build();
+	}
 }

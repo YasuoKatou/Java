@@ -1,5 +1,7 @@
 package yks.ticket.lite.dao.master;
 
+import java.util.List;
+
 import yks.ticket.lite.entity.master.LanguageMasterEntity;
 
 /**
@@ -17,4 +19,12 @@ public interface LanguageMasterDao {
 	 * @since 0.0.1
 	 */
 	int insert(LanguageMasterEntity entity);
+
+	/**
+	 * 言語情報一覧を取得する.
+	 * 
+	 * @return 言語情報一覧
+	 * @since 0.0.2
+	 */
+	List<LanguageMasterEntity> findAll();
 }

@@ -1,6 +1,9 @@
 package yks.ticket.lite.dao.master;
 
 import static org.junit.Assert.fail;
+
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
@@ -52,7 +55,7 @@ public class LanguageMasterDaoTest {
 					.country("japan")
 					.build();
 			entity.setCreateUserId(1L);
-			int count = languageMasterDao.insert(entity);
+			int count = this.languageMasterDao.insert(entity);
 			assertEquals("登録数", 1, count);
 		} catch (Exception ex) {
 			fail("insert error¥n" + ex.toString());
@@ -73,10 +76,22 @@ public class LanguageMasterDaoTest {
 					.remarks("for test")
 					.build();
 			entity.setCreateUserId(1L);
-			int count = languageMasterDao.insert(entity);
+			int count = this.languageMasterDao.insert(entity);
 			assertEquals("登録数", 1, count);
 		} catch (Exception ex) {
 			fail("insert error¥n" + ex.toString());
 		}
+	}
+
+	/**
+	 * 一覧取得（初期登録の内容を確認）
+	 */
+	@Test
+	public void test_find_all() {
+		List<LanguageMasterEntity> list = this.languageMasterDao.findAll();
+		assertEquals("一覧の数" , 1, list.size());
+		LanguageMasterEntity entity = list.get(0);
+		assertEquals("名称", "日本語", entity.getName());
+		assertEquals("国", "japan", entity.getCountry());
 	}
 }
