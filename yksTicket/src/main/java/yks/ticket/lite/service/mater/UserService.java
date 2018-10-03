@@ -130,7 +130,9 @@ public class UserService {
 			}
 		} catch (Exception ex) {
 			// 更新失敗
-			logger.error("更新失敗(DB異常) : " + ex.toString());
+			logger.error("更新失敗(DB異常) : " + ex.toString()
+				+ "¥nlogin : " + login.toString()
+				+ "¥nUserDto : " + inDto.toString());
 			throw new Exception("更新失敗(DB異常)");
 		}
 		return StatusResponseDto.builder()

@@ -108,7 +108,7 @@
       , email       = #{email}     --メールアドレス
       , language_id = #{language_id}  --言語ID
       , updateUserId = #{updateUserId}  --更新ユーザID
-      , updateDate = TIMESTAMP
+      , updateDate = CURRENT_TIMESTAMP
       , versionNo  = versionNo + 1
     where id = #{id}
   </update>
