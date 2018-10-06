@@ -72,4 +72,28 @@ public interface DBInitDao {
 	 * @since 0.0.1
 	 */
 	void dropSessionTran();
+
+	/**
+	 * ロール名称テーブルを生成する.
+	 * @since 0.0.1
+	 */
+	void createRollNameTran();
+
+	/**
+	 * ロール名称テーブルを削除する.
+	 * @since 0.0.1
+	 */
+	void dropRollNameTran();
+
+	/**
+	 * ロール設定テーブルを生成する.
+	 * @since 0.0.1
+	 */
+	void createRollSettingTran();
+
+	/**
+	 * ロール設定テーブルを削除する.
+	 * @since 0.0.1
+	 */
+	void dropRollSettingTran();
 }

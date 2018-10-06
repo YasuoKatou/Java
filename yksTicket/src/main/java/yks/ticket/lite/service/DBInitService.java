@@ -1,17 +1,19 @@
 package yks.ticket.lite.service;
 
-import static org.junit.Assert.assertEquals;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import yks.ticket.lite.dao.DBInitDao;
+import yks.ticket.lite.dao.RollNameDao;
+import yks.ticket.lite.dao.RollSettingDao;
 import yks.ticket.lite.dao.master.LanguageMasterDao;
 import yks.ticket.lite.dao.master.RollGroupMasterDao;
 import yks.ticket.lite.dao.master.RollItemMasterDao;
 import yks.ticket.lite.dao.master.UserMasterDao;
+import yks.ticket.lite.entity.RollNameEntity;
+import yks.ticket.lite.entity.RollSettingEntity;
 import yks.ticket.lite.entity.master.LanguageMasterEntity;
 import yks.ticket.lite.entity.master.RollGroupMasterEntity;
 import yks.ticket.lite.entity.master.RollItemMasterEntity;
@@ -37,6 +39,13 @@ public class DBInitService {
 	@Autowired private RollGroupMasterDao rollGroupMasterDao;
 	/** ロール項目マスタDao. */
 	@Autowired private RollItemMasterDao rollItemMasterDao;
+	/** ロール名称Dao. */
+	@Autowired private RollNameDao rollNameDao;
+	/** ロール設定Dao. */
+	@Autowired private RollSettingDao rollSettingDao;
+
+	/** 管理者ユーザID */
+	public static final Long ADMIN_USER_ID = Long.valueOf(1L);
 
 	/**
 	 * ＤＢの初期化を行う
@@ -66,6 +75,8 @@ public class DBInitService {
 		this.rollGroupMaster();
 		// ロール項目マスタの初期データ登録
 		this.rollItemMaster();
+		// ロール名称／設定の初期データ登録
+		this.rollNameAndSetting();
 	}
 
 	/**
@@ -77,7 +88,7 @@ public class DBInitService {
 				.name("日本語")
 				.country("japan")
 				.build();
-		entity.setCreateUserId(1L);
+		entity.setCreateUserId(this.ADMIN_USER_ID);
 		int count = languageMasterDao.insert(entity);
 		logger.info("言語マスタ登録件数 : " + count);
 	}
@@ -88,13 +99,14 @@ public class DBInitService {
 	 */
 	private void userMaster() {
 		UserMasterEntity entity = UserMasterEntity.builder()
+				.id(this.ADMIN_USER_ID)
 				.login_id("admin")
 				.passwd("admin")	// TODO 暗号化
 				.name1("Katou").name2("Yasuo")
 				.email("yasuokatou@gmail.com")
 				.language_id(1L)
 				.build();
-		entity.setCreateUserId(1L);
+		entity.setCreateUserId(this.ADMIN_USER_ID);
 		int count = userMasterDao.insert(entity);
 		logger.info("ユーザマスタ登録件数 : " + count);
 	}
@@ -108,7 +120,7 @@ public class DBInitService {
 				.id(Long.valueOf(1000L))
 				.name("プロジェクト")
 				.build();
-		entity.setCreateUserId(1L);
+		entity.setCreateUserId(this.ADMIN_USER_ID);
 		int count = rollGroupMasterDao.insert(entity);
 
 		entity.setId(Long.valueOf(2000L));
@@ -136,7 +148,7 @@ public class DBInitService {
 				.name("プロジェクトの編集")
 				.group_id(Long.valueOf(1000L))
 				.build();
-		entity.setCreateUserId(1L);
+		entity.setCreateUserId(this.ADMIN_USER_ID);
 		int count = rollItemMasterDao.insert(entity);
 
 		entity.setId(Long.valueOf(1002L));
@@ -190,6 +202,55 @@ public class DBInitService {
 	}
 
 	/**
+	 * ロール名称／設定の初期データ登録を行う.
+	 * @since 0.0.1
+	 */
+	private void rollNameAndSetting() {
+		// ロール名称
+		Long rollNameId = Long.valueOf(1L);
+		RollNameEntity nameEntity = RollNameEntity.builder()
+				.id(rollNameId)
+				.name("システム管理者")
+				.description("全権限を与える")
+				.build();
+		nameEntity.setCreateUserId(this.ADMIN_USER_ID);
+		int count = this.rollNameDao.insert(nameEntity);
+		logger.info("管理者ロール名称登録件数 : " + count);
+
+		// ロール設定
+		RollSettingEntity rollEntity = RollSettingEntity.builder()
+				.rollNameId(rollNameId)
+				.rollItemId(Long.valueOf(1001L))			// プロジェクトの編集
+				.build();
+		rollEntity.setCreateUserId(this.ADMIN_USER_ID);
+		count = this.rollSettingDao.insert(rollEntity);
+		rollEntity.setRollItemId(Long.valueOf(1002L));		// プロジェクトの終了/再開
+		count += this.rollSettingDao.insert(rollEntity);
+		rollEntity.setRollItemId(Long.valueOf(1003L));		// メンバーの管理
+		count += this.rollSettingDao.insert(rollEntity);
+		rollEntity.setRollItemId(Long.valueOf(1004L));		// サブプロジェクトの追加
+		count += this.rollSettingDao.insert(rollEntity);
+		rollEntity.setRollItemId(Long.valueOf(2001L));		// ファイルの閲覧
+		count += this.rollSettingDao.insert(rollEntity);
+		rollEntity.setRollItemId(Long.valueOf(3001L));		// チケットのカテゴリの管理
+		count += this.rollSettingDao.insert(rollEntity);
+		rollEntity.setRollItemId(Long.valueOf(3002L));		// チケットの閲覧
+		count += this.rollSettingDao.insert(rollEntity);
+		rollEntity.setRollItemId(Long.valueOf(3003L));		// チケットの追加
+		count += this.rollSettingDao.insert(rollEntity);
+		rollEntity.setRollItemId(Long.valueOf(3004L));		// チケットの編集
+		count += this.rollSettingDao.insert(rollEntity);
+		rollEntity.setRollItemId(Long.valueOf(3005L));		// チケットの削除
+		count += this.rollSettingDao.insert(rollEntity);
+		rollEntity.setRollItemId(Long.valueOf(4001L));		// Wikiの閲覧
+		count += this.rollSettingDao.insert(rollEntity);
+		rollEntity.setRollItemId(Long.valueOf(4002L));		// Wikiページの編集
+		count += this.rollSettingDao.insert(rollEntity);
+
+		logger.info("管理者ロール設定登録件数 : " + count);
+	}
+
+	/**
 	 * テーブルの生成
 	 * @since 0.0.1
 	 */
@@ -213,6 +274,12 @@ public class DBInitService {
 		// セッション管理
 		dbInitDao.createSessionTran();
 		logger.info("created sesion table");
+		// ロール名称
+		dbInitDao.createRollNameTran();
+		logger.info("created roll name table");
+		// ロール設定
+		dbInitDao.createRollSettingTran();
+		logger.info("created roll table");
 	}
 
 	/**
@@ -261,6 +328,20 @@ public class DBInitService {
 			logger.info("dropped session table");
 		} catch (Exception ex) {
 			logger.debug("session table can't drop cause by " + ex.getMessage());
+		}
+		// ロール名称テーブル
+		try {
+			dbInitDao.dropRollNameTran();
+			logger.info("dropped roll name table");
+		} catch (Exception ex) {
+			logger.debug("roll name table can't drop cause by " + ex.getMessage());
+		}
+		// ロール設定テーブル
+		try {
+			dbInitDao.dropRollSettingTran();
+			logger.info("dropped roll table");
+		} catch (Exception ex) {
+			logger.debug("roll table can't drop cause by " + ex.getMessage());
 		}
 	}
 }

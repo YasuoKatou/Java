@@ -32,7 +32,9 @@ import yks.ticket.lite.common.CsvDataSetLoader;
 
 /**
  * プロジェクトマスタメンテナンスコントローラのテストを行う.
- * 
+ *
+ * ※このテストクラスは、テスト前のデータ投入がうまく出来ないため失敗する.
+ *
  * @author yasuokatou (YKS)
  * @since 0.0.1
  */

@@ -1,5 +1,7 @@
 package yks.ticket.lite.dao.master;
 
+import java.util.List;
+
 import yks.ticket.lite.entity.master.RollGroupMasterEntity;
 
 /**
@@ -17,4 +19,12 @@ public interface RollGroupMasterDao {
 	 * @since 0.0.1
 	 */
 	int insert(RollGroupMasterEntity entity);
+
+	/**
+	 * ロールグループマスタを全取得する.
+	 * 
+	 * @return ロールグループマスタエンティティ一覧
+	 * @since 0.0.1
+	 */
+	List<RollGroupMasterEntity> findAll();
 }

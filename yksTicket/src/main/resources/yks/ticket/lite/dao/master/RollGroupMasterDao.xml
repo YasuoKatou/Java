@@ -24,4 +24,17 @@
       , 1
     )
   </insert>
+
+  <select id="findAll" resultMap="rollGroupMasterResultMap">
+    select
+        id  --識別子
+      , name  --ロールグループ名
+      , createDate  --作成日時
+      , createUserId  --作成者ID
+      , updateDate  --更新日時
+      , updateUserId  --更新者ID
+      , versionNo  --バージョンNo
+    from m_rollGroup
+    order by id
+  </select>
 </mapper>

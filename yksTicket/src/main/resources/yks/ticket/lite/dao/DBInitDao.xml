@@ -102,4 +102,36 @@
 	<delete id="dropSessionTran">
 		drop table t_session
 	</delete>
+
+	<insert id="createRollNameTran">
+		create table t_roll_name (
+			  id bigint primary key					--ロール名称ID
+			, name varchar(256) not null			--ロール名称
+			, description varchar(1024)				--説明
+			, createDate TIMESTAMP not null default CURRENT_TIMESTAMP	--作成日時
+			, createUserId bigint not null								--作成者ID
+			, updateDate TIMESTAMP										--更新日時
+			, updateUserId bigint										--更新者ID
+			, versionNo	int not null									--バージョンNo
+		)
+	</insert>
+	<delete id="dropRollNameTran">
+		drop table t_roll_name
+	</delete>
+
+	<insert id="createRollSettingTran">
+		create table t_roll_setting (
+			  roll_name_id bigint 					--ロール名称ID
+			, roll_item_id bigint 					--ロール項目ID
+			, createDate TIMESTAMP not null default CURRENT_TIMESTAMP	--作成日時
+			, createUserId bigint not null								--作成者ID
+			, updateDate TIMESTAMP										--更新日時
+			, updateUserId bigint										--更新者ID
+			, versionNo	int not null									--バージョンNo
+			, primary key(roll_name_id, roll_item_id)
+		)
+	</insert>
+	<delete id="dropRollSettingTran">
+		drop table t_roll_setting
+	</delete>
 </mapper>

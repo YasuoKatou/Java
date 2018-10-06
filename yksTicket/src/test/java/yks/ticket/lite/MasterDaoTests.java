@@ -22,6 +22,6 @@ import yks.ticket.lite.dao.master.UserMasterDaoTest;
 	, UserMasterDaoTest.class 			// ユーザマスタ
 	, ProjectMasterDaoTest.class		// プロジェクトマスタ
 	, RollGroupMasterDaoTest.class		// ロールグループマスタ
-	, RollItemMasterDaoTest.class			// ロールマスタ
+	, RollItemMasterDaoTest.class		// ロールマスタ
 	})
 public class MasterDaoTests {}
