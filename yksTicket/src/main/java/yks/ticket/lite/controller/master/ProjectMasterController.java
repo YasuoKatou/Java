@@ -23,7 +23,7 @@ import yks.ticket.lite.service.mater.ProjectService;
  * @since 0.0.1
  */
 @Controller
-@RequestMapping(value="/yksticket/maintenance")
+@RequestMapping(value="/yksticket/project")
 public class ProjectMasterController extends ControllerBase {
 	/** プロジェクトマスタメンテナンスサービス */
 	@Autowired private ProjectService projectService;
@@ -34,7 +34,7 @@ public class ProjectMasterController extends ControllerBase {
 	 * @return プロジェクトDtoリスト
 	 * @since 0.0.1
 	 */
-	@PostMapping(value="/projects", consumes = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(value="/list", consumes = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public List<ProjectDto> getProjects(@RequestBody ProjectListRequestDto inDto) {
 		// プロジェクトの一覧を取得
@@ -47,7 +47,7 @@ public class ProjectMasterController extends ControllerBase {
 	 * @return
 	 * @since 0.0.1
 	 */
-	@PostMapping(value="/newproject", consumes = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(value="/append", consumes = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public StatusResponseDto addProject(@RequestBody ProjectDto projectDto) {
 		LoginDto login = super.getLogin(projectDto);

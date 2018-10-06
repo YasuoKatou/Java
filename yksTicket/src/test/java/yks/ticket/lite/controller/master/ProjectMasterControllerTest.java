@@ -61,7 +61,7 @@ public class ProjectMasterControllerTest {
 			requestParamMap.put("alive", null);
 			BodyInserter<Object, ReactiveHttpOutputMessage> requestParam = BodyInserters.fromObject(requestParamMap);
 			// コントローラ呼び出し
-			webClient.post().uri("/yksticket/maintenance/projects")
+			webClient.post().uri("/yksticket/project/list")
 				.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
 				.accept(MediaType.APPLICATION_JSON)
 				.acceptCharset(Charset.forName("UTF-8"))
@@ -104,7 +104,7 @@ public class ProjectMasterControllerTest {
 			requestParamMap.put("alive", "yes");
 			BodyInserter<Object, ReactiveHttpOutputMessage> requestParam = BodyInserters.fromObject(requestParamMap);
 			// コントローラ呼び出し
-			webClient.post().uri("/yksticket/maintenance/projects")
+			webClient.post().uri("/yksticket/project/list")
 				.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
 				.accept(MediaType.APPLICATION_JSON)
 				.acceptCharset(Charset.forName("UTF-8"))
