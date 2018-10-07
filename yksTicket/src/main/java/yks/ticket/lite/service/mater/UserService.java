@@ -12,6 +12,7 @@ import yks.ticket.lite.dao.master.UserMasterDao;
 import yks.ticket.lite.dto.LoginDto;
 import yks.ticket.lite.dto.StatusResponseDto;
 import yks.ticket.lite.dto.UserDto;
+import yks.ticket.lite.dto.UserInformationRequestDto;
 import yks.ticket.lite.entity.master.UserMasterEntity;
 
 /**
@@ -90,7 +91,7 @@ public class UserService {
 		entity = this.userMasterDao.findByLoginId(entity);
 		if (entity == null) {
 			// 登録後の抽出失敗
-			logger.error("ユーザID取得失敗 : " + entity.toString());
+			logger.error("ユーザID取得失敗 : " + inDto.toString());
 			throw new Exception("登録失敗(ユーザID取得) : ");
 		}
 		return UserDto.builder()
@@ -143,12 +144,12 @@ public class UserService {
 	/**
 	 * ユーザ情報を取得する.
 	 * 
-	 * @param inDto ユーザ情報取得要求
+	 * @param inDto ユーザ情報取得リクエストDto.
 	 * @return ユーザ情報
 	 * @throws Exception 取得失敗
 	 * @since 0.0.1
 	 */
-	public UserDto getUserInfo(UserDto inDto) throws Exception {
+	public UserDto getUserInfo(UserInformationRequestDto inDto) throws Exception {
 		UserMasterEntity entity;
 		try {
 			entity = this.userMasterDao.findById(UserMasterEntity.builder()

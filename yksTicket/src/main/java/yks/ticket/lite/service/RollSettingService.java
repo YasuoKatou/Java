@@ -11,6 +11,7 @@ import yks.ticket.lite.dao.RollSettingDao;
 import yks.ticket.lite.dto.RollNameResponseDto;
 import yks.ticket.lite.dto.RollSettingRequestDto;
 import yks.ticket.lite.dto.RollSettingResponseDto;
+import yks.ticket.lite.entity.RollNameEntity;
 
 /**
  * ロール情報設定サービス.
@@ -49,14 +50,23 @@ public class RollSettingService {
 	 * @return ロール設定レスポンスDto一覧
 	 * @since 0.0.1
 	 */
-	public List<RollSettingResponseDto> getRoll(RollSettingRequestDto inDto) {
-		List<RollSettingResponseDto> list = new ArrayList<>();
+	public RollSettingResponseDto getRoll(RollSettingRequestDto inDto) {
+		// ロール設定項目を取得
+		List<RollSettingResponseDto.RollSetting> list = new ArrayList<>();
 		this.rollSettingDao.findSetting(inDto.getId()).forEach(entity -> {
-			list.add(RollSettingResponseDto.builder()
-					.id(entity.getRollNameId())
+			list.add(RollSettingResponseDto.RollSetting.builder()
+					.id(entity.getRollItemId())
 					.group_id(entity.getRollGroupId())
 					.build());
 		});
-		return list;
+		// ロール名称を取得
+		RollNameEntity nameEntity = this.rollNameDao.findByPk(inDto.getId());
+		RollSettingResponseDto outDto = RollSettingResponseDto.builder()
+				.id(nameEntity.getId())
+				.name(nameEntity.getName())
+				.descript(nameEntity.getDescription())
+				.items(list)
+				.build();
+		return outDto;
 	}
 }

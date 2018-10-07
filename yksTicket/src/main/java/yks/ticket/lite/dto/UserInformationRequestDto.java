@@ -6,8 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * ロール設定情報取得リクエストDto.
- *
+ * ユーザ情報取得リクエストDto.
+ * 
  * @author yasuokatou (YKS)
  * @since 0.0.1
  */
@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RollSettingRequestDto extends RequestHeaderDto {
-	/** ロール名称ID */
+public class UserInformationRequestDto extends RequestHeaderDto {
+	/** ユーザ識別子 */
 	private Long id;
 }

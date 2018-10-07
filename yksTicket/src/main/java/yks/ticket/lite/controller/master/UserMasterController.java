@@ -15,6 +15,7 @@ import yks.ticket.lite.dto.LoginDto;
 import yks.ticket.lite.dto.RequestDto;
 import yks.ticket.lite.dto.StatusResponseDto;
 import yks.ticket.lite.dto.UserDto;
+import yks.ticket.lite.dto.UserInformationRequestDto;
 import yks.ticket.lite.service.mater.UserService;
 
 /**
@@ -84,14 +85,14 @@ public class UserMasterController extends ControllerBase {
 	/**
 	 * ユーザ情報を取得する.
 	 * 
-	 * @param userDto ユーザ情報取得リクエスト
+	 * @param userDto ユーザ情報取得リクエストDto.
 	 * @return ユーザ情報
 	 * @throws Exception 取得失敗
 	 * @since 0.0.1
 	 */
 	@PostMapping(value="", consumes = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public UserDto getUserInfo(@RequestBody UserDto userDto) throws Exception {
-		return this.userService.getUserInfo(userDto);
+	public UserDto getUserInfo(@RequestBody UserInformationRequestDto inDto) throws Exception {
+		return this.userService.getUserInfo(inDto);
 	}
 }

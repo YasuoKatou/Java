@@ -2,6 +2,8 @@ package yks.ticket.lite.dao;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
+
 import yks.ticket.lite.entity.RollNameEntity;
 
 /**
@@ -26,4 +28,13 @@ public interface RollNameDao {
 	 * @since 0.0.1
 	 */
 	List<RollNameEntity> findAll();
+
+	/**
+	 * PK指定でロール名称を取得する.
+	 *
+	 * @param id ロール名称ID
+	 * @return ロール設定エンティティ.
+	 * @since 0.0.1
+	 */
+	RollNameEntity findByPk(@Param("id") Long id);
 }

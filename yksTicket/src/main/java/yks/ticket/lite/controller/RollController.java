@@ -43,12 +43,12 @@ public class RollController {
 	 * ロール設定情報を取得
 	 *
 	 * @param inDto ロール設定情報取得リクエストDto.
-	 * @return ロール設定レスポンスDto一覧.
+	 * @return ロール設定レスポンスDto.
 	 * @since 0.0.1
 	 */
 	@PostMapping(value="", consumes = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public List<RollSettingResponseDto> getRoll(@RequestBody RollSettingRequestDto inDto) {
+	public RollSettingResponseDto getRoll(@RequestBody RollSettingRequestDto inDto) {
 		return this.rollSettingService.getRoll(inDto);
 	}
 }
