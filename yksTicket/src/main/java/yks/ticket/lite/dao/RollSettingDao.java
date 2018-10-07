@@ -25,9 +25,18 @@ public interface RollSettingDao {
 	/**
 	 * ロール設定情報を取得する.
 	 *
-	 * @param id ロール名称ID
+	 * @param rollNameId ロール名称ID
 	 * @return ロール設定エンティティ一覧
 	 * @since 0.0.1
 	 */
-	List<RollSettingEntity> findSetting(@Param("id") Long id);
+	List<RollSettingEntity> findSetting(@Param("rollNameId") Long rollNameId);
+
+	/**
+	 * ロール名称IDでレコードを削除する.
+	 *
+	 * @param rollNameId ロール名称ID
+	 * @return 削除件数
+	 * @since 0.0. 1
+	 */
+	int deleteByRollNameId(@Param("rollNameId") Long rollNameId);
 }

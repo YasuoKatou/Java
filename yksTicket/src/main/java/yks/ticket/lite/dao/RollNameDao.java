@@ -37,4 +37,21 @@ public interface RollNameDao {
 	 * @since 0.0.1
 	 */
 	RollNameEntity findByPk(@Param("id") Long id);
+
+	/**
+	 * 最大のIDを取得
+	 *
+	 * @return 最大ID
+	 * @since 0.0.1
+	 */
+	Long findMaxId();
+
+	/**
+	 * ロール名称を更新する.
+	 *
+	 * @param entity ロール名称エンティティ.
+	 * @return 1 (更新レコード数)
+	 * @since 0.0.1
+	 */
+	int updateByPk(RollNameEntity entity);
 }

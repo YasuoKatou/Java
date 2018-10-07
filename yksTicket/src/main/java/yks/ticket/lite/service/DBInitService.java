@@ -88,7 +88,7 @@ public class DBInitService {
 				.name("日本語")
 				.country("japan")
 				.build();
-		entity.setCreateUserId(this.ADMIN_USER_ID);
+		entity.setCreateUserId(ADMIN_USER_ID);
 		int count = languageMasterDao.insert(entity);
 		logger.info("言語マスタ登録件数 : " + count);
 	}
@@ -99,14 +99,14 @@ public class DBInitService {
 	 */
 	private void userMaster() {
 		UserMasterEntity entity = UserMasterEntity.builder()
-				.id(this.ADMIN_USER_ID)
+				.id(ADMIN_USER_ID)
 				.login_id("admin")
 				.passwd("admin")	// TODO 暗号化
 				.name1("Katou").name2("Yasuo")
 				.email("yasuokatou@gmail.com")
 				.language_id(1L)
 				.build();
-		entity.setCreateUserId(this.ADMIN_USER_ID);
+		entity.setCreateUserId(ADMIN_USER_ID);
 		int count = userMasterDao.insert(entity);
 		logger.info("ユーザマスタ登録件数 : " + count);
 	}
@@ -120,7 +120,7 @@ public class DBInitService {
 				.id(Long.valueOf(1000L))
 				.name("プロジェクト")
 				.build();
-		entity.setCreateUserId(this.ADMIN_USER_ID);
+		entity.setCreateUserId(ADMIN_USER_ID);
 		int count = rollGroupMasterDao.insert(entity);
 
 		entity.setId(Long.valueOf(2000L));
@@ -148,7 +148,7 @@ public class DBInitService {
 				.name("プロジェクトの編集")
 				.group_id(Long.valueOf(1000L))
 				.build();
-		entity.setCreateUserId(this.ADMIN_USER_ID);
+		entity.setCreateUserId(ADMIN_USER_ID);
 		int count = rollItemMasterDao.insert(entity);
 
 		entity.setId(Long.valueOf(1002L));
@@ -213,7 +213,7 @@ public class DBInitService {
 				.name("システム管理者")
 				.description("全権限を与える")
 				.build();
-		nameEntity.setCreateUserId(this.ADMIN_USER_ID);
+		nameEntity.setCreateUserId(ADMIN_USER_ID);
 		int count = this.rollNameDao.insert(nameEntity);
 		logger.info("管理者ロール名称登録件数 : " + count);
 
@@ -222,7 +222,7 @@ public class DBInitService {
 				.rollNameId(rollNameId)
 				.rollItemId(Long.valueOf(1001L))			// プロジェクトの編集
 				.build();
-		rollEntity.setCreateUserId(this.ADMIN_USER_ID);
+		rollEntity.setCreateUserId(ADMIN_USER_ID);
 		count = this.rollSettingDao.insert(rollEntity);
 		rollEntity.setRollItemId(Long.valueOf(1002L));		// プロジェクトの終了/再開
 		count += this.rollSettingDao.insert(rollEntity);

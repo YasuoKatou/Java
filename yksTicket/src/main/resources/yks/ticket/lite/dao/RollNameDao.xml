@@ -58,4 +58,20 @@
     from t_roll_name
     where id = #{id}
   </select>
+
+  <select id="findMaxId" resultType="Long">
+    select
+        coalesce(max(id), 0)
+    from t_roll_name
+  </select>
+
+  <update id="updateByPk">
+    update t_roll_name set
+        name = #{name}  --ロール名
+      , description = #{description}  --説明
+      , updateUserId = #{updateUserId}  --更新ユーザID
+      , updateDate = CURRENT_TIMESTAMP
+      , versionNo  = versionNo + 1
+    where id = #{id}
+  </update>
 </mapper>
