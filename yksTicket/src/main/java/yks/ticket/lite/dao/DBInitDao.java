@@ -96,4 +96,52 @@ public interface DBInitDao {
 	 * @since 0.0.1
 	 */
 	void dropRollSettingTran();
+
+	/**
+	 * チケットテーブルを生成する.
+	 * @since 0.0.1
+	 */
+	void createTicketTran();
+
+	/**
+	 * チケットテーブルを削除する.
+	 * @since 0.0.1
+	 */
+	void dropTicketTran();
+
+	/**
+	 * チケットメモテーブルを生成する.
+	 * @since 0.0.1
+	 */
+	void createTicketMemoTran();
+
+	/**
+	 * チケットメモテーブルを削除する.
+	 * @since 0.0.1
+	 */
+	void dropTicketMemoTran();
+
+	/**
+	 * 履歴チケットテーブルを生成する.
+	 * @since 0.0.1
+	 */
+	void createTicketHistory();
+
+	/**
+	 * 履歴チケットテーブルを削除する.
+	 * @since 0.0.1
+	 */
+	void dropTicketHistory();
+
+	/**
+	 * 履歴チケットメモテーブルを生成する.
+	 * @since 0.0.1
+	 */
+	void createTicketMemoHistory();
+
+	/**
+	 * 履歴チケットメモテーブルを削除する.
+	 * @since 0.0.1
+	 */
+	void dropTicketMemoHistory();
 }

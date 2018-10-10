@@ -280,6 +280,18 @@ public class DBInitService {
 		// ロール設定
 		dbInitDao.createRollSettingTran();
 		logger.info("created roll table");
+		// チケット
+		dbInitDao.createTicketTran();
+		logger.info("created ticket table");
+		// チケットメモ
+		dbInitDao.createTicketMemoTran();
+		logger.info("created ticket memo table");
+		// 履歴チケット
+		dbInitDao.createTicketHistory();
+		logger.info("created History ticket table");
+		// 履歴チケットメモ
+		dbInitDao.createTicketMemoHistory();
+		logger.info("created History ticket memo table");
 	}
 
 	/**
@@ -342,6 +354,34 @@ public class DBInitService {
 			logger.info("dropped roll table");
 		} catch (Exception ex) {
 			logger.debug("roll table can't drop cause by " + ex.getMessage());
+		}
+		// チケットテーブル
+		try {
+			dbInitDao.dropTicketTran();
+			logger.info("dropped ticket table");
+		} catch (Exception ex) {
+			logger.debug("ticket table can't drop cause by " + ex.getMessage());
+		}
+		// チケットメモテーブル
+		try {
+			dbInitDao.dropTicketMemoTran();
+			logger.info("dropped ticket memo table");
+		} catch (Exception ex) {
+			logger.debug("ticket memo table can't drop cause by " + ex.getMessage());
+		}
+		// 履歴チケットテーブル
+		try {
+			dbInitDao.dropTicketHistory();
+			logger.info("dropped history ticket table");
+		} catch (Exception ex) {
+			logger.debug("history ticket table can't drop cause by " + ex.getMessage());
+		}
+		// 履歴チケットメモテーブル
+		try {
+			dbInitDao.dropTicketMemoHistory();
+			logger.info("dropped history ticket memo table");
+		} catch (Exception ex) {
+			logger.debug("history ticket memo table can't drop cause by " + ex.getMessage());
 		}
 	}
 }

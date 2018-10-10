@@ -134,4 +134,84 @@
 	<delete id="dropRollSettingTran">
 		drop table t_roll_setting
 	</delete>
+
+	<insert id="createTicketTran">
+		create table t_ticket (
+			  id bigint 							--チケットID
+			, title varchar(256) not null			--ロール項目ID
+			, description varchar(1024)				--説明
+			, status_id bigint						--ステータス
+			, start_date TIMESTAMP					--開始日
+			, finish_date TIMESTAMP					--終了日
+			, progress varchar(16)					--進捗
+			, createDate TIMESTAMP not null default CURRENT_TIMESTAMP	--作成日時
+			, createUserId bigint not null								--作成者ID
+			, updateDate TIMESTAMP										--更新日時
+			, updateUserId bigint										--更新者ID
+			, versionNo	int not null									--バージョンNo
+			, primary key(id, versionNo)
+		)
+	</insert>
+	<delete id="dropTicketTran">
+		drop table t_ticket
+	</delete>
+
+	<insert id="createTicketMemoTran">
+		create table t_ticket_memo (
+			  id bigint 							--メモID
+			, ticket_id bigint						--チケットID
+			, memo varchar(1024) not null			--説明
+			, root_memo_id bigint not null			--ルートメモID
+			, parent_memo_id bigint not null		--親メモID
+			, createDate TIMESTAMP not null default CURRENT_TIMESTAMP	--作成日時
+			, createUserId bigint not null								--作成者ID
+			, updateDate TIMESTAMP										--更新日時
+			, updateUserId bigint										--更新者ID
+			, versionNo	int not null									--バージョンNo
+			, primary key(id, ticket_id, versionNo)
+		)
+	</insert>
+	<delete id="dropTicketMemoTran">
+		drop table t_ticket_memo
+	</delete>
+
+	<insert id="createTicketHistory">
+		create table h_ticket (
+			  id bigint 							--チケットID
+			, title varchar(256) not null			--ロール項目ID
+			, description varchar(1024)				--説明
+			, status_id bigint						--ステータス
+			, start_date TIMESTAMP					--開始日
+			, finish_date TIMESTAMP					--終了日
+			, progress varchar(16)					--進捗
+			, createDate TIMESTAMP not null default CURRENT_TIMESTAMP	--作成日時
+			, createUserId bigint not null								--作成者ID
+			, updateDate TIMESTAMP										--更新日時
+			, updateUserId bigint										--更新者ID
+			, versionNo	int not null									--バージョンNo
+			, primary key(id, versionNo)
+		)
+	</insert>
+	<delete id="dropTicketHistory">
+		drop table h_ticket
+	</delete>
+
+	<insert id="createTicketMemoHistory">
+		create table h_ticket_memo (
+			  id bigint 							--メモID
+			, ticket_id bigint						--チケットID
+			, memo varchar(1024) not null			--説明
+			, root_memo_id bigint not null			--ルートメモID
+			, parent_memo_id bigint not null		--親メモID
+			, createDate TIMESTAMP not null default CURRENT_TIMESTAMP	--作成日時
+			, createUserId bigint not null								--作成者ID
+			, updateDate TIMESTAMP										--更新日時
+			, updateUserId bigint										--更新者ID
+			, versionNo	int not null									--バージョンNo
+			, primary key(id, ticket_id, versionNo)
+		)
+	</insert>
+	<delete id="dropTicketMemoHistory">
+		drop table h_ticket_memo
+	</delete>
 </mapper>
