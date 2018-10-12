@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="yks.ticket.lite.dao.ProjectStatusDao">
+  <resultMap id="projectStatusResultMap" type="yks.ticket.lite.entity.ProjectStatusEntity" autoMapping="true">
+  </resultMap>
+
+  <select id="findByProject" resultMap="projectStatusResultMap">
+    select
+        id
+      , disp_seq
+      , name
+    from t_proj_stat
+    where project_id = #{projectId}
+      and available = 'yes'
+    order by disp_seq
+  </select>
+</mapper>
