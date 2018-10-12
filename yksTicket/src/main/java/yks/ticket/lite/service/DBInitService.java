@@ -292,6 +292,9 @@ public class DBInitService {
 		// 履歴チケットメモ
 		dbInitDao.createTicketMemoHistory();
 		logger.info("created History ticket memo table");
+		// ステータス管理
+		dbInitDao.createProjectStatusTran();
+		logger.info("created project status table");
 	}
 
 	/**
@@ -382,6 +385,13 @@ public class DBInitService {
 			logger.info("dropped history ticket memo table");
 		} catch (Exception ex) {
 			logger.debug("history ticket memo table can't drop cause by " + ex.getMessage());
+		}
+		// ステータス管理テーブル
+		try {
+			dbInitDao.dropProjectStatusTran();
+			logger.info("dropped project status table");
+		} catch (Exception ex) {
+			logger.debug("project status table can't drop cause by " + ex.getMessage());
 		}
 	}
 }

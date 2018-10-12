@@ -144,4 +144,16 @@ public interface DBInitDao {
 	 * @since 0.0.1
 	 */
 	void dropTicketMemoHistory();
+
+	/**
+	 * ステータス管理テーブルを生成する.
+	 * @since 0.0.1
+	 */
+	void createProjectStatusTran();
+
+	/**
+	 * ステータス管理テーブルを削除する.
+	 * @since 0.0.1
+	 */
+	void dropProjectStatusTran();
 }

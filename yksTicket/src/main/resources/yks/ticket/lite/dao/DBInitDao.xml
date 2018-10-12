@@ -137,7 +137,7 @@
 
 	<insert id="createTicketTran">
 		create table t_ticket (
-			  id bigint 							--チケットID
+			  id bigint primary key					--チケットID
 			, title varchar(256) not null			--ロール項目ID
 			, description varchar(1024)				--説明
 			, status_id bigint						--ステータス
@@ -149,7 +149,6 @@
 			, updateDate TIMESTAMP										--更新日時
 			, updateUserId bigint										--更新者ID
 			, versionNo	int not null									--バージョンNo
-			, primary key(id, versionNo)
 		)
 	</insert>
 	<delete id="dropTicketTran">
@@ -168,7 +167,7 @@
 			, updateDate TIMESTAMP										--更新日時
 			, updateUserId bigint										--更新者ID
 			, versionNo	int not null									--バージョンNo
-			, primary key(id, ticket_id, versionNo)
+			, primary key(id, ticket_id)
 		)
 	</insert>
 	<delete id="dropTicketMemoTran">
@@ -178,7 +177,7 @@
 	<insert id="createTicketHistory">
 		create table h_ticket (
 			  id bigint 							--チケットID
-			, title varchar(256) not null			--ロール項目ID
+			, title varchar(256) not null			--ロール項目名称
 			, description varchar(1024)				--説明
 			, status_id bigint						--ステータス
 			, start_date TIMESTAMP					--開始日
@@ -213,5 +212,22 @@
 	</insert>
 	<delete id="dropTicketMemoHistory">
 		drop table h_ticket_memo
+	</delete>
+
+	<insert id="createProjectStatusTran">
+		create table t_proj_stat (
+			  project_id bigint						--プロジェクトID
+			, disp_seq int							--表示順
+			, name varchar(256) not null			--ステータス名称
+			, createDate TIMESTAMP not null default CURRENT_TIMESTAMP	--作成日時
+			, createUserId bigint not null								--作成者ID
+			, updateDate TIMESTAMP										--更新日時
+			, updateUserId bigint										--更新者ID
+			, versionNo	int not null									--バージョンNo
+			, primary key(project_id, disp_seq)
+		)
+	</insert>
+	<delete id="dropProjectStatusTran">
+		drop table t_proj_stat
 	</delete>
 </mapper>
