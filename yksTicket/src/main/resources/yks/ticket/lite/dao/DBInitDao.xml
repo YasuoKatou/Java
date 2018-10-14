@@ -144,6 +144,7 @@
 			, start_date TIMESTAMP					--開始日
 			, finish_date TIMESTAMP					--終了日
 			, progress varchar(16)					--進捗
+			, project_id bigint						--プロジェクトID
 			, createDate TIMESTAMP not null default CURRENT_TIMESTAMP	--作成日時
 			, createUserId bigint not null								--作成者ID
 			, updateDate TIMESTAMP										--更新日時
@@ -183,6 +184,7 @@
 			, start_date TIMESTAMP					--開始日
 			, finish_date TIMESTAMP					--終了日
 			, progress varchar(16)					--進捗
+			, project_id bigint						--プロジェクトID
 			, createDate TIMESTAMP not null default CURRENT_TIMESTAMP	--作成日時
 			, createUserId bigint not null								--作成者ID
 			, updateDate TIMESTAMP										--更新日時
