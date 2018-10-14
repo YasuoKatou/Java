@@ -11,9 +11,56 @@
         id
       , disp_seq dispSeq
       , name
+      , versionNo
     from t_proj_stat
     where project_id = #{projectId}
       and available = 'yes'
     order by disp_seq
+  </select>
+
+  <update id="updateProject2NotUse">
+    update t_proj_stat set
+        available = 'no'
+      , versionNo = versionNo + 1
+    where project_id = #{projectId}
+  </update>
+
+  <update id="updateStatus">
+    update t_proj_stat set
+        disp_seq = #{dispSeq}
+      , name = #{name}
+      , available = #{available}
+      , updateDate = CURRENT_TIMESTAMP
+      , updateUserId = #{updateUserId}
+    where project_id = #{projectId}
+      and id = #{id}
+  </update>
+
+  <update id="appendStatus">
+    insert into t_proj_stat (
+        project_id   --プロジェクトID
+      , id           --識別子
+      , disp_seq     --表示順
+      , name         --ステータス名称
+      , available    --有効フラグ
+      , createDate   --作成日時
+      , createUserId --作成者ID
+      , versionNo    --バージョンNo
+    ) values (
+        #{projectId}
+      , #{id}
+      , #{dispSeq}
+      , #{name}
+      , #{available}
+      , CURRENT_TIMESTAMP
+      , #{createUserId}
+      , 1
+    )
+  </update>
+
+  <select id="getNextStatusId" resultType="Long">
+    select coalesce(max(id), 0) + 1
+    from t_proj_stat
+    where project_id = #{projectId}
   </select>
 </mapper>

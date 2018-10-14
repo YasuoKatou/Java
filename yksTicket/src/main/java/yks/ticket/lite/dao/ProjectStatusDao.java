@@ -21,4 +21,40 @@ public interface ProjectStatusDao {
 	 * @since 0.0.1
 	 */
 	List<ProjectStatusEntity> findByProject(@Param("projectId") Long projectId);
+
+	/**
+	 * 指定プロジェクトのステータスを全て使用不可に設定する.
+	 *
+	 * @param projectId プロジェクトID
+	 * @return 更新レコード数
+	 * @since 0.0.1
+	 */
+	int updateProject2NotUse(@Param("projectId") Long projectId);
+
+	/**
+	 * 指定プロジェクトのステータスを更新する.
+	 *
+	 * @param entity プロジェクトスタータス管理エンティティ.
+	 * @return 1（更新件数）
+	 * @since 0.0.1
+	 */
+	int updateStatus(ProjectStatusEntity entity);
+
+	/**
+	 * 指定プロジェクトにステータスを新規登録する.
+	 *
+	 * @param entity プロジェクトスタータス管理エンティティ.
+	 * @return 1（登録件数）
+	 * @since 0.0.1
+	 */
+	int appendStatus(ProjectStatusEntity entity);
+
+	/**
+	 * 次のステータスIDを取得する.
+	 *
+	 * @param projectId プロジェクトID
+	 * @return 次のステータスID
+	 * @since 0.0.1
+	 */
+	Long getNextStatusId(@Param("projectId") Long projectId);
 }

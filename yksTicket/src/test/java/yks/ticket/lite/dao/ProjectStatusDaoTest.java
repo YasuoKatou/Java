@@ -59,15 +59,18 @@ public class ProjectStatusDaoTest {
 		assertEquals("+0.ステータスID", entity.getId(), Long.valueOf(1L));
 		assertEquals("+0.ステータス名称", entity.getName(), "未着手");
 		assertEquals("+0.表示順", entity.getDispSeq(), 10);
+		assertEquals("+0.バージョン", entity.getVersionNo(), Integer.valueOf(100));
 		// +1
 		entity = list.get(1);
 		assertEquals("+1.ステータスID", entity.getId(), Long.valueOf(2L));
 		assertEquals("+1.ステータス名称", entity.getName(), "10%");
 		assertEquals("+1.表示順", entity.getDispSeq(), 20);
+		assertEquals("+1.バージョン", entity.getVersionNo(), Integer.valueOf(200));
 		// +2
 		entity = list.get(2);
 		assertEquals("+2.ステータスID", entity.getId(), Long.valueOf(3L));
 		assertEquals("+2.ステータス名称", entity.getName(), "完了");
 		assertEquals("+2.表示順", entity.getDispSeq(), 30);
+		assertEquals("+2.バージョン", entity.getVersionNo(), Integer.valueOf(300));
 	}
 }

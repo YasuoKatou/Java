@@ -17,6 +17,12 @@ public class ProjectStatusListResponseDto {
 	/** プロジェクトステータス一覧 */
 	private List<Status> statusList;
 
+	/**
+	 * プロジェクトステータス.
+	 *
+	 * @author yasuokatou (YKS)
+	 * @since 0.0.1
+	 */
 	@Builder
 	@Data
 	public static class Status {
@@ -24,5 +30,9 @@ public class ProjectStatusListResponseDto {
 		private Long id;
 		/** スタータス名称 */
 		private String name;
+		/** 表示順 */
+		private int dispSeq;
+		/** バージョンNo */
+		private Integer versionNo;
 	}
 }
