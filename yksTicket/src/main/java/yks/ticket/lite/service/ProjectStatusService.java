@@ -11,13 +11,14 @@ import yks.ticket.lite.dto.ProjectStatusListRequestDto;
 import yks.ticket.lite.dto.ProjectStatusListResponseDto;
 
 /**
- * プロジェクトステータスサービス.
+ * プロジェクトステータ管理スサービス.
  *
  * @author yasuokatou (YKS)
  * @since 0.0.1
  */
 @Service
 public class ProjectStatusService {
+	/** プロジェクトステータス管理テーブルDao. */
 	@Autowired private ProjectStatusDao projectStatusDao;
 
 	/**

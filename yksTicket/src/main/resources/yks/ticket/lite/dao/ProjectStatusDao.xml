@@ -9,7 +9,7 @@
   <select id="findByProject" resultMap="projectStatusResultMap">
     select
         id
-      , disp_seq
+      , disp_seq dispSeq
       , name
     from t_proj_stat
     where project_id = #{projectId}
