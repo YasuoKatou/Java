@@ -295,6 +295,12 @@ public class DBInitService {
 		// プロジェクトステータス管理
 		dbInitDao.createProjectStatusTran();
 		logger.info("created project status table");
+		// チケットステータス管理
+		dbInitDao.createTicketStatusTran();
+		logger.info("created ticket status table");
+		// チケット進捗管理
+		dbInitDao.createTicketProgressTran();
+		logger.info("created ticket progress table");
 	}
 
 	/**
@@ -392,6 +398,20 @@ public class DBInitService {
 			logger.info("dropped project status table");
 		} catch (Exception ex) {
 			logger.debug("project status table can't drop cause by " + ex.getMessage());
+		}
+		// チケットステータス管理テーブル
+		try {
+			dbInitDao.dropTicketStatusTran();
+			logger.info("dropped ticket status table");
+		} catch (Exception ex) {
+			logger.debug("project ticket status table can't drop cause by " + ex.getMessage());
+		}
+		// チケットステータス進捗テーブル
+		try {
+			dbInitDao.dropTicketProgressTran();
+			logger.info("dropped ticket progress table");
+		} catch (Exception ex) {
+			logger.debug("project ticket progress table can't drop cause by " + ex.getMessage());
 		}
 	}
 }

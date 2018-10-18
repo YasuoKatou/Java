@@ -234,4 +234,41 @@
 	<delete id="dropProjectStatusTran">
 		drop table t_proj_stat
 	</delete>
+
+	<insert id="createTicketStatusTran">
+		create table t_ticket_stat (
+			  project_id bigint						--プロジェクトID
+			, id bigint								--識別子
+			, disp_seq int							--表示順
+			, name varchar(256) not null			--ステータス名称
+			, available varchar(10) not null		--有効フラグ
+			, createDate TIMESTAMP not null default CURRENT_TIMESTAMP	--作成日時
+			, createUserId bigint not null								--作成者ID
+			, updateDate TIMESTAMP										--更新日時
+			, updateUserId bigint										--更新者ID
+			, versionNo	int not null									--バージョンNo
+			, primary key(project_id, id)
+		)
+	</insert>
+	<delete id="dropTicketStatusTran">
+		drop table t_ticket_stat
+	</delete>
+
+	<insert id="createTicketProgressTran">
+		create table t_ticket_progress (
+			  project_id bigint						--プロジェクトID
+			, id bigint								--識別子
+			, disp_seq int							--表示順
+			, name varchar(256) not null			--進捗名称
+			, available varchar(10) not null		--有効フラグ
+			, createUserId bigint not null								--作成者ID
+			, updateDate TIMESTAMP										--更新日時
+			, updateUserId bigint										--更新者ID
+			, versionNo	int not null									--バージョンNo
+			, primary key(project_id, id)
+		)
+	</insert>
+	<delete id="dropTicketProgressTran">
+		drop table t_ticket_progress
+	</delete>
 </mapper>
