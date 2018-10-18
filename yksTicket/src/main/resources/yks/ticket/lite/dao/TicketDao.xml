@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="yks.ticket.lite.dao.TicketDao">
+  <resultMap id="ticketResultMap" type="yks.ticket.lite.entity.TicketEntity" autoMapping="true">
+  </resultMap>
+
+  <select id="findByProject" resultMap="ticketResultMap">
+    select
+        T1.id  --チケットID
+      , T1.title  --チケットタイトル
+      , T1.description  --チケットの説明
+      , T1.status_id  --チケットステータスID
+      , T1.start_date  --開始日
+      , T1.finish_date  --終了日
+      , T1.progress_id  --チケットの進捗
+      , T1.project_id  --プロジェクトID
+      , T1.createDate  --作成日時
+      , T1.createUserId  --作成者ID
+      , T1.updateDate  --更新日時
+      , T1.updateUserId  --更新者ID
+      , T1.versionNo  --バージョンNo
+    from t_ticket T1
+    where T1.project_id = #{project_id}
+    order by T1.id
+  </select>
+</mapper>
