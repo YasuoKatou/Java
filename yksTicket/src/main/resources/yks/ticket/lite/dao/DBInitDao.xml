@@ -141,8 +141,8 @@
 			, title varchar(256) not null			--チケットタイトル
 			, description varchar(1024)				--チケットの説明
 			, status_id bigint						--チケットステータスID
-			, start_date TIMESTAMP					--開始日
-			, finish_date TIMESTAMP					--終了日
+			, start_date DATE						--開始日
+			, finish_date DATE						--終了日
 			, progress_id bigint					--チケットの進捗
 			, project_id bigint						--プロジェクトID
 			, createDate TIMESTAMP not null default CURRENT_TIMESTAMP	--作成日時

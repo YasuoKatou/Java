@@ -12,13 +12,14 @@ import yks.ticket.lite.dto.TicketListRequestDto;
 import yks.ticket.lite.dto.TicketListResponseDto;
 
 /**
- * チケットサービス.
+ * チケット管理サービス.
  *
  * @author yasuokatou (YKS)
  * @since 0.0.1
  */
 @Service
 public class TicketService {
+	/** チケットテーブルDao. */
 	@Autowired private TicketDao ticketDao;
 
 	/**

@@ -1,6 +1,6 @@
 package yks.ticket.lite.entity;
 
-import java.util.Date;
+import java.sql.Date;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

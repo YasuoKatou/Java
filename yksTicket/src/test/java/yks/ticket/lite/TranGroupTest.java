@@ -9,6 +9,7 @@ import yks.ticket.lite.controller.master.RollMasterControllerTest;
 import yks.ticket.lite.dao.ProjectStatusDaoTest;
 import yks.ticket.lite.dao.SessionDaoTest;
 import yks.ticket.lite.service.ProjectStatusServiceTest;
+import yks.ticket.lite.service.TicketServiceTest;
 
 @RunWith(Suite.class)
 @SuiteClasses({
@@ -17,5 +18,6 @@ import yks.ticket.lite.service.ProjectStatusServiceTest;
 	, RollMasterControllerTest.class		// ロールマスタコントローラのテスト
 	, ProjectStatusDaoTest.class			// プロジェクトステータス管理Daoテストクラス.
 	, ProjectStatusServiceTest.class		// プロジェクトステータ管理スサービスのテストクラス.
+	, TicketServiceTest.class				// チケットステータ管理サービスのテストクラス.
 })
 public class TranGroupTest {}
