@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="yks.ticket.lite.dao.TicketStatusDao">
+  <resultMap id="ticketStatusResultMap" type="yks.ticket.lite.entity.TicketStatusEntity" autoMapping="true">
+  </resultMap>
+
+  <select id="findByProject" resultMap="ticketStatusResultMap">
+    select
+        project_id  --プロジェクトID
+      , id          --ステータスID
+      , disp_seq    --表示順
+      , name        --ステータス名称
+      , versionNo   --バージョンNo
+    from t_ticket_stat
+    where project_id = #{project_id}
+      and available = 'yes'
+    order by disp_seq
+  </select>
+</mapper>

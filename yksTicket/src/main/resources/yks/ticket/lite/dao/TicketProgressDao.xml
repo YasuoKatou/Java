@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="yks.ticket.lite.dao.TicketProgressDao">
+  <resultMap id="ticketProgressResultMap" type="yks.ticket.lite.entity.TicketProgressEntity" autoMapping="true">
+  </resultMap>
+
+  <select id="findByProject" resultMap="ticketProgressResultMap">
+    select
+        project_id  --プロジェクトID
+      , id          --進捗ID
+      , disp_seq    --表示順
+      , name        --進捗名称
+      , versionNo   --バージョンNo
+    from t_ticket_progress
+    where project_id = #{project_id}
+      and available = 'yes'
+    order by disp_seq
+  </select>
+</mapper>

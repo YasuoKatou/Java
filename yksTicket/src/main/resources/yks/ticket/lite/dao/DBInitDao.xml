@@ -261,6 +261,7 @@
 			, disp_seq int							--表示順
 			, name varchar(256) not null			--進捗名称
 			, available varchar(10) not null		--有効フラグ
+			, createDate TIMESTAMP not null default CURRENT_TIMESTAMP	--作成日時
 			, createUserId bigint not null								--作成者ID
 			, updateDate TIMESTAMP										--更新日時
 			, updateUserId bigint										--更新者ID

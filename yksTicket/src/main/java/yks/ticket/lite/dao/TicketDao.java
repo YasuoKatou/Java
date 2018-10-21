@@ -8,7 +8,7 @@ import yks.ticket.lite.entity.TicketEntity;
 
 /**
  * チケットテーブルDao.
- * 
+ *
  * @author yasuokatou (YKS)
  * @since 0.0.1
  */
