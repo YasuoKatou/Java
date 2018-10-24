@@ -8,12 +8,16 @@ import org.springframework.stereotype.Service;
 import yks.ticket.lite.dao.DBInitDao;
 import yks.ticket.lite.dao.RollNameDao;
 import yks.ticket.lite.dao.RollSettingDao;
+import yks.ticket.lite.dao.TicketProgressDao;
+import yks.ticket.lite.dao.TicketStatusDao;
 import yks.ticket.lite.dao.master.LanguageMasterDao;
 import yks.ticket.lite.dao.master.RollGroupMasterDao;
 import yks.ticket.lite.dao.master.RollItemMasterDao;
 import yks.ticket.lite.dao.master.UserMasterDao;
 import yks.ticket.lite.entity.RollNameEntity;
 import yks.ticket.lite.entity.RollSettingEntity;
+import yks.ticket.lite.entity.TicketProgressEntity;
+import yks.ticket.lite.entity.TicketStatusEntity;
 import yks.ticket.lite.entity.master.LanguageMasterEntity;
 import yks.ticket.lite.entity.master.RollGroupMasterEntity;
 import yks.ticket.lite.entity.master.RollItemMasterEntity;
@@ -43,6 +47,10 @@ public class DBInitService {
 	@Autowired private RollNameDao rollNameDao;
 	/** ロール設定Dao. */
 	@Autowired private RollSettingDao rollSettingDao;
+	/** チケットステータスDao */
+	@Autowired private TicketStatusDao ticketStatusDao;
+	/** チケット進捗Dao */
+	@Autowired private TicketProgressDao ticketProgressDao;
 
 	/** 管理者ユーザID */
 	public static final Long ADMIN_USER_ID = Long.valueOf(1L);
@@ -77,6 +85,12 @@ public class DBInitService {
 		this.rollItemMaster();
 		// ロール名称／設定の初期データ登録
 		this.rollNameAndSetting();
+		// チケットスタータスの初期データ登録
+		this.ticketStatusInitData();
+		// チケット進捗の初期データ登録
+		this.ticketProgressInitData();
+		// TODO チケット種類の初期データ登録
+		// TODO チケット優先順位の初期データ登録
 	}
 
 	/**
@@ -248,6 +262,82 @@ public class DBInitService {
 		count += this.rollSettingDao.insert(rollEntity);
 
 		logger.info("管理者ロール設定登録件数 : " + count);
+	}
+
+	/**
+	 * チケットステータスの初期データ登録を行う.
+	 * @since 0.0.1 
+	 */
+	private void ticketStatusInitData() {
+		TicketStatusEntity entity = TicketStatusEntity.builder()
+				.project_id(Long.valueOf(0L))
+				.build();
+		entity.setCreateUserId(ADMIN_USER_ID);
+
+		entity.setId(Long.valueOf(1L));
+		entity.setDisp_seq(Integer.valueOf(1));
+		entity.setName("未着手");
+		int count = this.ticketStatusDao.appendItem(entity);
+
+		entity.setId(Long.valueOf(2L));
+		entity.setDisp_seq(Integer.valueOf(2));
+		entity.setName("作業中");
+		count += this.ticketStatusDao.appendItem(entity);
+
+		entity.setId(Long.valueOf(3L));
+		entity.setDisp_seq(Integer.valueOf(3));
+		entity.setName("完了");
+		count += this.ticketStatusDao.appendItem(entity);
+
+		logger.info("チケットステータス登録件数 : " + count);
+	}
+
+	/**
+	 * チケット進捗の初期データ登録を行う.
+	 * @since 0.0.1
+	 */
+	private void ticketProgressInitData() {
+		TicketProgressEntity entity = TicketProgressEntity.builder()
+				.project_id(Long.valueOf(0L))
+				.build();
+		entity.setCreateUserId(ADMIN_USER_ID);
+
+		entity.setId(Long.valueOf(1L));
+		entity.setDisp_seq(Integer.valueOf(1));
+		entity.setName("10%");
+		int count = this.ticketProgressDao.appendItem(entity);
+
+		entity.setId(Long.valueOf(2L));
+		entity.setDisp_seq(Integer.valueOf(2));
+		entity.setName("30%");
+		count += this.ticketProgressDao.appendItem(entity);
+
+		entity.setId(Long.valueOf(3L));
+		entity.setDisp_seq(Integer.valueOf(3));
+		entity.setName("30%");
+		count += this.ticketProgressDao.appendItem(entity);
+
+		entity.setId(Long.valueOf(4L));
+		entity.setDisp_seq(Integer.valueOf(4));
+		entity.setName("50%");
+		count += this.ticketProgressDao.appendItem(entity);
+
+		entity.setId(Long.valueOf(5L));
+		entity.setDisp_seq(Integer.valueOf(5));
+		entity.setName("70%");
+		count += this.ticketProgressDao.appendItem(entity);
+
+		entity.setId(Long.valueOf(6L));
+		entity.setDisp_seq(Integer.valueOf(6));
+		entity.setName("90%");
+		count += this.ticketProgressDao.appendItem(entity);
+
+		entity.setId(Long.valueOf(7L));
+		entity.setDisp_seq(Integer.valueOf(7));
+		entity.setName("100%");
+		count += this.ticketProgressDao.appendItem(entity);
+
+		logger.info("チケット進捗登録件数 : " + count);
 	}
 
 	/**
