@@ -301,6 +301,12 @@ public class DBInitService {
 		// チケット進捗管理
 		dbInitDao.createTicketProgressTran();
 		logger.info("created ticket progress table");
+		// チケット種類管理
+		dbInitDao.createTicketKindTran();
+		logger.info("created ticket kind table");
+		// チケット優先順位管理
+		dbInitDao.createTicketPriorityTran();
+		logger.info("created ticket priority table");
 	}
 
 	/**
@@ -406,12 +412,26 @@ public class DBInitService {
 		} catch (Exception ex) {
 			logger.debug("project ticket status table can't drop cause by " + ex.getMessage());
 		}
-		// チケットステータス進捗テーブル
+		// チケット進捗テーブル
 		try {
 			dbInitDao.dropTicketProgressTran();
 			logger.info("dropped ticket progress table");
 		} catch (Exception ex) {
 			logger.debug("project ticket progress table can't drop cause by " + ex.getMessage());
+		}
+		// チケット種類管理テーブル
+		try {
+			dbInitDao.dropTicketKindTran();
+			logger.info("dropped ticket kind table");
+		} catch (Exception ex) {
+			logger.debug("project ticket kind table can't drop cause by " + ex.getMessage());
+		}
+		// チケット優先順位管理テーブル
+		try {
+			dbInitDao.dropTicketPriorityTran();
+			logger.info("dropped ticket priority table");
+		} catch (Exception ex) {
+			logger.debug("project ticket priority table can't drop cause by " + ex.getMessage());
 		}
 	}
 }

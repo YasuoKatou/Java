@@ -159,21 +159,49 @@ public interface DBInitDao {
 
 	/**
 	 * チケットステータス管理テーブルを生成する.
+	 * @since 0.0.1
 	 */
 	void createTicketStatusTran();
 
 	/**
 	 * チケットステータス管理テーブルを削除する.
+	 * @since 0.0.1
 	 */
 	void dropTicketStatusTran();
 
 	/**
 	 * チケット進捗管理テーブルを生成する.
+	 * @since 0.0.1
 	 */
 	void createTicketProgressTran();
 
 	/**
 	 * チケット進捗管理テーブルを削除する.
+	 * @since 0.0.1
 	 */
 	void dropTicketProgressTran();
+
+	/**
+	 * チケット種類管理テーブルを生成する.
+	 * @since 0.0.1
+	 */
+	void createTicketKindTran();
+
+	/**
+	 * チケット種類管理テーブルを削除する.
+	 * @since 0.0.1
+	 */
+	void dropTicketKindTran();
+
+	/**
+	 * チケット優先順位管理テーブルを生成する.
+	 * @since 0.0.1
+	 */
+	void createTicketPriorityTran();
+
+	/**
+	 * チケット優先順位管理テーブルを削除する.
+	 * @since 0.0.1
+	 */
+	void dropTicketPriorityTran();
 }
