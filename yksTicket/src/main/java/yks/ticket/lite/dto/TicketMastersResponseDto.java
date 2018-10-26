@@ -18,4 +18,8 @@ public class TicketMastersResponseDto {
 	private List<TicketStatusDto> statusList;
 	/** チケット進捗一覧 */
 	private List<TicketProgressDto> progressList;
+	/** チケット優先順位一覧 */
+	private List<TicketPriorityDto> priorityList;
+	/** チケット種類一覧 */
+	private List<TicketKindDto> kindList;
 }

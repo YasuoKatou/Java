@@ -8,15 +8,15 @@
 
   <select id="findByProject" resultMap="ticketStatusResultMap">
     select
-        project_id  --プロジェクトID
-      , id          --ステータスID
-      , disp_seq    --表示順
-      , name        --ステータス名称
-      , versionNo   --バージョンNo
-    from t_ticket_stat
-    where project_id = #{project_id}
-      and available = 'yes'
-    order by disp_seq
+        T1.project_id  --プロジェクトID
+      , T1.id          --ステータスID
+      , T1.disp_seq    --表示順
+      , T1.name        --ステータス名称
+      , T1.versionNo   --バージョンNo
+    from t_ticket_stat T1
+    where T1.project_id = #{project_id}
+      and T1.available = 'yes'
+    order by T1.disp_seq
   </select>
 
   <update id="setUnavailable">

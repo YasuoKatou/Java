@@ -29,10 +29,12 @@ import yks.ticket.lite.common.CsvDataSetLoader;
 import yks.ticket.lite.dto.LoginDto;
 import yks.ticket.lite.dto.StatusResponseDto;
 import yks.ticket.lite.dto.TicketDto;
+import yks.ticket.lite.dto.TicketKindDto;
 import yks.ticket.lite.dto.TicketListRequestDto;
 import yks.ticket.lite.dto.TicketListResponseDto;
 import yks.ticket.lite.dto.TicketMastersRequestDto;
 import yks.ticket.lite.dto.TicketMastersResponseDto;
+import yks.ticket.lite.dto.TicketPriorityDto;
 import yks.ticket.lite.dto.TicketProgressDto;
 import yks.ticket.lite.dto.TicketProgressSaveRequestDto;
 import yks.ticket.lite.dto.TicketStatusDto;
@@ -163,6 +165,42 @@ public class TicketServiceTest {
 		assertEquals("+2:進捗表示順", progressDto.getDisp_seq(), Integer.valueOf(3));
 		assertEquals("+2:進捗名称", progressDto.getName(), "100%");
 		assertEquals("+2:進捗データバージョン", progressDto.getVersionNo(), Integer.valueOf(113));
+
+		List<TicketKindDto> kindList = outDto.getKindList();
+		assertNotNull("進捗データあり", kindList);
+		assertEquals("進捗一覧件数", kindList.size(), 2);
+		// +0
+		TicketKindDto kindDto = kindList.get(0);
+		assertEquals("+0:プロジェクトID", kindDto.getProject_id(), projectId);
+		assertEquals("+0:種類ID", kindDto.getId(), Long.valueOf(5L));
+		assertEquals("+0:種類表示順", kindDto.getDisp_seq(), Integer.valueOf(1));
+		assertEquals("+0:種類名称", kindDto.getName(), "バグ");
+		assertEquals("+0:種類データバージョン", kindDto.getVersionNo(), Integer.valueOf(2));
+		// +1
+		kindDto = kindList.get(1);
+		assertEquals("+1:プロジェクトID", kindDto.getProject_id(), projectId);
+		assertEquals("+1:種類ID", kindDto.getId(), Long.valueOf(6L));
+		assertEquals("+1:種類表示順", kindDto.getDisp_seq(), Integer.valueOf(2));
+		assertEquals("+1:種類名称", kindDto.getName(), "bug");
+		assertEquals("+1:種類データバージョン", kindDto.getVersionNo(), Integer.valueOf(3));
+
+		List<TicketPriorityDto> proiotyList = outDto.getPriorityList();
+		assertNotNull("進捗データあり", proiotyList);
+		assertEquals("進捗一覧件数", proiotyList.size(), 2);
+		// +0
+		TicketPriorityDto proiotyDto = proiotyList.get(0);
+		assertEquals("+0:プロジェクトID", proiotyDto.getProject_id(), projectId);
+		assertEquals("+0:優先順位ID", proiotyDto.getId(), Long.valueOf(3L));
+		assertEquals("+0:優先順位表示順", proiotyDto.getDisp_seq(), Integer.valueOf(211));
+		assertEquals("+0:優先順位名称", proiotyDto.getName(), "即対応");
+		assertEquals("+0:優先順位データバージョン", proiotyDto.getVersionNo(), Integer.valueOf(11));
+		// +1
+		proiotyDto = proiotyList.get(1);
+		assertEquals("+1:プロジェクトID", proiotyDto.getProject_id(), projectId);
+		assertEquals("+1:優先順位ID", proiotyDto.getId(), Long.valueOf(4L));
+		assertEquals("+1:優先順位表示順", proiotyDto.getDisp_seq(), Integer.valueOf(214));
+		assertEquals("+1:優先順位名称", proiotyDto.getName(), "そのうち");
+		assertEquals("+1:優先順位データバージョン", proiotyDto.getVersionNo(), Integer.valueOf(10));
 	}
 
 	/**

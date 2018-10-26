@@ -1,2 +1,4 @@
 t_ticket_stat
 t_ticket_progress
+t_ticket_kind
+t_ticket_priority

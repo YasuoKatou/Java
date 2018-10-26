@@ -9,15 +9,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import yks.ticket.lite.dao.TicketDao;
+import yks.ticket.lite.dao.TicketKindDao;
+import yks.ticket.lite.dao.TicketPriorityDao;
 import yks.ticket.lite.dao.TicketProgressDao;
 import yks.ticket.lite.dao.TicketStatusDao;
 import yks.ticket.lite.dto.LoginDto;
 import yks.ticket.lite.dto.StatusResponseDto;
 import yks.ticket.lite.dto.TicketDto;
+import yks.ticket.lite.dto.TicketKindDto;
 import yks.ticket.lite.dto.TicketListRequestDto;
 import yks.ticket.lite.dto.TicketListResponseDto;
 import yks.ticket.lite.dto.TicketMastersRequestDto;
 import yks.ticket.lite.dto.TicketMastersResponseDto;
+import yks.ticket.lite.dto.TicketPriorityDto;
 import yks.ticket.lite.dto.TicketProgressDto;
 import yks.ticket.lite.dto.TicketProgressSaveRequestDto;
 import yks.ticket.lite.dto.TicketStatusDto;
@@ -41,6 +45,10 @@ public class TicketService {
 	@Autowired private TicketStatusDao ticketStatusDao;
 	/** チケット進捗Dao. */
 	@Autowired private TicketProgressDao ticketProgressDao;
+	/** チケット種類Dao. */
+	@Autowired private TicketKindDao ticketKindDao;
+	/** チケット優先順位Dao. */
+	@Autowired private TicketPriorityDao ticketPriorityDao;
 
 	/**
 	 * 指定プロジェクトのチケットを取得
@@ -99,9 +107,33 @@ public class TicketService {
 					.versionNo(entity.getVersionNo())
 					.build());
 		});
+		// チケット種類一覧を取得
+		final List<TicketKindDto> kindList = new ArrayList<>();
+		this.ticketKindDao.findByProject(inDto.getProject_id()).forEach(entity -> {
+			kindList.add(TicketKindDto.builder()
+					.project_id(entity.getProject_id())
+					.id(entity.getId())
+					.disp_seq(entity.getDisp_seq())
+					.name(entity.getName())
+					.versionNo(entity.getVersionNo())
+					.build());
+		});
+		// チケット優先順位一覧を取得
+		final List<TicketPriorityDto> priorityList = new ArrayList<>();
+		this.ticketPriorityDao.findByProject(inDto.getProject_id()).forEach(entity -> {
+			priorityList.add(TicketPriorityDto.builder()
+					.project_id(entity.getProject_id())
+					.id(entity.getId())
+					.disp_seq(entity.getDisp_seq())
+					.name(entity.getName())
+					.versionNo(entity.getVersionNo())
+					.build());
+		});
 		return TicketMastersResponseDto.builder()
 				.statusList(statusList)
 				.progressList(progressList)
+				.kindList(kindList)
+				.priorityList(priorityList)
 				.build();
 	}
 
