@@ -1,27 +1,24 @@
 package yks.ticket.lite.service;
 
+import static org.junit.Assert.fail;
+
+import java.lang.reflect.Method;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import yks.ticket.lite.common.TicketApConstatnt.FilePath;
 import yks.ticket.lite.dao.DBInitDao;
-import yks.ticket.lite.dao.RollNameDao;
-import yks.ticket.lite.dao.RollSettingDao;
-import yks.ticket.lite.dao.TicketProgressDao;
-import yks.ticket.lite.dao.TicketStatusDao;
-import yks.ticket.lite.dao.master.LanguageMasterDao;
-import yks.ticket.lite.dao.master.RollGroupMasterDao;
-import yks.ticket.lite.dao.master.RollItemMasterDao;
-import yks.ticket.lite.dao.master.UserMasterDao;
-import yks.ticket.lite.entity.RollNameEntity;
-import yks.ticket.lite.entity.RollSettingEntity;
-import yks.ticket.lite.entity.TicketProgressEntity;
-import yks.ticket.lite.entity.TicketStatusEntity;
-import yks.ticket.lite.entity.master.LanguageMasterEntity;
-import yks.ticket.lite.entity.master.RollGroupMasterEntity;
-import yks.ticket.lite.entity.master.RollItemMasterEntity;
-import yks.ticket.lite.entity.master.UserMasterEntity;
+import yks.ticket.lite.dto.ApInitData;
+import yks.ticket.lite.dto.ApInitData.ApInitTable;
 
 /**
  * ＤＢの初期化を行う.
@@ -35,22 +32,9 @@ public class DBInitService {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	/** ＤＢ初期化Dao. */
 	@Autowired private DBInitDao dbInitDao;
-	/** 言語マスタDao. */
-	@Autowired private LanguageMasterDao languageMasterDao;
-	/** ユーザマスタDao. */
-	@Autowired private UserMasterDao userMasterDao;
-	/** ロールグループマスタDao. */
-	@Autowired private RollGroupMasterDao rollGroupMasterDao;
-	/** ロール項目マスタDao. */
-	@Autowired private RollItemMasterDao rollItemMasterDao;
-	/** ロール名称Dao. */
-	@Autowired private RollNameDao rollNameDao;
-	/** ロール設定Dao. */
-	@Autowired private RollSettingDao rollSettingDao;
-	/** チケットステータスDao */
-	@Autowired private TicketStatusDao ticketStatusDao;
-	/** チケット進捗Dao */
-	@Autowired private TicketProgressDao ticketProgressDao;
+
+	@Autowired private ResourceLoader resourceLoader;
+	@Autowired private ApplicationContext applicationContext;
 
 	/** 管理者ユーザID */
 	public static final Long ADMIN_USER_ID = Long.valueOf(1L);
@@ -75,269 +59,34 @@ public class DBInitService {
 	 * @since 0.0.1
 	 */
 	private void insertInitDatas() {
-		// ユーザマスタの初期データ登録
-		this.userMaster();
-		// 言語マスタの初期データ登録
-		this.languageMaster();
-		// ロールグループマスタの初期データ登録
-		this.rollGroupMaster();
-		// ロール項目マスタの初期データ登録
-		this.rollItemMaster();
-		// ロール名称／設定の初期データ登録
-		this.rollNameAndSetting();
-		// チケットスタータスの初期データ登録
-		this.ticketStatusInitData();
-		// チケット進捗の初期データ登録
-		this.ticketProgressInitData();
-		// TODO チケット種類の初期データ登録
-		// TODO チケット優先順位の初期データ登録
-	}
-
-	/**
-	 * 言語マスタの初期データ登録を行う.
-	 * @since 0.0.1
-	 */
-	private void languageMaster() {
-		LanguageMasterEntity entity = LanguageMasterEntity.builder()
-				.name("日本語")
-				.country("japan")
-				.build();
-		entity.setCreateUserId(ADMIN_USER_ID);
-		int count = languageMasterDao.insert(entity);
-		logger.info("言語マスタ登録件数 : " + count);
-	}
-
-	/**
-	 * ユーザマスタの初期データ登録を行う.
-	 * @since 0.0.1
-	 */
-	private void userMaster() {
-		UserMasterEntity entity = UserMasterEntity.builder()
-				.id(ADMIN_USER_ID)
-				.login_id("admin")
-				.passwd("admin")	// TODO 暗号化
-				.name1("Katou").name2("Yasuo")
-				.email("yasuokatou@gmail.com")
-				.language_id(1L)
-				.build();
-		entity.setCreateUserId(ADMIN_USER_ID);
-		int count = userMasterDao.insert(entity);
-		logger.info("ユーザマスタ登録件数 : " + count);
-	}
-
-	/**
-	 * ロールグループマスタの初期データ登録を行う.
-	 * @since 0.0.1
-	 */
-	private void rollGroupMaster() {
-		RollGroupMasterEntity entity = RollGroupMasterEntity.builder()
-				.id(Long.valueOf(1000L))
-				.name("プロジェクト")
-				.build();
-		entity.setCreateUserId(ADMIN_USER_ID);
-		int count = rollGroupMasterDao.insert(entity);
-
-		entity.setId(Long.valueOf(2000L));
-		entity.setName("ファイル");
-		count += rollGroupMasterDao.insert(entity);
-
-		entity.setId(Long.valueOf(3000L));
-		entity.setName("チケット");
-		count += rollGroupMasterDao.insert(entity);
-
-		entity.setId(Long.valueOf(4000L));
-		entity.setName("Wiki");
-		count += rollGroupMasterDao.insert(entity);
-
-		logger.info("ロールグループマスタ登録件数 : " + count);
-	}
-
-	/**
-	 * ロール項目マスタの初期データ登録を行う.
-	 * @since 0.0.1
-	 */
-	private void rollItemMaster() {
-		RollItemMasterEntity entity = RollItemMasterEntity.builder()
-				.id(Long.valueOf(1001L))
-				.name("プロジェクトの編集")
-				.group_id(Long.valueOf(1000L))
-				.build();
-		entity.setCreateUserId(ADMIN_USER_ID);
-		int count = rollItemMasterDao.insert(entity);
-
-		entity.setId(Long.valueOf(1002L));
-		entity.setName("プロジェクトの終了/再開");
-		count += rollItemMasterDao.insert(entity);
-
-		entity.setId(Long.valueOf(1003L));
-		entity.setName("メンバーの管理");
-		count += rollItemMasterDao.insert(entity);
-
-		entity.setId(Long.valueOf(1004L));
-		entity.setName("サブプロジェクトの追加（将来機能）");
-		count += rollItemMasterDao.insert(entity);
-
-		entity.setId(Long.valueOf(2001L));
-		entity.setName("ファイルの閲覧");
-		entity.setGroup_id(Long.valueOf(2000L));
-		count += rollItemMasterDao.insert(entity);
-
-		entity.setId(Long.valueOf(3001L));
-		entity.setName("チケットのカテゴリの管理");
-		entity.setGroup_id(Long.valueOf(3000L));
-		count += rollItemMasterDao.insert(entity);
-
-		entity.setId(Long.valueOf(3002L));
-		entity.setName("チケットの閲覧");
-		count += rollItemMasterDao.insert(entity);
-
-		entity.setId(Long.valueOf(3003L));
-		entity.setName("チケットの追加");
-		count += rollItemMasterDao.insert(entity);
-
-		entity.setId(Long.valueOf(3004L));
-		entity.setName("チケットの編集");
-		count += rollItemMasterDao.insert(entity);
-
-		entity.setId(Long.valueOf(3005L));
-		entity.setName("チケットの削除");
-		count += rollItemMasterDao.insert(entity);
-
-		entity.setId(Long.valueOf(4001L));
-		entity.setName("Wikiの閲覧");
-		entity.setGroup_id(Long.valueOf(4000L));
-		count += rollItemMasterDao.insert(entity);
-
-		entity.setId(Long.valueOf(4002L));
-		entity.setName("Wikiページの編集");
-		count += rollItemMasterDao.insert(entity);
-
-		logger.info("ロール項目マスタ登録件数 : " + count);
-	}
-
-	/**
-	 * ロール名称／設定の初期データ登録を行う.
-	 * @since 0.0.1
-	 */
-	private void rollNameAndSetting() {
-		// ロール名称
-		Long rollNameId = Long.valueOf(1L);
-		RollNameEntity nameEntity = RollNameEntity.builder()
-				.id(rollNameId)
-				.name("システム管理者")
-				.description("全権限を与える")
-				.build();
-		nameEntity.setCreateUserId(ADMIN_USER_ID);
-		int count = this.rollNameDao.insert(nameEntity);
-		logger.info("管理者ロール名称登録件数 : " + count);
-
-		// ロール設定
-		RollSettingEntity rollEntity = RollSettingEntity.builder()
-				.rollNameId(rollNameId)
-				.rollItemId(Long.valueOf(1001L))			// プロジェクトの編集
-				.build();
-		rollEntity.setCreateUserId(ADMIN_USER_ID);
-		count = this.rollSettingDao.insert(rollEntity);
-		rollEntity.setRollItemId(Long.valueOf(1002L));		// プロジェクトの終了/再開
-		count += this.rollSettingDao.insert(rollEntity);
-		rollEntity.setRollItemId(Long.valueOf(1003L));		// メンバーの管理
-		count += this.rollSettingDao.insert(rollEntity);
-		rollEntity.setRollItemId(Long.valueOf(1004L));		// サブプロジェクトの追加
-		count += this.rollSettingDao.insert(rollEntity);
-		rollEntity.setRollItemId(Long.valueOf(2001L));		// ファイルの閲覧
-		count += this.rollSettingDao.insert(rollEntity);
-		rollEntity.setRollItemId(Long.valueOf(3001L));		// チケットのカテゴリの管理
-		count += this.rollSettingDao.insert(rollEntity);
-		rollEntity.setRollItemId(Long.valueOf(3002L));		// チケットの閲覧
-		count += this.rollSettingDao.insert(rollEntity);
-		rollEntity.setRollItemId(Long.valueOf(3003L));		// チケットの追加
-		count += this.rollSettingDao.insert(rollEntity);
-		rollEntity.setRollItemId(Long.valueOf(3004L));		// チケットの編集
-		count += this.rollSettingDao.insert(rollEntity);
-		rollEntity.setRollItemId(Long.valueOf(3005L));		// チケットの削除
-		count += this.rollSettingDao.insert(rollEntity);
-		rollEntity.setRollItemId(Long.valueOf(4001L));		// Wikiの閲覧
-		count += this.rollSettingDao.insert(rollEntity);
-		rollEntity.setRollItemId(Long.valueOf(4002L));		// Wikiページの編集
-		count += this.rollSettingDao.insert(rollEntity);
-
-		logger.info("管理者ロール設定登録件数 : " + count);
-	}
-
-	/**
-	 * チケットステータスの初期データ登録を行う.
-	 * @since 0.0.1 
-	 */
-	private void ticketStatusInitData() {
-		TicketStatusEntity entity = TicketStatusEntity.builder()
-				.project_id(Long.valueOf(0L))
-				.build();
-		entity.setCreateUserId(ADMIN_USER_ID);
-
-		entity.setId(Long.valueOf(1L));
-		entity.setDisp_seq(Integer.valueOf(1));
-		entity.setName("未着手");
-		int count = this.ticketStatusDao.appendItem(entity);
-
-		entity.setId(Long.valueOf(2L));
-		entity.setDisp_seq(Integer.valueOf(2));
-		entity.setName("作業中");
-		count += this.ticketStatusDao.appendItem(entity);
-
-		entity.setId(Long.valueOf(3L));
-		entity.setDisp_seq(Integer.valueOf(3));
-		entity.setName("完了");
-		count += this.ticketStatusDao.appendItem(entity);
-
-		logger.info("チケットステータス登録件数 : " + count);
-	}
-
-	/**
-	 * チケット進捗の初期データ登録を行う.
-	 * @since 0.0.1
-	 */
-	private void ticketProgressInitData() {
-		TicketProgressEntity entity = TicketProgressEntity.builder()
-				.project_id(Long.valueOf(0L))
-				.build();
-		entity.setCreateUserId(ADMIN_USER_ID);
-
-		entity.setId(Long.valueOf(1L));
-		entity.setDisp_seq(Integer.valueOf(1));
-		entity.setName("10%");
-		int count = this.ticketProgressDao.appendItem(entity);
-
-		entity.setId(Long.valueOf(2L));
-		entity.setDisp_seq(Integer.valueOf(2));
-		entity.setName("30%");
-		count += this.ticketProgressDao.appendItem(entity);
-
-		entity.setId(Long.valueOf(3L));
-		entity.setDisp_seq(Integer.valueOf(3));
-		entity.setName("30%");
-		count += this.ticketProgressDao.appendItem(entity);
-
-		entity.setId(Long.valueOf(4L));
-		entity.setDisp_seq(Integer.valueOf(4));
-		entity.setName("50%");
-		count += this.ticketProgressDao.appendItem(entity);
-
-		entity.setId(Long.valueOf(5L));
-		entity.setDisp_seq(Integer.valueOf(5));
-		entity.setName("70%");
-		count += this.ticketProgressDao.appendItem(entity);
-
-		entity.setId(Long.valueOf(6L));
-		entity.setDisp_seq(Integer.valueOf(6));
-		entity.setName("90%");
-		count += this.ticketProgressDao.appendItem(entity);
-
-		entity.setId(Long.valueOf(7L));
-		entity.setDisp_seq(Integer.valueOf(7));
-		entity.setName("100%");
-		count += this.ticketProgressDao.appendItem(entity);
-
-		logger.info("チケット進捗登録件数 : " + count);
+		ObjectMapper mapper = new ObjectMapper();
+		Resource resource = resourceLoader.getResource("classpath:" + FilePath.AP_INIT_JSON);
+		try {
+			// JSON読込み ＆ 初期データ投入情報Dtoへのマッピング
+			ApInitData apInitData = mapper.readValue(resource.getFile(), ApInitData.class);
+			// テーブルごとに初期データの投入を実施
+			for (ApInitTable table : apInitData.getInitDataList()) {
+				System.out.println(table.getTitle());
+				// Daoをbeanから取得
+				Object dao = applicationContext.getBean(table.getDao());
+				// エンティティを取得
+				Class entityClass = Class.forName(table.getEntity());
+				// 初期データを登録
+				int count = 0;
+				for (Map<String, Object> rec : table.getValues()) {
+					String json = mapper.writeValueAsString(rec);
+					Object entity = mapper.readValue(json, entityClass);
+					System.out.println("entity : " + entity.toString());
+					Method method = dao.getClass().getMethod(table.getMethod(), entityClass);
+					System.out.println("method : " + method.toString());
+					count += (int)method.invoke(dao, entity);
+				}
+				System.out.println("登録件数 : " + count);
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("Not yet implemented : " + ex.toString());
+		}
 	}
 
 	/**
