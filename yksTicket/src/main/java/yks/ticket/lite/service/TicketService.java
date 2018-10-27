@@ -7,6 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import yks.ticket.lite.dao.TicketDao;
 import yks.ticket.lite.dao.TicketKindDao;
@@ -17,15 +19,19 @@ import yks.ticket.lite.dto.LoginDto;
 import yks.ticket.lite.dto.StatusResponseDto;
 import yks.ticket.lite.dto.TicketDto;
 import yks.ticket.lite.dto.TicketKindDto;
+import yks.ticket.lite.dto.TicketKindSaveRequestDto;
 import yks.ticket.lite.dto.TicketListRequestDto;
 import yks.ticket.lite.dto.TicketListResponseDto;
 import yks.ticket.lite.dto.TicketMastersRequestDto;
 import yks.ticket.lite.dto.TicketMastersResponseDto;
 import yks.ticket.lite.dto.TicketPriorityDto;
+import yks.ticket.lite.dto.TicketPrioritySaveRequestDto;
 import yks.ticket.lite.dto.TicketProgressDto;
 import yks.ticket.lite.dto.TicketProgressSaveRequestDto;
 import yks.ticket.lite.dto.TicketStatusDto;
 import yks.ticket.lite.dto.TicketStatusSaveRequestDto;
+import yks.ticket.lite.entity.TicketKindEntity;
+import yks.ticket.lite.entity.TicketPriorityEntity;
 import yks.ticket.lite.entity.TicketProgressEntity;
 import yks.ticket.lite.entity.TicketStatusEntity;
 
@@ -146,6 +152,7 @@ public class TicketService {
 	 * @throws Exception 登録失敗
 	 * @since 0.0.1
 	 */
+	@Transactional(propagation = Propagation.REQUIRED, readOnly=false)
 	public StatusResponseDto saveTicketStatus(LoginDto login, TicketStatusSaveRequestDto inDto) throws Exception {
 		final TicketStatusEntity entity = TicketStatusEntity.builder().build();
 		entity.setProject_id(inDto.getProject_id());
@@ -182,11 +189,12 @@ public class TicketService {
 	 * チケット進捗の登録を行う.
 	 *
 	 * @param login ログイン情報
-	 * @param inDto チケットステータス登録リクエストDto.
+	 * @param inDto チケットス進捗登録リクエストDto.
 	 * @return 処理結果
 	 * @throws Exception 登録失敗
 	 * @since 0.0.1
 	 */
+	@Transactional(propagation = Propagation.REQUIRED, readOnly=false)
 	public StatusResponseDto saveTicketProgress(LoginDto login, TicketProgressSaveRequestDto inDto) throws Exception {
 		final TicketProgressEntity entity = TicketProgressEntity.builder().build();
 		entity.setProject_id(inDto.getProject_id());
@@ -195,22 +203,108 @@ public class TicketService {
 		Long maxId = this.ticketProgressDao.getMaxId(inDto.getProject_id());
 		// 一旦全てを無効に設定
 		this.ticketProgressDao.setUnavailable(inDto.getProject_id());
-		for (TicketProgressDto statusDto : inDto.getProgressList()) {
-			entity.setDisp_seq(statusDto.getDisp_seq());
-			entity.setName(statusDto.getName());
-			if (statusDto.getId() != null) {
+		for (TicketProgressDto progressDto : inDto.getProgressList()) {
+			entity.setDisp_seq(progressDto.getDisp_seq());
+			entity.setName(progressDto.getName());
+			if (progressDto.getId() != null) {
 				// 更新
-				entity.setId(statusDto.getId());
+				entity.setId(progressDto.getId());
 				if (this.ticketProgressDao.updateItem(entity) != 1) {
-					logger.error("チケットステータス更新失敗 : " + entity.toString());
-					throw new Exception("チケットステータス更新失敗");
+					logger.error("チケット進捗更新失敗 : " + entity.toString());
+					throw new Exception("チケット進捗更新失敗");
 				}
 			} else {
 				// 登録
 				entity.setId(++maxId);
 				if (this.ticketProgressDao.appendItem(entity) != 1) {
-					logger.error("チケットステータス登録失敗 : " + entity.toString());
-					throw new Exception("チケットステータス登録失敗");
+					logger.error("チケット進捗登録失敗 : " + entity.toString());
+					throw new Exception("チケット進捗登録失敗");
+				}
+			}
+		}
+		return StatusResponseDto.builder()
+				.status(StatusResponseDto.SUCCESS)
+				.build();
+	}
+
+
+	/**
+	 * チケット優先順位の登録を行う.
+	 *
+	 * @param login ログイン情報
+	 * @param inDto チケット優先順位登録リクエストDto.
+	 * @return 処理結果
+	 * @throws Exception 登録失敗
+	 * @since 0.0.1
+	 */
+	@Transactional(propagation = Propagation.REQUIRED, readOnly=false)
+	public StatusResponseDto saveTicketPriority(LoginDto login, TicketPrioritySaveRequestDto inDto) throws Exception {
+		final TicketPriorityEntity entity = TicketPriorityEntity.builder().build();
+		entity.setProject_id(inDto.getProject_id());
+		entity.setCreateUserId(login.getId());
+		entity.setUpdateUserId(login.getId());
+		Long maxId = this.ticketPriorityDao.getMaxId(inDto.getProject_id());
+		// 一旦全てを無効に設定
+		this.ticketPriorityDao.setUnavailable(inDto.getProject_id());
+		for (TicketPriorityDto priorityDto : inDto.getPriorityList()) {
+			entity.setDisp_seq(priorityDto.getDisp_seq());
+			entity.setName(priorityDto.getName());
+			if (priorityDto.getId() != null) {
+				// 更新
+				entity.setId(priorityDto.getId());
+				if (this.ticketPriorityDao.updateItem(entity) != 1) {
+					logger.error("チケット優先順位更新失敗 : " + entity.toString());
+					throw new Exception("チケット優先順位更新失敗");
+				}
+			} else {
+				// 登録
+				entity.setId(++maxId);
+				if (this.ticketPriorityDao.appendItem(entity) != 1) {
+					logger.error("チケット優先順位登録失敗 : " + entity.toString());
+					throw new Exception("チケット優先順位登録失敗");
+				}
+			}
+		}
+		return StatusResponseDto.builder()
+				.status(StatusResponseDto.SUCCESS)
+				.build();
+	}
+
+
+	/**
+	 * チケット種類の登録を行う.
+	 *
+	 * @param login ログイン情報
+	 * @param inDto チケット種類登録リクエストDto.
+	 * @return 処理結果
+	 * @throws Exception 登録失敗
+	 * @since 0.0.1
+	 */
+	@Transactional(propagation = Propagation.REQUIRED, readOnly=false)
+	public StatusResponseDto saveTicketKind(LoginDto login, TicketKindSaveRequestDto inDto) throws Exception {
+		final TicketKindEntity entity = TicketKindEntity.builder().build();
+		entity.setProject_id(inDto.getProject_id());
+		entity.setCreateUserId(login.getId());
+		entity.setUpdateUserId(login.getId());
+		Long maxId = this.ticketKindDao.getMaxId(inDto.getProject_id());
+		// 一旦全てを無効に設定
+		this.ticketKindDao.setUnavailable(inDto.getProject_id());
+		for (TicketKindDto kindDto : inDto.getKindList()) {
+			entity.setDisp_seq(kindDto.getDisp_seq());
+			entity.setName(kindDto.getName());
+			if (kindDto.getId() != null) {
+				// 更新
+				entity.setId(kindDto.getId());
+				if (this.ticketKindDao.updateItem(entity) != 1) {
+					logger.error("チケット種類更新失敗 : " + entity.toString());
+					throw new Exception("チケット種類更新失敗");
+				}
+			} else {
+				// 登録
+				entity.setId(++maxId);
+				if (this.ticketKindDao.appendItem(entity) != 1) {
+					logger.error("チケット種類登録失敗 : " + entity.toString());
+					throw new Exception("チケット種類登録失敗");
 				}
 			}
 		}

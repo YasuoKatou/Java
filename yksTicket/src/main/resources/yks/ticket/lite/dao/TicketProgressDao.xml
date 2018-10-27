@@ -30,7 +30,7 @@
         project_id  --プロジェクトID
       , id  --識別子
       , disp_seq  --表示順
-      , name  --ステータス名称
+      , name  --進捗名称
       , available  --有効フラグ
       , createDate  --作成日時
       , createUserId  --作成者ID

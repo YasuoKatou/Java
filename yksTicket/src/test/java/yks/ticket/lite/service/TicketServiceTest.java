@@ -30,11 +30,13 @@ import yks.ticket.lite.dto.LoginDto;
 import yks.ticket.lite.dto.StatusResponseDto;
 import yks.ticket.lite.dto.TicketDto;
 import yks.ticket.lite.dto.TicketKindDto;
+import yks.ticket.lite.dto.TicketKindSaveRequestDto;
 import yks.ticket.lite.dto.TicketListRequestDto;
 import yks.ticket.lite.dto.TicketListResponseDto;
 import yks.ticket.lite.dto.TicketMastersRequestDto;
 import yks.ticket.lite.dto.TicketMastersResponseDto;
 import yks.ticket.lite.dto.TicketPriorityDto;
+import yks.ticket.lite.dto.TicketPrioritySaveRequestDto;
 import yks.ticket.lite.dto.TicketProgressDto;
 import yks.ticket.lite.dto.TicketProgressSaveRequestDto;
 import yks.ticket.lite.dto.TicketStatusDto;
@@ -258,11 +260,11 @@ public class TicketServiceTest {
 			assertEquals("+0:ステータスデータバージョン", statusDto.getVersionNo(), Integer.valueOf(12));
 			// +1
 			statusDto = statusList.get(1);
-			assertEquals("+0:プロジェクトID", statusDto.getProject_id(), projectId);
-			assertEquals("+0:ステータスID", statusDto.getId(), Long.valueOf(5L));
-			assertEquals("+0:ステータス表示順", statusDto.getDisp_seq(), Integer.valueOf(2));
-			assertEquals("+0:ステータス名称", statusDto.getName(), "ぱげ");
-			assertEquals("+0:ステータスデータバージョン", statusDto.getVersionNo(), Integer.valueOf(1));
+			assertEquals("+1:プロジェクトID", statusDto.getProject_id(), projectId);
+			assertEquals("+1:ステータスID", statusDto.getId(), Long.valueOf(5L));
+			assertEquals("+1:ステータス表示順", statusDto.getDisp_seq(), Integer.valueOf(2));
+			assertEquals("+1:ステータス名称", statusDto.getName(), "ぱげ");
+			assertEquals("+1:ステータスデータバージョン", statusDto.getVersionNo(), Integer.valueOf(1));
 		} catch (Exception ex) {
 			fail("テスト異常終了 " + ex.toString());
 		}
@@ -284,7 +286,7 @@ public class TicketServiceTest {
 				.name("ほげ")
 				.disp_seq(Integer.valueOf(1))
 				.project_id(projectId)
-				.versionNo(Integer.valueOf(11))
+				.versionNo(Integer.valueOf(111))
 				.build());
 		progressList.add(TicketProgressDto.builder()
 				.id(null)
@@ -312,22 +314,152 @@ public class TicketServiceTest {
 			// サービスの戻り値を判定する.
 			assertNotNull("戻り値あり", outDto);
 			progressList = outDto.getProgressList();
-			assertNotNull("ステータスデータあり", progressList);
-			assertEquals("ステータス一覧件数", progressList.size(), 2);
+			assertNotNull("進捗データあり", progressList);
+			assertEquals("進捗一覧件数", progressList.size(), 2);
 			// +0
-			TicketProgressDto statusDto = progressList.get(0);
-			assertEquals("+0:プロジェクトID", statusDto.getProject_id(), projectId);
-			assertEquals("+0:ステータスID", statusDto.getId(), Long.valueOf(11L));
-			assertEquals("+0:ステータス表示順", statusDto.getDisp_seq(), Integer.valueOf(1));
-			assertEquals("+0:ステータス名称", statusDto.getName(), "ほげ");
-			assertEquals("+0:ステータスデータバージョン", statusDto.getVersionNo(), Integer.valueOf(112));
+			TicketProgressDto progressDto = progressList.get(0);
+			assertEquals("+0:プロジェクトID", progressDto.getProject_id(), projectId);
+			assertEquals("+0:進捗ID", progressDto.getId(), Long.valueOf(11L));
+			assertEquals("+0:進捗表示順", progressDto.getDisp_seq(), Integer.valueOf(1));
+			assertEquals("+0:進捗名称", progressDto.getName(), "ほげ");
+			assertEquals("+0:進捗データバージョン", progressDto.getVersionNo(), Integer.valueOf(112));
 			// +1
-			statusDto = progressList.get(1);
-			assertEquals("+0:プロジェクトID", statusDto.getProject_id(), projectId);
-			assertEquals("+0:ステータスID", statusDto.getId(), Long.valueOf(15L));
-			assertEquals("+0:ステータス表示順", statusDto.getDisp_seq(), Integer.valueOf(2));
-			assertEquals("+0:ステータス名称", statusDto.getName(), "ぱげ");
-			assertEquals("+0:ステータスデータバージョン", statusDto.getVersionNo(), Integer.valueOf(1));
+			progressDto = progressList.get(1);
+			assertEquals("+1:プロジェクトID", progressDto.getProject_id(), projectId);
+			assertEquals("+1:進捗ID", progressDto.getId(), Long.valueOf(15L));
+			assertEquals("+1:進捗表示順", progressDto.getDisp_seq(), Integer.valueOf(2));
+			assertEquals("+1:進捗名称", progressDto.getName(), "ぱげ");
+			assertEquals("+1:進捗データバージョン", progressDto.getVersionNo(), Integer.valueOf(1));
+		} catch (Exception ex) {
+			fail("テスト異常終了 " + ex.toString());
+		}
+	}
+
+	/**
+	 * チケット優先順位管理の更新をテスト
+	 * @since 0.0.1
+	 */
+	@Test
+	@DatabaseSetup("classpath:TicketServiceTest_D05/")
+	public void test_saveTicketPriority() {
+		Long userId = Long.valueOf(10012L);
+		Long projectId = Long.valueOf(2L);
+		// 呼び出すサービスのデータを作成
+		List<TicketPriorityDto> priorityList = new ArrayList<>();
+		priorityList.add(TicketPriorityDto.builder()
+				.id(Long.valueOf(11L))
+				.name("高")
+				.disp_seq(Integer.valueOf(1))
+				.project_id(projectId)
+				.versionNo(Integer.valueOf(111))
+				.build());
+		priorityList.add(TicketPriorityDto.builder()
+				.id(null)
+				.name("低")
+				.disp_seq(Integer.valueOf(2))
+				.project_id(projectId)
+				.build());
+		TicketPrioritySaveRequestDto requestDto = TicketPrioritySaveRequestDto.builder()
+				.project_id(projectId)
+				.priorityList(priorityList)
+				.build();
+		// テスト対象のサービスを呼び出す
+		try {
+			StatusResponseDto responseDto = this.ticketService.saveTicketPriority(
+					  LoginDto.builder().id(userId).build()
+					, requestDto);
+			// サービスの戻り値を判定する.
+			assertNotNull("戻り値あり", responseDto);
+			assertEquals("正常終了", responseDto.getStatus(), StatusResponseDto.SUCCESS);
+
+			// 更新結果は、データを取得して確認する
+			TicketMastersResponseDto outDto = this.ticketService.getTicketMasters(
+					TicketMastersRequestDto.builder().project_id(Long.valueOf(2L)).build());
+
+			// サービスの戻り値を判定する.
+			assertNotNull("戻り値あり", outDto);
+			priorityList = outDto.getPriorityList();
+			assertNotNull("優先順位データあり", priorityList);
+			assertEquals("優先順位一覧件数", priorityList.size(), 2);
+			// +0
+			TicketPriorityDto priorityDto = priorityList.get(0);
+			assertEquals("+0:プロジェクトID", priorityDto.getProject_id(), projectId);
+			assertEquals("+0:優先順位ID", priorityDto.getId(), Long.valueOf(11L));
+			assertEquals("+0:優先順位表示順", priorityDto.getDisp_seq(), Integer.valueOf(1));
+			assertEquals("+0:優先順位名称", priorityDto.getName(), "高");
+			assertEquals("+0:優先順位データバージョン", priorityDto.getVersionNo(), Integer.valueOf(112));
+			// +1
+			priorityDto = priorityList.get(1);
+			assertEquals("+1:プロジェクトID", priorityDto.getProject_id(), projectId);
+			assertEquals("+1:優先順位ID", priorityDto.getId(), Long.valueOf(16L));
+			assertEquals("+1:優先順位表示順", priorityDto.getDisp_seq(), Integer.valueOf(2));
+			assertEquals("+1:優先順位名称", priorityDto.getName(), "低");
+			assertEquals("+1:優先順位データバージョン", priorityDto.getVersionNo(), Integer.valueOf(1));
+		} catch (Exception ex) {
+			fail("テスト異常終了 " + ex.toString());
+		}
+	}
+
+	/**
+	 * チケット種類管理の更新をテスト
+	 * @since 0.0.1
+	 */
+	@Test
+	@DatabaseSetup("classpath:TicketServiceTest_D06/")
+	public void test_saveTicketKind() {
+		Long userId = Long.valueOf(10012L);
+		Long projectId = Long.valueOf(2L);
+		// 呼び出すサービスのデータを作成
+		List<TicketKindDto> kindList = new ArrayList<>();
+		kindList.add(TicketKindDto.builder()
+				.id(Long.valueOf(11L))
+				.name("バグ")
+				.disp_seq(Integer.valueOf(1))
+				.project_id(projectId)
+				.versionNo(Integer.valueOf(111))
+				.build());
+		kindList.add(TicketKindDto.builder()
+				.id(null)
+				.name("操作ミス")
+				.disp_seq(Integer.valueOf(2))
+				.project_id(projectId)
+				.build());
+		TicketKindSaveRequestDto requestDto = TicketKindSaveRequestDto.builder()
+				.project_id(projectId)
+				.kindList(kindList)
+				.build();
+		// テスト対象のサービスを呼び出す
+		try {
+			StatusResponseDto responseDto = this.ticketService.saveTicketKind(
+					  LoginDto.builder().id(userId).build()
+					, requestDto);
+			// サービスの戻り値を判定する.
+			assertNotNull("戻り値あり", responseDto);
+			assertEquals("正常終了", responseDto.getStatus(), StatusResponseDto.SUCCESS);
+
+			// 更新結果は、データを取得して確認する
+			TicketMastersResponseDto outDto = this.ticketService.getTicketMasters(
+					TicketMastersRequestDto.builder().project_id(Long.valueOf(2L)).build());
+
+			// サービスの戻り値を判定する.
+			assertNotNull("戻り値あり", outDto);
+			kindList = outDto.getKindList();
+			assertNotNull("種類データあり", kindList);
+			assertEquals("種類一覧件数", kindList.size(), 2);
+			// +0
+			TicketKindDto kindDto = kindList.get(0);
+			assertEquals("+0:プロジェクトID", kindDto.getProject_id(), projectId);
+			assertEquals("+0:種類ID", kindDto.getId(), Long.valueOf(11L));
+			assertEquals("+0:種類表示順", kindDto.getDisp_seq(), Integer.valueOf(1));
+			assertEquals("+0:種類名称", kindDto.getName(), "バグ");
+			assertEquals("+0:種類データバージョン", kindDto.getVersionNo(), Integer.valueOf(12));
+			// +1
+			kindDto = kindList.get(1);
+			assertEquals("+1:プロジェクトID", kindDto.getProject_id(), projectId);
+			assertEquals("+1:種類ID", kindDto.getId(), Long.valueOf(16L));
+			assertEquals("+1:種類表示順", kindDto.getDisp_seq(), Integer.valueOf(2));
+			assertEquals("+1:種類名称", kindDto.getName(), "操作ミス");
+			assertEquals("+1:種類データバージョン", kindDto.getVersionNo(), Integer.valueOf(1));
 		} catch (Exception ex) {
 			fail("テスト異常終了 " + ex.toString());
 		}
