@@ -26,6 +26,10 @@ public class TicketEntity extends CommonEntity {
 	private String description;
 	/** チケットステータスID */
 	private Long status_id;
+	/** チケット種類ID */
+	private Long kind_id;
+	/** チケット優先順位ID */
+	private Long priority_id;
 	/** 開始日 */
 	private Date start_date;
 	/** 終了日 */

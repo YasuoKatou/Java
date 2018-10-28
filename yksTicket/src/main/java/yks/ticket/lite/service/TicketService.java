@@ -74,6 +74,8 @@ public class TicketService {
 					.start_date(entity.getStart_date())
 					.finish_date(entity.getFinish_date())
 					.progress_id(entity.getProgress_id())
+					.kind_id(entity.getKind_id())
+					.priority_id(entity.getPriority_id())
 					.project_id(entity.getProject_id())
 					.versionNo(entity.getVersionNo())
 					.build());

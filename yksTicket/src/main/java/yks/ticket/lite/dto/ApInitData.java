@@ -42,4 +42,5 @@ public class ApInitData {
 		private String entity;
 		/** 投入データ */
 		private List<Map<String, Object>> values;
-	}}
+	}
+}

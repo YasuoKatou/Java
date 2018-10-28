@@ -141,6 +141,8 @@
 			, title varchar(256) not null			--チケットタイトル
 			, description varchar(1024)				--チケットの説明
 			, status_id bigint						--チケットステータスID
+			, kind_id bigint						--種類ID
+			, priority_id bigint					--優先順位ID
 			, start_date DATE						--開始日
 			, finish_date DATE						--終了日
 			, progress_id bigint					--チケットの進捗

@@ -15,6 +15,8 @@
       , T1.start_date  --開始日
       , T1.finish_date  --終了日
       , T1.progress_id  --チケットの進捗
+      , T1.kind_id  --種類ID
+      , T1.priority_id  --優先順位ID
       , T1.project_id  --プロジェクトID
       , T1.createDate  --作成日時
       , T1.createUserId  --作成者ID

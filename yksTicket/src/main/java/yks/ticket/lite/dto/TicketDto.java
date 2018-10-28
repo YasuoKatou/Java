@@ -28,6 +28,10 @@ public class TicketDto {
 	private Date finish_date;
 	/** チケットの進捗 */
 	private Long progress_id;
+	/** チケット種類ID */
+	private Long kind_id;
+	/** チケット優先順位ID */
+	private Long priority_id;
 	/** プロジェクトID */
 	private Long project_id;
 	/** 作成日時 */
@@ -40,5 +44,4 @@ public class TicketDto {
 	private Long updateUserId;
 	/** バージョンNo */
 	private Integer versionNo;
-
 }

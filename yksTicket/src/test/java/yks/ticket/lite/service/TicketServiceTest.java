@@ -89,6 +89,8 @@ public class TicketServiceTest {
 		assertEquals("+0:開始日", sdfDate.format(ticket.getStart_date()), "2018-09-25");
 		assertEquals("+0:終了日", sdfDate.format(ticket.getFinish_date()), "2018-09-26");
 		assertEquals("+0:進捗ID", ticket.getProgress_id(), Long.valueOf(1L));
+		assertEquals("+0:種類ID", ticket.getKind_id(), Long.valueOf(302L));
+		assertEquals("+0:優先順位ID", ticket.getPriority_id(), Long.valueOf(402L));
 		assertEquals("+0:プロジェクトID", ticket.getProject_id(), projectId);
 		assertEquals("+0:バージョンNo", ticket.getVersionNo(), Integer.valueOf(2));
 		// +1
@@ -100,6 +102,8 @@ public class TicketServiceTest {
 		assertNull("+1:開始日", ticket.getStart_date());
 		assertNull("+1:終了日", ticket.getFinish_date());
 		assertEquals("+1:進捗ID", ticket.getProgress_id(), Long.valueOf(5L));
+		assertEquals("+1:種類ID", ticket.getKind_id(), Long.valueOf(303L));
+		assertEquals("+1:優先順位ID", ticket.getPriority_id(), Long.valueOf(403L));
 		assertEquals("+1:プロジェクトID", ticket.getProject_id(), projectId);
 		assertEquals("+1:バージョンNo", ticket.getVersionNo(), Integer.valueOf(6));
 	}
