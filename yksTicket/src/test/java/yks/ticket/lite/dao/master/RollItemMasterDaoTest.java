@@ -98,7 +98,7 @@ public class RollItemMasterDaoTest {
 		assertEquals("+0.項目名称", "プロジェクトの編集", entity.getName());
 		assertEquals("+0.グループID", Long.valueOf(1000L), entity.getGroup_id());
 		assertNotNull("+0.作成日付", entity.getCreateDate());
-		assertEquals("+0.作成者ID", DBInitService.ADMIN_USER_ID.longValue(), entity.getCreateUserId());
+		assertEquals("+0.作成者ID", DBInitService.ADMIN_USER_ID, entity.getCreateUserId());
 		assertEquals("+0.バージョン", 1, entity.getVersionNo().intValue());
 		// +1
 		entity = list.get(1);
@@ -106,7 +106,7 @@ public class RollItemMasterDaoTest {
 		assertEquals("+1.項目名称", "プロジェクトの終了/再開", entity.getName());
 		assertEquals("+1.グループID", Long.valueOf(1000L), entity.getGroup_id());
 		assertNotNull("+1.作成日付", entity.getCreateDate());
-		assertEquals("+1.作成者ID", DBInitService.ADMIN_USER_ID.longValue(), entity.getCreateUserId());
+		assertEquals("+1.作成者ID", DBInitService.ADMIN_USER_ID, entity.getCreateUserId());
 		assertEquals("+1.バージョン", 1, entity.getVersionNo().intValue());
 		// +8
 		entity = list.get(8);
@@ -114,7 +114,7 @@ public class RollItemMasterDaoTest {
 		assertEquals("+8.項目名称", "チケットの編集", entity.getName());
 		assertEquals("+8.グループID", Long.valueOf(3000L), entity.getGroup_id());
 		assertNotNull("+8.作成日付", entity.getCreateDate());
-		assertEquals("+8.作成者ID", DBInitService.ADMIN_USER_ID.longValue(), entity.getCreateUserId());
+		assertEquals("+8.作成者ID", DBInitService.ADMIN_USER_ID, entity.getCreateUserId());
 		assertEquals("+8.バージョン", 1, entity.getVersionNo().intValue());
 		// +10
 		entity = list.get(10);
@@ -122,7 +122,7 @@ public class RollItemMasterDaoTest {
 		assertEquals("+10.項目名称", "Wikiの閲覧", entity.getName());
 		assertEquals("+10.グループID", Long.valueOf(4000L), entity.getGroup_id());
 		assertNotNull("+10.作成日付", entity.getCreateDate());
-		assertEquals("+10.作成者ID", DBInitService.ADMIN_USER_ID.longValue(), entity.getCreateUserId());
+		assertEquals("+10.作成者ID", DBInitService.ADMIN_USER_ID, entity.getCreateUserId());
 		assertEquals("+10.バージョン", 1, entity.getVersionNo().intValue());
 		// +11
 		entity = list.get(11);
@@ -130,7 +130,7 @@ public class RollItemMasterDaoTest {
 		assertEquals("+11.項目名称", "Wikiページの編集", entity.getName());
 		assertEquals("+11.グループID", Long.valueOf(4000L), entity.getGroup_id());
 		assertNotNull("+11.作成日付", entity.getCreateDate());
-		assertEquals("+11.作成者ID", DBInitService.ADMIN_USER_ID.longValue(), entity.getCreateUserId());
+		assertEquals("+11.作成者ID", DBInitService.ADMIN_USER_ID, entity.getCreateUserId());
 		assertEquals("+11.バージョン", 1, entity.getVersionNo().intValue());
 	}
 }

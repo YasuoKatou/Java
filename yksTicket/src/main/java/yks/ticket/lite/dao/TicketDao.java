@@ -21,4 +21,30 @@ public interface TicketDao {
 	 * @since 0.0.1
 	 */
 	List<TicketEntity> findByProject(@Param("project_id") Long project_id);
+
+	/**
+	 * チケットIDでチケットを取得する.
+	 *
+	 * @param id チケットID
+	 * @return チケットエンティティ
+	 * @since 0.0.1
+	 */
+	TicketEntity findById(@Param("id") Long id);
+
+	/**
+	 * 最大のチケットIDを取得する.
+	 *
+	 * @return チケットID
+	 * @since 0.0.1
+	 */
+	Long findMaxId();
+
+	/**
+	 * チケットを登録する.
+	 *
+	 * @param entity チケットエンティティ
+	 * @return 1（登録件数）
+	 * @since 0.0.1
+	 */
+	int append(TicketEntity entity);
 }

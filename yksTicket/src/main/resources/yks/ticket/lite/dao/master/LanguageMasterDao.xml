@@ -15,7 +15,7 @@
       , remarks  --説明
       </if>
       , createUserId  --作成者ID
-      , versionNo     --バージョンNo
+      , updateUserId  --更新者ID
     ) values (
       <if test="id == null">
         coalesce((select max(id) from m_language), 0) + 1
@@ -29,7 +29,7 @@
       , #{remarks}
       </if>
       , #{createUserId}
-      , 1
+      , #{createUserId}
     )
   </insert>
 

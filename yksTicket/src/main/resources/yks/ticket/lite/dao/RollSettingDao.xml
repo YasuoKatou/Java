@@ -11,12 +11,12 @@
         roll_name_id  --ロール名称ID
       , roll_item_id  --ロール項目ID
       , createUserId  --作成者ID
-      , versionNo     --バージョンNo
+      , updateUserId  --更新者ID
     ) values (
         #{rollNameId}
       , #{rollItemId}
       , #{createUserId}
-      , 1
+      , #{createUserId}
     )
   </insert>
 

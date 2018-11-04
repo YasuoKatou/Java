@@ -12,7 +12,7 @@
       , name     --ロール項目名
       , group_id --ロールグループ識別子
       , createUserId  --作成者ID
-      , versionNo     --バージョンNo
+      , updateUserId  --更新者ID
     ) values (
       <if test="id == null">
         coalesce((select max(id) from m_rollItem), 0) + 1
@@ -23,7 +23,7 @@
       , #{name}
       , #{group_id}
       , #{createUserId}
-      , 1
+      , #{createUserId}
     )
   </insert>
 

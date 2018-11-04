@@ -15,5 +15,5 @@ import lombok.Data;
 @Data
 public class TicketListResponseDto {
 	/** チケット一覧 */
-	List<TicketDto> ticketList;
+	private List<TicketDto> ticketList;
 }

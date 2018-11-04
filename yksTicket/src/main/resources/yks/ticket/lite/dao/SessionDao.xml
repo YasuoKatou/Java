@@ -11,12 +11,12 @@
         session_id  --セッションID
       , user_id     --ユーザ識別子
       , createUserId  --作成者ID
-      , versionNo     --バージョンNo
+      , updateUserId  --更新者ID
     ) values (
         #{session_id}
       , #{user_id}
       , #{user_id}
-      , 1
+      , #{user_id}
     )
   </insert>
 

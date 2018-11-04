@@ -94,28 +94,28 @@ public class RollGroupMasterDaoTest {
 		assertEquals("+0.識別子", Long.valueOf(1000L), entity.getId());
 		assertEquals("+0.グループ名称", "プロジェクト", entity.getName());
 		assertNotNull("+0.作成日付", entity.getCreateDate());
-		assertEquals("+0.作成者ID", DBInitService.ADMIN_USER_ID.longValue(), entity.getCreateUserId());
+		assertEquals("+0.作成者ID", DBInitService.ADMIN_USER_ID, entity.getCreateUserId());
 		assertEquals("+0.バージョン", 1, entity.getVersionNo().intValue());
 		// +1
 		entity = list.get(1);
 		assertEquals("+1.識別子", Long.valueOf(2000L), entity.getId());
 		assertEquals("+1.グループ名称", "ファイル", entity.getName());
 		assertNotNull("+1.作成日付", entity.getCreateDate());
-		assertEquals("+1.作成者ID", DBInitService.ADMIN_USER_ID.longValue(), entity.getCreateUserId());
+		assertEquals("+1.作成者ID", DBInitService.ADMIN_USER_ID, entity.getCreateUserId());
 		assertEquals("+1.バージョン", 1, entity.getVersionNo().intValue());
 		// +2
 		entity = list.get(2);
 		assertEquals("+2.識別子", Long.valueOf(3000L), entity.getId());
 		assertEquals("+2.グループ名称", "チケット", entity.getName());
 		assertNotNull("+2.作成日付", entity.getCreateDate());
-		assertEquals("+2.作成者ID", DBInitService.ADMIN_USER_ID.longValue(), entity.getCreateUserId());
+		assertEquals("+2.作成者ID", DBInitService.ADMIN_USER_ID, entity.getCreateUserId());
 		assertEquals("+2.バージョン", 1, entity.getVersionNo().intValue());
 		// +3
 		entity = list.get(3);
 		assertEquals("+2.識別子", Long.valueOf(4000L), entity.getId());
 		assertEquals("+2.グループ名称", "Wiki", entity.getName());
 		assertNotNull("+2.作成日付", entity.getCreateDate());
-		assertEquals("+2.作成者ID", DBInitService.ADMIN_USER_ID.longValue(), entity.getCreateUserId());
+		assertEquals("+2.作成者ID", DBInitService.ADMIN_USER_ID, entity.getCreateUserId());
 		assertEquals("+2.バージョン", 1, entity.getVersionNo().intValue());
 	}
 }

@@ -14,7 +14,7 @@
       , description  --説明
       </if>
       , createUserId  --作成者ID
-      , versionNo     --バージョンNo
+      , updateUserId  --更新者ID
     ) values (
       <if test="id == null">
         coalesce((select max(id) from t_roll_name), 0) + 1
@@ -27,7 +27,7 @@
       , #{description}
       </if>
       , #{createUserId}
-      , 1
+      , #{createUserId}
     )
   </insert>
 

@@ -5,7 +5,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,8 +25,12 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.github.springtestdbunit.annotation.DbUnitConfiguration;
 
 import yks.ticket.lite.common.CsvDataSetLoader;
+import yks.ticket.lite.common.TicketApConstatnt.TicketMessage;
+import yks.ticket.lite.dao.TicketDao;
+import yks.ticket.lite.dao.TicketMemoDao;
 import yks.ticket.lite.dto.LoginDto;
 import yks.ticket.lite.dto.StatusResponseDto;
+import yks.ticket.lite.dto.TicketAppendRequestDto;
 import yks.ticket.lite.dto.TicketDto;
 import yks.ticket.lite.dto.TicketKindDto;
 import yks.ticket.lite.dto.TicketKindSaveRequestDto;
@@ -35,10 +38,15 @@ import yks.ticket.lite.dto.TicketListRequestDto;
 import yks.ticket.lite.dto.TicketListResponseDto;
 import yks.ticket.lite.dto.TicketMastersRequestDto;
 import yks.ticket.lite.dto.TicketMastersResponseDto;
+import yks.ticket.lite.dto.TicketMemoDto;
+import yks.ticket.lite.dto.TicketMemoListRequestDto;
+import yks.ticket.lite.dto.TicketMemoListResponseDto;
 import yks.ticket.lite.dto.TicketPriorityDto;
 import yks.ticket.lite.dto.TicketPrioritySaveRequestDto;
 import yks.ticket.lite.dto.TicketProgressDto;
 import yks.ticket.lite.dto.TicketProgressSaveRequestDto;
+import yks.ticket.lite.dto.TicketRequestDto;
+import yks.ticket.lite.dto.TicketResponseDto;
 import yks.ticket.lite.dto.TicketStatusDto;
 import yks.ticket.lite.dto.TicketStatusSaveRequestDto;
 
@@ -60,6 +68,10 @@ import yks.ticket.lite.dto.TicketStatusSaveRequestDto;
 public class TicketServiceTest {
 	/** チケットサービス */
 	@Autowired private TicketService ticketService;
+	/** チケットテーブルDao */
+	@Autowired private TicketDao ticketDao;
+	/** チケットメモテーブルDao */
+	@Autowired private TicketMemoDao ticketMemoDao;
 
 	/**
 	 * チケット一覧取得をテスト.
@@ -69,7 +81,6 @@ public class TicketServiceTest {
 	@DatabaseSetup("classpath:TicketServiceTest_D01/")
 	public void test_getTicketList() {
 		Long projectId = Long.valueOf(2L);
-		SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd");
 		// テスト対象のサービスを呼び出す
 		TicketListResponseDto outDto = this.ticketService.getTicketList(TicketListRequestDto.builder()
 				.project_id(projectId)
@@ -86,8 +97,8 @@ public class TicketServiceTest {
 		assertEquals("+0:タイトル", ticket.getTitle(), "ccc");
 		assertEquals("+0:説明", ticket.getDescription(), "ddd");
 		assertEquals("+0:ステータスID", ticket.getStatus_id(), Long.valueOf(202L));
-		assertEquals("+0:開始日", sdfDate.format(ticket.getStart_date()), "2018-09-25");
-		assertEquals("+0:終了日", sdfDate.format(ticket.getFinish_date()), "2018-09-26");
+		assertEquals("+0:開始日", ticket.getStart_date(), "2018-09-25");
+		assertEquals("+0:終了日", ticket.getFinish_date(), "2018-09-26");
 		assertEquals("+0:進捗ID", ticket.getProgress_id(), Long.valueOf(1L));
 		assertEquals("+0:種類ID", ticket.getKind_id(), Long.valueOf(302L));
 		assertEquals("+0:優先順位ID", ticket.getPriority_id(), Long.valueOf(402L));
@@ -106,6 +117,121 @@ public class TicketServiceTest {
 		assertEquals("+1:優先順位ID", ticket.getPriority_id(), Long.valueOf(403L));
 		assertEquals("+1:プロジェクトID", ticket.getProject_id(), projectId);
 		assertEquals("+1:バージョンNo", ticket.getVersionNo(), Integer.valueOf(6));
+	}
+
+	/**
+	 * チケット取得をテスト.
+	 * @since 0.0.1
+	 */
+	@Test
+	@DatabaseSetup("classpath:TicketServiceTest_D01/")
+	public void test_getTicket() {
+		Long ticketId = Long.valueOf(2L);
+		// テスト対象のサービスを呼び出す
+		try {
+			TicketResponseDto outDto = this.ticketService.getTicket(TicketRequestDto.builder()
+					.id(ticketId)
+					.build());
+	
+			// サービスの戻り値を判定する.
+			assertNotNull("戻り値あり", outDto);
+			TicketDto dto = outDto.getTicketDto();
+			assertNotNull("取得データあり", dto);
+			// +0
+			assertEquals("チケットID", dto.getId(), ticketId);
+			assertEquals("タイトル", dto.getTitle(), "ccc");
+			assertEquals("説明", dto.getDescription(), "ddd");
+			assertEquals("ステータスID", dto.getStatus_id(), Long.valueOf(202L));
+			assertEquals("開始日", dto.getStart_date(), "2018-09-25");
+			assertEquals("終了日", dto.getFinish_date(), "2018-09-26");
+			assertEquals("進捗ID", dto.getProgress_id(), Long.valueOf(1L));
+			assertEquals("種類ID", dto.getKind_id(), Long.valueOf(302L));
+			assertEquals("優先順位ID", dto.getPriority_id(), Long.valueOf(402L));
+			assertEquals("プロジェクトID", dto.getProject_id(), Long.valueOf(2L));
+			assertEquals("バージョンNo", dto.getVersionNo(), Integer.valueOf(2));
+		} catch (Exception ex) {
+			fail("チケット取得失敗");
+		}
+	}
+
+	/**
+	 * チケット登録の確認
+	 * @since 0.0.1
+	 */
+	@Test
+	public void test_appendTicket() {
+		Long userId = Long.valueOf(3L);
+		// テストデータの作成
+		LoginDto login = LoginDto.builder().id(userId).build();
+		// リクエストの作成
+		Long status_id   = Long.valueOf(101L);
+		Long progress_id = Long.valueOf(102L);
+		Long kind_id     = Long.valueOf(103L);
+		Long priority_id = Long.valueOf(104L);
+		Long project_id  = Long.valueOf(105L);
+		TicketDto ticket = TicketDto.builder()
+				.title("テストチケット")
+				.description("チケットの説明")
+				.status_id(status_id)
+				.start_date("2018-11-01")
+				.finish_date("2018-11-04")
+				.progress_id(progress_id)
+				.kind_id(kind_id)
+				.priority_id(priority_id)
+				.project_id(project_id)
+				.build();
+		// チケットの登録
+		try {
+			StatusResponseDto serviceResult =
+			this.ticketService.appendTicket(login, TicketAppendRequestDto.builder()
+					.ticket(ticket)
+					.build());
+			assertEquals("チケット登録結果", serviceResult.getStatus(), StatusResponseDto.SUCCESS);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("チケット登録テスト失敗");
+		}
+		// 正しく登録が行われたかを確認する
+		// ※（１／２）チケット本体
+		Long ticketId = this.ticketDao.findMaxId();
+		try {
+			TicketResponseDto ticketRespDto = this.ticketService.getTicket(
+					TicketRequestDto.builder().id(ticketId).build());
+			assertNotNull("戻り値あり", ticketRespDto);
+			assertNotNull("チケットデータあり", ticketRespDto.getTicketDto());
+			ticket = ticketRespDto.getTicketDto();
+			assertEquals("タイトル", ticket .getTitle(), "テストチケット");
+			assertEquals("説明", ticket.getDescription(), "チケットの説明");
+			assertEquals("ステータスID", ticket .getStatus_id(), status_id);
+			assertEquals("作業開始日", ticket .getStart_date(), "2018-11-01");
+			assertEquals("作業終了日", ticket .getFinish_date(), "2018-11-04");
+			assertEquals("進捗ID", ticket .getProgress_id(), progress_id);
+			assertEquals("種類ID", ticket .getKind_id(), kind_id);
+			assertEquals("優先順位ID", ticket .getPriority_id(), priority_id);
+			assertEquals("プロジェクトID", ticket .getProject_id(), project_id);
+			assertEquals("バージョンNo", ticket .getVersionNo(), Integer.valueOf(1));
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("登録チケットの取得失敗");
+		}
+		// ※（２／２）チケット履歴
+		TicketMemoListResponseDto memoRespDto = this.ticketService.getTicketMemoList(
+				TicketMemoListRequestDto.builder().ticket_id(ticketId).build());
+		assertNotNull("戻り値あり", memoRespDto);
+		List<TicketMemoDto> memoList = memoRespDto.getMemoList();
+		assertNotNull("メモ一覧あり", memoList);
+		assertEquals("メモ一覧一見あり", memoList.size(), 1);
+		TicketMemoDto memoDto = memoList.get(0);
+		Long memoId = this.ticketMemoDao.findMaxId(ticketId);
+		assertEquals("メモID", memoDto.getId(), memoId);
+		assertEquals("チケットID", memoDto.getTicket_id(), ticketId);
+		assertEquals("メモ内容", memoDto.getMemo(), TicketMessage.NEW_TICKET_MESSAGE);
+		assertEquals("ルートメモID", memoDto.getRoot_memo_id(), memoId);
+		assertEquals("親メモID", memoDto.getParent_memo_id(), memoId);
+		assertEquals("作成者ID", memoDto.getCreateUserId(), userId);
+		assertNotNull("作成日時", memoDto.getCreateDate());
+		assertEquals("更新者ID", memoDto.getUpdateUserId(), userId);
+		assertEquals("バージョンNo", memoDto.getVersionNo(), Integer.valueOf(1));
 	}
 
 	/**

@@ -1,6 +1,7 @@
 package yks.ticket.lite.entity;
 
-import java.util.Date;
+
+import java.sql.Date;
 
 import lombok.Data;
 
@@ -15,11 +16,11 @@ public class CommonEntity {
 	/** 作成日時 */
 	private Date createDate;
 	/** 作成者ID */
-	private long createUserId;
+	private Long createUserId;
 	/** 更新日時 */
 	private Date updateDate;
 	/** 更新者ID */
-	private long updateUserId;
+	private Long updateUserId;
 	/** バージョンNo */
 	private Integer versionNo;
 }

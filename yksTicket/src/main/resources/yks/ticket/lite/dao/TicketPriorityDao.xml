@@ -32,18 +32,16 @@
       , disp_seq  --表示順
       , name  --優先順位名称
       , available  --有効フラグ
-      , createDate  --作成日時
       , createUserId  --作成者ID
-      , versionNo  --バージョンNo
+      , updateUserId  --更新者ID
     ) values (
         #{project_id}
       , #{id}
       , #{disp_seq}
       , #{name}
       , 'yes'
-      , CURRENT_TIMESTAMP
       , #{createUserId}
-      ,1
+      , #{createUserId}
     )
   </insert>
 

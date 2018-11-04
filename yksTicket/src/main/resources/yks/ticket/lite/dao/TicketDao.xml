@@ -6,8 +6,7 @@
   <resultMap id="ticketResultMap" type="yks.ticket.lite.entity.TicketEntity" autoMapping="true">
   </resultMap>
 
-  <select id="findByProject" resultMap="ticketResultMap">
-    select
+  <sql id="ticketAllColumns">
         T1.id  --チケットID
       , T1.title  --チケットタイトル
       , T1.description  --チケットの説明
@@ -23,8 +22,55 @@
       , T1.updateDate  --更新日時
       , T1.updateUserId  --更新者ID
       , T1.versionNo  --バージョンNo
+  </sql>
+
+  <select id="findByProject" resultMap="ticketResultMap">
+    select
+    <include refid="ticketAllColumns"/>
     from t_ticket T1
     where T1.project_id = #{project_id}
     order by T1.id
   </select>
+
+  <select id="findById" resultMap="ticketResultMap">
+    select
+    <include refid="ticketAllColumns"/>
+    from t_ticket T1
+    where T1.id = #{id}
+  </select>
+
+  <select id="findMaxId" resultType="Long">
+    select coalesce(max(T1.id), 0)
+    from t_ticket T1
+  </select>
+
+  <insert id="append">
+    insert into t_ticket (
+        id  --チケットID
+      , title  --チケットタイトル
+      , description  --チケットの説明
+      , status_id  --チケットステータスID
+      , start_date  --開始日
+      , finish_date  --終了日
+      , progress_id  --チケットの進捗
+      , kind_id  --種類ID
+      , priority_id  --優先順位ID
+      , project_id  --プロジェクトID
+      , createUserId  --作成者ID
+      , updateUserId  --更新者ID
+    ) values (
+        #{id}
+      , #{title}
+      , #{description}
+      , #{status_id}
+      , #{start_date}
+      , #{finish_date}
+      , #{progress_id}
+      , #{kind_id}
+      , #{priority_id}
+      , #{project_id}
+      , #{createUserId}
+      , #{createUserId}
+    )
+  </insert>
 </mapper>

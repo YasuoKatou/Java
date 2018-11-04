@@ -1,3 +1,3 @@
-id,login_id,passwd,name1,name2,email,language_id,createDate,createUserId,versionNo
-102,abitbol,password,Ａｂｉｔｂｏｌ,Ａｃｈｉｌｌｅ－Ｃｌａｕｄｏ,achille@example.com,201,2018-09-23 08:25:00,1,1
-101,admin,password,Ａｂｂｏｔ,Ａａｒｏｎ,hoge@example.com,201,2018-09-23 08:19:00,1,1
+id,login_id,passwd,name1,name2,email,language_id,createDate,createUserId,updateDate,updateUserId,versionNo
+102,abitbol,password,Ａｂｉｔｂｏｌ,Ａｃｈｉｌｌｅ－Ｃｌａｕｄｏ,achille@example.com,201,2018-09-23 08:25:00,1,2018-09-23 08:25:00,1,1
+101,admin,password,Ａｂｂｏｔ,Ａａｒｏｎ,hoge@example.com,201,2018-09-23 08:19:00,1,2018-09-23 08:19:00,1,1

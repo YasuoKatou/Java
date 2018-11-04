@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="yks.ticket.lite.dao.TicketMemoDao">
+  <resultMap id="ticketMemoResultMap" type="yks.ticket.lite.entity.TicketMemoEntity" autoMapping="true">
+  </resultMap>
+
+  <sql id="ticketMemoAllColumns">
+        T1.id  --メモID
+      , T1.ticket_id  --チケットID
+      , T1.memo  --メモ内容
+      , T1.root_memo_id  --ルートメモID
+      , T1.parent_memo_id  --親メモID
+      , T1.createDate  --作成日時
+      , T1.createUserId  --作成者ID
+      , T1.updateDate  --更新日時
+      , T1.updateUserId  --更新者ID
+      , T1.versionNo  --バージョンNo
+  </sql>
+
+  <select id="findMaxId" resultType="Long">
+    select coalesce(max(T1.id), 0)
+    from t_ticket_memo T1
+    where T1.ticket_id = #{ticket_id}
+  </select>
+
+  <insert id="append">
+    insert into t_ticket_memo (
+        id  --メモID
+      , ticket_id  --チケットID
+      , memo  --メモ内容
+      , root_memo_id  --ルートメモID
+      , parent_memo_id  --親メモID
+      , createUserId  --作成者ID
+      , updateUserId  --更新者ID
+    ) values (
+        #{id}
+      , #{ticket_id}
+      , #{memo}
+      , #{root_memo_id}
+      , #{parent_memo_id}
+      , #{createUserId}
+      , #{createUserId}
+    )
+  </insert>
+
+  <select id="findByTicketId" resultMap="ticketMemoResultMap">
+    select
+    <include refid="ticketMemoAllColumns"/>
+    from t_ticket_memo T1
+    where T1.ticket_id = #{ticket_id}
+    order by T1.updateDate
+  </select>
+</mapper>
