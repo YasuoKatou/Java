@@ -181,13 +181,15 @@
 
 	<insert id="createTicketHistory">
 		create table h_ticket (
-			  id bigint 							--チケットID
-			, title varchar(256) not null			--ロール項目名称
-			, description varchar(1024)				--説明
-			, status_id bigint						--ステータス
-			, start_date TIMESTAMP					--開始日
-			, finish_date TIMESTAMP					--終了日
-			, progress varchar(16)					--進捗
+			  id bigint								--チケットID
+			, title varchar(256) not null			--チケットタイトル
+			, description varchar(1024)				--チケットの説明
+			, status_id bigint						--チケットステータスID
+			, kind_id bigint						--種類ID
+			, priority_id bigint					--優先順位ID
+			, start_date DATE						--開始日
+			, finish_date DATE						--終了日
+			, progress_id bigint					--チケットの進捗
 			, project_id bigint						--プロジェクトID
 			, createDate TIMESTAMP not null default CURRENT_TIMESTAMP	--作成日時
 			, createUserId bigint not null								--作成者ID
