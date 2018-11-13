@@ -49,6 +49,7 @@ import yks.ticket.lite.dto.TicketRequestDto;
 import yks.ticket.lite.dto.TicketResponseDto;
 import yks.ticket.lite.dto.TicketStatusDto;
 import yks.ticket.lite.dto.TicketStatusSaveRequestDto;
+import yks.ticket.lite.dto.TicketUpdateRequestDto;
 
 /**
  * チケット管理サービスのテストクラス.
@@ -164,27 +165,12 @@ public class TicketServiceTest {
 		// テストデータの作成
 		LoginDto login = LoginDto.builder().id(userId).build();
 		// リクエストの作成
-		Long status_id   = Long.valueOf(101L);
-		Long progress_id = Long.valueOf(102L);
-		Long kind_id     = Long.valueOf(103L);
-		Long priority_id = Long.valueOf(104L);
-		Long project_id  = Long.valueOf(105L);
-		TicketDto ticket = TicketDto.builder()
-				.title("テストチケット")
-				.description("チケットの説明")
-				.status_id(status_id)
-				.start_date("2018-11-01")
-				.finish_date("2018-11-04")
-				.progress_id(progress_id)
-				.kind_id(kind_id)
-				.priority_id(priority_id)
-				.project_id(project_id)
-				.build();
+		TicketDto ticketSource = this.makeTicketDto();
 		// チケットの登録
 		try {
 			StatusResponseDto serviceResult =
 			this.ticketService.appendTicket(login, TicketAppendRequestDto.builder()
-					.ticket(ticket)
+					.ticket(ticketSource)
 					.build());
 			assertEquals("チケット登録結果", serviceResult.getStatus(), StatusResponseDto.SUCCESS);
 		} catch (Exception ex) {
@@ -199,17 +185,17 @@ public class TicketServiceTest {
 					TicketRequestDto.builder().id(ticketId).build());
 			assertNotNull("戻り値あり", ticketRespDto);
 			assertNotNull("チケットデータあり", ticketRespDto.getTicketDto());
-			ticket = ticketRespDto.getTicketDto();
-			assertEquals("タイトル", ticket .getTitle(), "テストチケット");
-			assertEquals("説明", ticket.getDescription(), "チケットの説明");
-			assertEquals("ステータスID", ticket .getStatus_id(), status_id);
-			assertEquals("作業開始日", ticket .getStart_date(), "2018-11-01");
-			assertEquals("作業終了日", ticket .getFinish_date(), "2018-11-04");
-			assertEquals("進捗ID", ticket .getProgress_id(), progress_id);
-			assertEquals("種類ID", ticket .getKind_id(), kind_id);
-			assertEquals("優先順位ID", ticket .getPriority_id(), priority_id);
-			assertEquals("プロジェクトID", ticket .getProject_id(), project_id);
-			assertEquals("バージョンNo", ticket .getVersionNo(), Integer.valueOf(1));
+			TicketDto ticket = ticketRespDto.getTicketDto();
+			assertEquals("タイトル", ticket .getTitle(), ticketSource.getTitle());
+			assertEquals("説明", ticket.getDescription(), ticketSource.getDescription());
+			assertEquals("ステータスID", ticket.getStatus_id(), ticketSource.getStatus_id());
+			assertEquals("作業開始日", ticket.getStart_date(), ticketSource.getStart_date());
+			assertEquals("作業終了日", ticket.getFinish_date(), ticketSource.getFinish_date());
+			assertEquals("進捗ID", ticket.getProgress_id(), ticketSource.getProgress_id());
+			assertEquals("種類ID", ticket.getKind_id(), ticketSource.getKind_id());
+			assertEquals("優先順位ID", ticket.getPriority_id(), ticketSource.getPriority_id());
+			assertEquals("プロジェクトID", ticket.getProject_id(), ticketSource.getProject_id());
+			assertEquals("バージョンNo", ticket.getVersionNo(), Integer.valueOf(1));
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			fail("登録チケットの取得失敗");
@@ -226,6 +212,1604 @@ public class TicketServiceTest {
 		assertEquals("メモID", memoDto.getId(), memoId);
 		assertEquals("チケットID", memoDto.getTicket_id(), ticketId);
 		assertEquals("メモ内容", memoDto.getMemo(), TicketMessage.NEW_TICKET_MESSAGE);
+		assertEquals("ルートメモID", memoDto.getRoot_memo_id(), memoId);
+		assertEquals("親メモID", memoDto.getParent_memo_id(), memoId);
+		assertEquals("作成者ID", memoDto.getCreateUserId(), userId);
+		assertNotNull("作成日時", memoDto.getCreateDate());
+		assertEquals("更新者ID", memoDto.getUpdateUserId(), userId);
+		assertEquals("バージョンNo", memoDto.getVersionNo(), Integer.valueOf(1));
+	}
+
+	/**
+	 * テスト用のチケットデータを生成する.
+	 *
+	 * @return チケットDto
+	 * @since 0.0.1
+	 */
+	private TicketDto makeTicketDto() {
+		return TicketDto.builder()
+				.title("テストチケット")
+				.description("チケットの説明")
+				.status_id(Long.valueOf(101L))
+				.start_date("2018-11-01")
+				.finish_date("2018-11-04")
+				.progress_id(Long.valueOf(102L))
+				.kind_id(Long.valueOf(103L))
+				.priority_id(Long.valueOf(104L))
+				.project_id(Long.valueOf(105L))
+				.build();
+	}
+
+	/**
+	 * チケット更新確認（タイトルの変更）
+	 * @since 0.0.1
+	 */
+	@Test
+	public void test_updateTicket_01() {
+		// 更新対象のチケットを登録する
+		Long userId = Long.valueOf(3105L);
+		LoginDto login = LoginDto.builder().id(userId).build();
+		TicketDto ticketSource = this.makeTicketDto();
+		Long ticketId = null;
+		try {
+			StatusResponseDto serviceResult =
+			this.ticketService.appendTicket(login, TicketAppendRequestDto.builder()
+					.ticket(ticketSource)
+					.build());
+			assertEquals("チケット登録結果", serviceResult.getStatus(), StatusResponseDto.SUCCESS);
+			ticketId = this.ticketDao.findMaxId();
+			ticketSource.setId(ticketId);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("チケット更新テスト失敗（準備）");
+		}
+
+		// テストデータの作成
+		ticketSource.setTitle("チケットタイトルの変更");
+		// テスト対象を呼び出す
+		try {
+			StatusResponseDto serviceResult = this.ticketService.updateTicket(login,
+					TicketUpdateRequestDto.builder().ticket(ticketSource).build());
+			assertEquals("チケット更新結果", serviceResult.getStatus(), StatusResponseDto.SUCCESS);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("チケット更新テスト失敗");
+		}
+
+		// 正しく更新が行われたかを確認する
+		// ※（１／２）チケット本体
+		try {
+			TicketResponseDto ticketRespDto = this.ticketService.getTicket(
+					TicketRequestDto.builder().id(ticketId).build());
+			assertNotNull("戻り値あり", ticketRespDto);
+			assertNotNull("チケットデータあり", ticketRespDto.getTicketDto());
+			TicketDto ticket = ticketRespDto.getTicketDto();
+			assertEquals("タイトル", ticket .getTitle(), ticketSource.getTitle());
+			assertEquals("説明", ticket.getDescription(), ticketSource.getDescription());
+			assertEquals("ステータスID", ticket.getStatus_id(), ticketSource.getStatus_id());
+			assertEquals("作業開始日", ticket.getStart_date(), ticketSource.getStart_date());
+			assertEquals("作業終了日", ticket.getFinish_date(), ticketSource.getFinish_date());
+			assertEquals("進捗ID", ticket.getProgress_id(), ticketSource.getProgress_id());
+			assertEquals("種類ID", ticket.getKind_id(), ticketSource.getKind_id());
+			assertEquals("優先順位ID", ticket.getPriority_id(), ticketSource.getPriority_id());
+			assertEquals("プロジェクトID", ticket.getProject_id(), ticketSource.getProject_id());
+			assertEquals("バージョンNo", ticket.getVersionNo(), Integer.valueOf(2));
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("更新チケットの取得失敗");
+		}
+		// ※（２／２）チケット履歴
+		TicketMemoListResponseDto memoRespDto = this.ticketService.getTicketMemoList(
+				TicketMemoListRequestDto.builder().ticket_id(ticketId).build());
+		assertNotNull("戻り値あり", memoRespDto);
+		List<TicketMemoDto> memoList = memoRespDto.getMemoList();
+		assertNotNull("メモ一覧あり", memoList);
+		assertEquals("メモ一覧一見あり", memoList.size(), 2);
+		TicketMemoDto memoDto = memoList.get(1);			// +1が変更履歴
+		Long memoId = this.ticketMemoDao.findMaxId(ticketId);
+		assertEquals("メモID", memoDto.getId(), memoId);
+		assertEquals("チケットID", memoDto.getTicket_id(), ticketId);
+		assertEquals("メモ内容", memoDto.getMemo(), "タイトルを変更 【テストチケット】 --> 【チケットタイトルの変更】¥n");
+		assertEquals("ルートメモID", memoDto.getRoot_memo_id(), memoId);
+		assertEquals("親メモID", memoDto.getParent_memo_id(), memoId);
+		assertEquals("作成者ID", memoDto.getCreateUserId(), userId);
+		assertNotNull("作成日時", memoDto.getCreateDate());
+		assertEquals("更新者ID", memoDto.getUpdateUserId(), userId);
+		assertEquals("バージョンNo", memoDto.getVersionNo(), Integer.valueOf(1));
+	}
+
+	/**
+	 * チケット更新確認（説明の変更）
+	 * @since 0.0.1
+	 */
+	@Test
+	public void test_updateTicket_02() {
+		// 更新対象のチケットを登録する
+		Long userId = Long.valueOf(3105L);
+		LoginDto login = LoginDto.builder().id(userId).build();
+		TicketDto ticketSource = this.makeTicketDto();
+		Long ticketId = null;
+		try {
+			StatusResponseDto serviceResult =
+			this.ticketService.appendTicket(login, TicketAppendRequestDto.builder()
+					.ticket(ticketSource)
+					.build());
+			assertEquals("チケット登録結果", serviceResult.getStatus(), StatusResponseDto.SUCCESS);
+			ticketId = this.ticketDao.findMaxId();
+			ticketSource.setId(ticketId);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("チケット更新テスト失敗（準備）");
+		}
+
+		// テストデータの作成
+		ticketSource.setDescription("テストチケットの説明変更");
+		// テスト対象を呼び出す
+		try {
+			StatusResponseDto serviceResult = this.ticketService.updateTicket(login,
+					TicketUpdateRequestDto.builder().ticket(ticketSource).build());
+			assertEquals("チケット更新結果", serviceResult.getStatus(), StatusResponseDto.SUCCESS);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("チケット更新テスト失敗");
+		}
+
+		// 正しく更新が行われたかを確認する
+		// ※（１／２）チケット本体
+		try {
+			TicketResponseDto ticketRespDto = this.ticketService.getTicket(
+					TicketRequestDto.builder().id(ticketId).build());
+			assertNotNull("戻り値あり", ticketRespDto);
+			assertNotNull("チケットデータあり", ticketRespDto.getTicketDto());
+			TicketDto ticket = ticketRespDto.getTicketDto();
+			assertEquals("タイトル", ticket .getTitle(), ticketSource.getTitle());
+			assertEquals("説明", ticket.getDescription(), ticketSource.getDescription());
+			assertEquals("ステータスID", ticket.getStatus_id(), ticketSource.getStatus_id());
+			assertEquals("作業開始日", ticket.getStart_date(), ticketSource.getStart_date());
+			assertEquals("作業終了日", ticket.getFinish_date(), ticketSource.getFinish_date());
+			assertEquals("進捗ID", ticket.getProgress_id(), ticketSource.getProgress_id());
+			assertEquals("種類ID", ticket.getKind_id(), ticketSource.getKind_id());
+			assertEquals("優先順位ID", ticket.getPriority_id(), ticketSource.getPriority_id());
+			assertEquals("プロジェクトID", ticket.getProject_id(), ticketSource.getProject_id());
+			assertEquals("バージョンNo", ticket.getVersionNo(), Integer.valueOf(2));
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("更新チケットの取得失敗");
+		}
+		// ※（２／２）チケット履歴
+		TicketMemoListResponseDto memoRespDto = this.ticketService.getTicketMemoList(
+				TicketMemoListRequestDto.builder().ticket_id(ticketId).build());
+		assertNotNull("戻り値あり", memoRespDto);
+		List<TicketMemoDto> memoList = memoRespDto.getMemoList();
+		assertNotNull("メモ一覧あり", memoList);
+		assertEquals("メモ一覧一見あり", memoList.size(), 2);
+		TicketMemoDto memoDto = memoList.get(1);			// +1が変更履歴
+		Long memoId = this.ticketMemoDao.findMaxId(ticketId);
+		assertEquals("メモID", memoDto.getId(), memoId);
+		assertEquals("チケットID", memoDto.getTicket_id(), ticketId);
+		assertEquals("メモ内容", memoDto.getMemo(), "説明を変更 【チケットの説明】 --> 【テストチケットの説明変更】¥n");
+		assertEquals("ルートメモID", memoDto.getRoot_memo_id(), memoId);
+		assertEquals("親メモID", memoDto.getParent_memo_id(), memoId);
+		assertEquals("作成者ID", memoDto.getCreateUserId(), userId);
+		assertNotNull("作成日時", memoDto.getCreateDate());
+		assertEquals("更新者ID", memoDto.getUpdateUserId(), userId);
+		assertEquals("バージョンNo", memoDto.getVersionNo(), Integer.valueOf(1));
+	}
+
+	/**
+	 * チケット更新確認（状態の変更）
+	 * @since 0.0.1
+	 */
+	@Test
+	@DatabaseSetup("classpath:TicketServiceTest_D07/")
+	public void test_updateTicket_status_01() {
+		// 更新対象のチケットを登録する
+		Long userId = Long.valueOf(3105L);
+		LoginDto login = LoginDto.builder().id(userId).build();
+		TicketDto ticketSource = this.makeTicketDto();
+		Long ticketId = null;
+		try {
+			StatusResponseDto serviceResult =
+			this.ticketService.appendTicket(login, TicketAppendRequestDto.builder()
+					.ticket(ticketSource)
+					.build());
+			assertEquals("チケット登録結果", serviceResult.getStatus(), StatusResponseDto.SUCCESS);
+			ticketId = this.ticketDao.findMaxId();
+			ticketSource.setId(ticketId);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("チケット更新テスト失敗（準備）");
+		}
+
+		// テストデータの作成
+		ticketSource.setStatus_id(Long.valueOf(103L));
+		// テスト対象を呼び出す
+		try {
+			StatusResponseDto serviceResult = this.ticketService.updateTicket(login,
+					TicketUpdateRequestDto.builder().ticket(ticketSource).build());
+			assertEquals("チケット更新結果", serviceResult.getStatus(), StatusResponseDto.SUCCESS);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("チケット更新テスト失敗");
+		}
+
+		// 正しく更新が行われたかを確認する
+		// ※（１／２）チケット本体
+		try {
+			TicketResponseDto ticketRespDto = this.ticketService.getTicket(
+					TicketRequestDto.builder().id(ticketId).build());
+			assertNotNull("戻り値あり", ticketRespDto);
+			assertNotNull("チケットデータあり", ticketRespDto.getTicketDto());
+			TicketDto ticket = ticketRespDto.getTicketDto();
+			assertEquals("タイトル", ticket .getTitle(), ticketSource.getTitle());
+			assertEquals("説明", ticket.getDescription(), ticketSource.getDescription());
+			assertEquals("ステータスID", ticket.getStatus_id(), ticketSource.getStatus_id());
+			assertEquals("作業開始日", ticket.getStart_date(), ticketSource.getStart_date());
+			assertEquals("作業終了日", ticket.getFinish_date(), ticketSource.getFinish_date());
+			assertEquals("進捗ID", ticket.getProgress_id(), ticketSource.getProgress_id());
+			assertEquals("種類ID", ticket.getKind_id(), ticketSource.getKind_id());
+			assertEquals("優先順位ID", ticket.getPriority_id(), ticketSource.getPriority_id());
+			assertEquals("プロジェクトID", ticket.getProject_id(), ticketSource.getProject_id());
+			assertEquals("バージョンNo", ticket.getVersionNo(), Integer.valueOf(2));
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("更新チケットの取得失敗");
+		}
+		// ※（２／２）チケット履歴
+		TicketMemoListResponseDto memoRespDto = this.ticketService.getTicketMemoList(
+				TicketMemoListRequestDto.builder().ticket_id(ticketId).build());
+		assertNotNull("戻り値あり", memoRespDto);
+		List<TicketMemoDto> memoList = memoRespDto.getMemoList();
+		assertNotNull("メモ一覧あり", memoList);
+		assertEquals("メモ一覧一見あり", memoList.size(), 2);
+		TicketMemoDto memoDto = memoList.get(1);			// +1が変更履歴
+		Long memoId = this.ticketMemoDao.findMaxId(ticketId);
+		assertEquals("メモID", memoDto.getId(), memoId);
+		assertEquals("チケットID", memoDto.getTicket_id(), ticketId);
+		assertEquals("メモ内容", memoDto.getMemo(), "状態を変更 【未着手】 --> 【完了】¥n");
+		assertEquals("ルートメモID", memoDto.getRoot_memo_id(), memoId);
+		assertEquals("親メモID", memoDto.getParent_memo_id(), memoId);
+		assertEquals("作成者ID", memoDto.getCreateUserId(), userId);
+		assertNotNull("作成日時", memoDto.getCreateDate());
+		assertEquals("更新者ID", memoDto.getUpdateUserId(), userId);
+		assertEquals("バージョンNo", memoDto.getVersionNo(), Integer.valueOf(1));
+	}
+
+	/**
+	 * チケット更新確認（状態未設定から設定）
+	 * @since 0.0.1
+	 */
+	@Test
+	@DatabaseSetup("classpath:TicketServiceTest_D07/")
+	public void test_updateTicket_status_02() {
+		// 更新対象のチケットを登録する
+		Long userId = Long.valueOf(3105L);
+		LoginDto login = LoginDto.builder().id(userId).build();
+		TicketDto ticketSource = this.makeTicketDto();
+		ticketSource.setStatus_id(null);
+		Long ticketId = null;
+		try {
+			StatusResponseDto serviceResult =
+			this.ticketService.appendTicket(login, TicketAppendRequestDto.builder()
+					.ticket(ticketSource)
+					.build());
+			assertEquals("チケット登録結果", serviceResult.getStatus(), StatusResponseDto.SUCCESS);
+			ticketId = this.ticketDao.findMaxId();
+			ticketSource.setId(ticketId);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("チケット更新テスト失敗（準備）");
+		}
+
+		// テストデータの作成
+		ticketSource.setStatus_id(Long.valueOf(103L));
+		// テスト対象を呼び出す
+		try {
+			StatusResponseDto serviceResult = this.ticketService.updateTicket(login,
+					TicketUpdateRequestDto.builder().ticket(ticketSource).build());
+			assertEquals("チケット更新結果", serviceResult.getStatus(), StatusResponseDto.SUCCESS);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("チケット更新テスト失敗");
+		}
+
+		// 正しく更新が行われたかを確認する
+		// ※（１／２）チケット本体
+		try {
+			TicketResponseDto ticketRespDto = this.ticketService.getTicket(
+					TicketRequestDto.builder().id(ticketId).build());
+			assertNotNull("戻り値あり", ticketRespDto);
+			assertNotNull("チケットデータあり", ticketRespDto.getTicketDto());
+			TicketDto ticket = ticketRespDto.getTicketDto();
+			assertEquals("タイトル", ticket .getTitle(), ticketSource.getTitle());
+			assertEquals("説明", ticket.getDescription(), ticketSource.getDescription());
+			assertEquals("ステータスID", ticket.getStatus_id(), ticketSource.getStatus_id());
+			assertEquals("作業開始日", ticket.getStart_date(), ticketSource.getStart_date());
+			assertEquals("作業終了日", ticket.getFinish_date(), ticketSource.getFinish_date());
+			assertEquals("進捗ID", ticket.getProgress_id(), ticketSource.getProgress_id());
+			assertEquals("種類ID", ticket.getKind_id(), ticketSource.getKind_id());
+			assertEquals("優先順位ID", ticket.getPriority_id(), ticketSource.getPriority_id());
+			assertEquals("プロジェクトID", ticket.getProject_id(), ticketSource.getProject_id());
+			assertEquals("バージョンNo", ticket.getVersionNo(), Integer.valueOf(2));
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("更新チケットの取得失敗");
+		}
+		// ※（２／２）チケット履歴
+		TicketMemoListResponseDto memoRespDto = this.ticketService.getTicketMemoList(
+				TicketMemoListRequestDto.builder().ticket_id(ticketId).build());
+		assertNotNull("戻り値あり", memoRespDto);
+		List<TicketMemoDto> memoList = memoRespDto.getMemoList();
+		assertNotNull("メモ一覧あり", memoList);
+		assertEquals("メモ一覧一見あり", memoList.size(), 2);
+		TicketMemoDto memoDto = memoList.get(1);			// +1が変更履歴
+		Long memoId = this.ticketMemoDao.findMaxId(ticketId);
+		assertEquals("メモID", memoDto.getId(), memoId);
+		assertEquals("チケットID", memoDto.getTicket_id(), ticketId);
+		assertEquals("メモ内容", memoDto.getMemo(), "状態を変更 【未設定】 --> 【完了】¥n");
+		assertEquals("ルートメモID", memoDto.getRoot_memo_id(), memoId);
+		assertEquals("親メモID", memoDto.getParent_memo_id(), memoId);
+		assertEquals("作成者ID", memoDto.getCreateUserId(), userId);
+		assertNotNull("作成日時", memoDto.getCreateDate());
+		assertEquals("更新者ID", memoDto.getUpdateUserId(), userId);
+		assertEquals("バージョンNo", memoDto.getVersionNo(), Integer.valueOf(1));
+	}
+
+	/**
+	 * チケット更新確認（状態のクリア）
+	 * @since 0.0.1
+	 */
+	@Test
+	@DatabaseSetup("classpath:TicketServiceTest_D07/")
+	public void test_updateTicket_status_03() {
+		// 更新対象のチケットを登録する
+		Long userId = Long.valueOf(3105L);
+		LoginDto login = LoginDto.builder().id(userId).build();
+		TicketDto ticketSource = this.makeTicketDto();
+		Long ticketId = null;
+		try {
+			StatusResponseDto serviceResult =
+			this.ticketService.appendTicket(login, TicketAppendRequestDto.builder()
+					.ticket(ticketSource)
+					.build());
+			assertEquals("チケット登録結果", serviceResult.getStatus(), StatusResponseDto.SUCCESS);
+			ticketId = this.ticketDao.findMaxId();
+			ticketSource.setId(ticketId);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("チケット更新テスト失敗（準備）");
+		}
+
+		// テストデータの作成
+		ticketSource.setStatus_id(null);
+		// テスト対象を呼び出す
+		try {
+			StatusResponseDto serviceResult = this.ticketService.updateTicket(login,
+					TicketUpdateRequestDto.builder().ticket(ticketSource).build());
+			assertEquals("チケット更新結果", serviceResult.getStatus(), StatusResponseDto.SUCCESS);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("チケット更新テスト失敗");
+		}
+
+		// 正しく更新が行われたかを確認する
+		// ※（１／２）チケット本体
+		try {
+			TicketResponseDto ticketRespDto = this.ticketService.getTicket(
+					TicketRequestDto.builder().id(ticketId).build());
+			assertNotNull("戻り値あり", ticketRespDto);
+			assertNotNull("チケットデータあり", ticketRespDto.getTicketDto());
+			TicketDto ticket = ticketRespDto.getTicketDto();
+			assertEquals("タイトル", ticket .getTitle(), ticketSource.getTitle());
+			assertEquals("説明", ticket.getDescription(), ticketSource.getDescription());
+			assertEquals("ステータスID", ticket.getStatus_id(), ticketSource.getStatus_id());
+			assertEquals("作業開始日", ticket.getStart_date(), ticketSource.getStart_date());
+			assertEquals("作業終了日", ticket.getFinish_date(), ticketSource.getFinish_date());
+			assertEquals("進捗ID", ticket.getProgress_id(), ticketSource.getProgress_id());
+			assertEquals("種類ID", ticket.getKind_id(), ticketSource.getKind_id());
+			assertEquals("優先順位ID", ticket.getPriority_id(), ticketSource.getPriority_id());
+			assertEquals("プロジェクトID", ticket.getProject_id(), ticketSource.getProject_id());
+			assertEquals("バージョンNo", ticket.getVersionNo(), Integer.valueOf(2));
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("更新チケットの取得失敗");
+		}
+		// ※（２／２）チケット履歴
+		TicketMemoListResponseDto memoRespDto = this.ticketService.getTicketMemoList(
+				TicketMemoListRequestDto.builder().ticket_id(ticketId).build());
+		assertNotNull("戻り値あり", memoRespDto);
+		List<TicketMemoDto> memoList = memoRespDto.getMemoList();
+		assertNotNull("メモ一覧あり", memoList);
+		assertEquals("メモ一覧一見あり", memoList.size(), 2);
+		TicketMemoDto memoDto = memoList.get(1);			// +1が変更履歴
+		Long memoId = this.ticketMemoDao.findMaxId(ticketId);
+		assertEquals("メモID", memoDto.getId(), memoId);
+		assertEquals("チケットID", memoDto.getTicket_id(), ticketId);
+		assertEquals("メモ内容", memoDto.getMemo(), "状態を変更 【未着手】 --> 【未設定】¥n");
+		assertEquals("ルートメモID", memoDto.getRoot_memo_id(), memoId);
+		assertEquals("親メモID", memoDto.getParent_memo_id(), memoId);
+		assertEquals("作成者ID", memoDto.getCreateUserId(), userId);
+		assertNotNull("作成日時", memoDto.getCreateDate());
+		assertEquals("更新者ID", memoDto.getUpdateUserId(), userId);
+		assertEquals("バージョンNo", memoDto.getVersionNo(), Integer.valueOf(1));
+	}
+
+	/**
+	 * チケット更新確認（種類の変更）
+	 * @since 0.0.1
+	 */
+	@Test
+	@DatabaseSetup("classpath:TicketServiceTest_D07/")
+	public void test_updateTicket_kind_01() {
+		// 更新対象のチケットを登録する
+		Long userId = Long.valueOf(3105L);
+		LoginDto login = LoginDto.builder().id(userId).build();
+		TicketDto ticketSource = this.makeTicketDto();
+		Long ticketId = null;
+		try {
+			StatusResponseDto serviceResult =
+			this.ticketService.appendTicket(login, TicketAppendRequestDto.builder()
+					.ticket(ticketSource)
+					.build());
+			assertEquals("チケット登録結果", serviceResult.getStatus(), StatusResponseDto.SUCCESS);
+			ticketId = this.ticketDao.findMaxId();
+			ticketSource.setId(ticketId);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("チケット更新テスト失敗（準備）");
+		}
+
+		// テストデータの作成
+		ticketSource.setKind_id(Long.valueOf(203L));
+		// テスト対象を呼び出す
+		try {
+			StatusResponseDto serviceResult = this.ticketService.updateTicket(login,
+					TicketUpdateRequestDto.builder().ticket(ticketSource).build());
+			assertEquals("チケット更新結果", serviceResult.getStatus(), StatusResponseDto.SUCCESS);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("チケット更新テスト失敗");
+		}
+
+		// 正しく更新が行われたかを確認する
+		// ※（１／２）チケット本体
+		try {
+			TicketResponseDto ticketRespDto = this.ticketService.getTicket(
+					TicketRequestDto.builder().id(ticketId).build());
+			assertNotNull("戻り値あり", ticketRespDto);
+			assertNotNull("チケットデータあり", ticketRespDto.getTicketDto());
+			TicketDto ticket = ticketRespDto.getTicketDto();
+			assertEquals("タイトル", ticket .getTitle(), ticketSource.getTitle());
+			assertEquals("説明", ticket.getDescription(), ticketSource.getDescription());
+			assertEquals("ステータスID", ticket.getStatus_id(), ticketSource.getStatus_id());
+			assertEquals("作業開始日", ticket.getStart_date(), ticketSource.getStart_date());
+			assertEquals("作業終了日", ticket.getFinish_date(), ticketSource.getFinish_date());
+			assertEquals("進捗ID", ticket.getProgress_id(), ticketSource.getProgress_id());
+			assertEquals("種類ID", ticket.getKind_id(), ticketSource.getKind_id());
+			assertEquals("優先順位ID", ticket.getPriority_id(), ticketSource.getPriority_id());
+			assertEquals("プロジェクトID", ticket.getProject_id(), ticketSource.getProject_id());
+			assertEquals("バージョンNo", ticket.getVersionNo(), Integer.valueOf(2));
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("更新チケットの取得失敗");
+		}
+		// ※（２／２）チケット履歴
+		TicketMemoListResponseDto memoRespDto = this.ticketService.getTicketMemoList(
+				TicketMemoListRequestDto.builder().ticket_id(ticketId).build());
+		assertNotNull("戻り値あり", memoRespDto);
+		List<TicketMemoDto> memoList = memoRespDto.getMemoList();
+		assertNotNull("メモ一覧あり", memoList);
+		assertEquals("メモ一覧一見あり", memoList.size(), 2);
+		TicketMemoDto memoDto = memoList.get(1);			// +1が変更履歴
+		Long memoId = this.ticketMemoDao.findMaxId(ticketId);
+		assertEquals("メモID", memoDto.getId(), memoId);
+		assertEquals("チケットID", memoDto.getTicket_id(), ticketId);
+		assertEquals("メモ内容", memoDto.getMemo(), "種類を変更 【バグ】 --> 【操作ミス】¥n");
+		assertEquals("ルートメモID", memoDto.getRoot_memo_id(), memoId);
+		assertEquals("親メモID", memoDto.getParent_memo_id(), memoId);
+		assertEquals("作成者ID", memoDto.getCreateUserId(), userId);
+		assertNotNull("作成日時", memoDto.getCreateDate());
+		assertEquals("更新者ID", memoDto.getUpdateUserId(), userId);
+		assertEquals("バージョンNo", memoDto.getVersionNo(), Integer.valueOf(1));
+	}
+
+	/**
+	 * チケット更新確認（種類未設定から設定）
+	 * @since 0.0.1
+	 */
+	@Test
+	@DatabaseSetup("classpath:TicketServiceTest_D07/")
+	public void test_updateTicket_kind_02() {
+		// 更新対象のチケットを登録する
+		Long userId = Long.valueOf(3105L);
+		LoginDto login = LoginDto.builder().id(userId).build();
+		TicketDto ticketSource = this.makeTicketDto();
+		ticketSource.setKind_id(null);
+		Long ticketId = null;
+		try {
+			StatusResponseDto serviceResult =
+			this.ticketService.appendTicket(login, TicketAppendRequestDto.builder()
+					.ticket(ticketSource)
+					.build());
+			assertEquals("チケット登録結果", serviceResult.getStatus(), StatusResponseDto.SUCCESS);
+			ticketId = this.ticketDao.findMaxId();
+			ticketSource.setId(ticketId);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("チケット更新テスト失敗（準備）");
+		}
+
+		// テストデータの作成
+		ticketSource.setKind_id(Long.valueOf(203L));
+		// テスト対象を呼び出す
+		try {
+			StatusResponseDto serviceResult = this.ticketService.updateTicket(login,
+					TicketUpdateRequestDto.builder().ticket(ticketSource).build());
+			assertEquals("チケット更新結果", serviceResult.getStatus(), StatusResponseDto.SUCCESS);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("チケット更新テスト失敗");
+		}
+
+		// 正しく更新が行われたかを確認する
+		// ※（１／２）チケット本体
+		try {
+			TicketResponseDto ticketRespDto = this.ticketService.getTicket(
+					TicketRequestDto.builder().id(ticketId).build());
+			assertNotNull("戻り値あり", ticketRespDto);
+			assertNotNull("チケットデータあり", ticketRespDto.getTicketDto());
+			TicketDto ticket = ticketRespDto.getTicketDto();
+			assertEquals("タイトル", ticket .getTitle(), ticketSource.getTitle());
+			assertEquals("説明", ticket.getDescription(), ticketSource.getDescription());
+			assertEquals("ステータスID", ticket.getStatus_id(), ticketSource.getStatus_id());
+			assertEquals("作業開始日", ticket.getStart_date(), ticketSource.getStart_date());
+			assertEquals("作業終了日", ticket.getFinish_date(), ticketSource.getFinish_date());
+			assertEquals("進捗ID", ticket.getProgress_id(), ticketSource.getProgress_id());
+			assertEquals("種類ID", ticket.getKind_id(), ticketSource.getKind_id());
+			assertEquals("優先順位ID", ticket.getPriority_id(), ticketSource.getPriority_id());
+			assertEquals("プロジェクトID", ticket.getProject_id(), ticketSource.getProject_id());
+			assertEquals("バージョンNo", ticket.getVersionNo(), Integer.valueOf(2));
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("更新チケットの取得失敗");
+		}
+		// ※（２／２）チケット履歴
+		TicketMemoListResponseDto memoRespDto = this.ticketService.getTicketMemoList(
+				TicketMemoListRequestDto.builder().ticket_id(ticketId).build());
+		assertNotNull("戻り値あり", memoRespDto);
+		List<TicketMemoDto> memoList = memoRespDto.getMemoList();
+		assertNotNull("メモ一覧あり", memoList);
+		assertEquals("メモ一覧一見あり", memoList.size(), 2);
+		TicketMemoDto memoDto = memoList.get(1);			// +1が変更履歴
+		Long memoId = this.ticketMemoDao.findMaxId(ticketId);
+		assertEquals("メモID", memoDto.getId(), memoId);
+		assertEquals("チケットID", memoDto.getTicket_id(), ticketId);
+		assertEquals("メモ内容", memoDto.getMemo(), "種類を変更 【未設定】 --> 【操作ミス】¥n");
+		assertEquals("ルートメモID", memoDto.getRoot_memo_id(), memoId);
+		assertEquals("親メモID", memoDto.getParent_memo_id(), memoId);
+		assertEquals("作成者ID", memoDto.getCreateUserId(), userId);
+		assertNotNull("作成日時", memoDto.getCreateDate());
+		assertEquals("更新者ID", memoDto.getUpdateUserId(), userId);
+		assertEquals("バージョンNo", memoDto.getVersionNo(), Integer.valueOf(1));
+	}
+
+	/**
+	 * チケット更新確認（種類のクリア）
+	 * @since 0.0.1
+	 */
+	@Test
+	@DatabaseSetup("classpath:TicketServiceTest_D07/")
+	public void test_updateTicket_kind_03() {
+		// 更新対象のチケットを登録する
+		Long userId = Long.valueOf(3105L);
+		LoginDto login = LoginDto.builder().id(userId).build();
+		TicketDto ticketSource = this.makeTicketDto();
+		Long ticketId = null;
+		try {
+			StatusResponseDto serviceResult =
+			this.ticketService.appendTicket(login, TicketAppendRequestDto.builder()
+					.ticket(ticketSource)
+					.build());
+			assertEquals("チケット登録結果", serviceResult.getStatus(), StatusResponseDto.SUCCESS);
+			ticketId = this.ticketDao.findMaxId();
+			ticketSource.setId(ticketId);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("チケット更新テスト失敗（準備）");
+		}
+
+		// テストデータの作成
+		ticketSource.setKind_id(null);
+		// テスト対象を呼び出す
+		try {
+			StatusResponseDto serviceResult = this.ticketService.updateTicket(login,
+					TicketUpdateRequestDto.builder().ticket(ticketSource).build());
+			assertEquals("チケット更新結果", serviceResult.getStatus(), StatusResponseDto.SUCCESS);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("チケット更新テスト失敗");
+		}
+
+		// 正しく更新が行われたかを確認する
+		// ※（１／２）チケット本体
+		try {
+			TicketResponseDto ticketRespDto = this.ticketService.getTicket(
+					TicketRequestDto.builder().id(ticketId).build());
+			assertNotNull("戻り値あり", ticketRespDto);
+			assertNotNull("チケットデータあり", ticketRespDto.getTicketDto());
+			TicketDto ticket = ticketRespDto.getTicketDto();
+			assertEquals("タイトル", ticket .getTitle(), ticketSource.getTitle());
+			assertEquals("説明", ticket.getDescription(), ticketSource.getDescription());
+			assertEquals("ステータスID", ticket.getStatus_id(), ticketSource.getStatus_id());
+			assertEquals("作業開始日", ticket.getStart_date(), ticketSource.getStart_date());
+			assertEquals("作業終了日", ticket.getFinish_date(), ticketSource.getFinish_date());
+			assertEquals("進捗ID", ticket.getProgress_id(), ticketSource.getProgress_id());
+			assertEquals("種類ID", ticket.getKind_id(), ticketSource.getKind_id());
+			assertEquals("優先順位ID", ticket.getPriority_id(), ticketSource.getPriority_id());
+			assertEquals("プロジェクトID", ticket.getProject_id(), ticketSource.getProject_id());
+			assertEquals("バージョンNo", ticket.getVersionNo(), Integer.valueOf(2));
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("更新チケットの取得失敗");
+		}
+		// ※（２／２）チケット履歴
+		TicketMemoListResponseDto memoRespDto = this.ticketService.getTicketMemoList(
+				TicketMemoListRequestDto.builder().ticket_id(ticketId).build());
+		assertNotNull("戻り値あり", memoRespDto);
+		List<TicketMemoDto> memoList = memoRespDto.getMemoList();
+		assertNotNull("メモ一覧あり", memoList);
+		assertEquals("メモ一覧一見あり", memoList.size(), 2);
+		TicketMemoDto memoDto = memoList.get(1);			// +1が変更履歴
+		Long memoId = this.ticketMemoDao.findMaxId(ticketId);
+		assertEquals("メモID", memoDto.getId(), memoId);
+		assertEquals("チケットID", memoDto.getTicket_id(), ticketId);
+		assertEquals("メモ内容", memoDto.getMemo(), "種類を変更 【バグ】 --> 【未設定】¥n");
+		assertEquals("ルートメモID", memoDto.getRoot_memo_id(), memoId);
+		assertEquals("親メモID", memoDto.getParent_memo_id(), memoId);
+		assertEquals("作成者ID", memoDto.getCreateUserId(), userId);
+		assertNotNull("作成日時", memoDto.getCreateDate());
+		assertEquals("更新者ID", memoDto.getUpdateUserId(), userId);
+		assertEquals("バージョンNo", memoDto.getVersionNo(), Integer.valueOf(1));
+	}
+
+	/**
+	 * チケット更新確認（進捗の変更）
+	 * @since 0.0.1
+	 */
+	@Test
+	@DatabaseSetup("classpath:TicketServiceTest_D07/")
+	public void test_updateTicket_progress_01() {
+		// 更新対象のチケットを登録する
+		Long userId = Long.valueOf(3105L);
+		LoginDto login = LoginDto.builder().id(userId).build();
+		TicketDto ticketSource = this.makeTicketDto();
+		Long ticketId = null;
+		try {
+			StatusResponseDto serviceResult =
+			this.ticketService.appendTicket(login, TicketAppendRequestDto.builder()
+					.ticket(ticketSource)
+					.build());
+			assertEquals("チケット登録結果", serviceResult.getStatus(), StatusResponseDto.SUCCESS);
+			ticketId = this.ticketDao.findMaxId();
+			ticketSource.setId(ticketId);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("チケット更新テスト失敗（準備）");
+		}
+
+		// テストデータの作成
+		ticketSource.setProgress_id(Long.valueOf(103L));
+		// テスト対象を呼び出す
+		try {
+			StatusResponseDto serviceResult = this.ticketService.updateTicket(login,
+					TicketUpdateRequestDto.builder().ticket(ticketSource).build());
+			assertEquals("チケット更新結果", serviceResult.getStatus(), StatusResponseDto.SUCCESS);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("チケット更新テスト失敗");
+		}
+
+		// 正しく更新が行われたかを確認する
+		// ※（１／２）チケット本体
+		try {
+			TicketResponseDto ticketRespDto = this.ticketService.getTicket(
+					TicketRequestDto.builder().id(ticketId).build());
+			assertNotNull("戻り値あり", ticketRespDto);
+			assertNotNull("チケットデータあり", ticketRespDto.getTicketDto());
+			TicketDto ticket = ticketRespDto.getTicketDto();
+			assertEquals("タイトル", ticket .getTitle(), ticketSource.getTitle());
+			assertEquals("説明", ticket.getDescription(), ticketSource.getDescription());
+			assertEquals("ステータスID", ticket.getStatus_id(), ticketSource.getStatus_id());
+			assertEquals("作業開始日", ticket.getStart_date(), ticketSource.getStart_date());
+			assertEquals("作業終了日", ticket.getFinish_date(), ticketSource.getFinish_date());
+			assertEquals("進捗ID", ticket.getProgress_id(), ticketSource.getProgress_id());
+			assertEquals("種類ID", ticket.getKind_id(), ticketSource.getKind_id());
+			assertEquals("優先順位ID", ticket.getPriority_id(), ticketSource.getPriority_id());
+			assertEquals("プロジェクトID", ticket.getProject_id(), ticketSource.getProject_id());
+			assertEquals("バージョンNo", ticket.getVersionNo(), Integer.valueOf(2));
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("更新チケットの取得失敗");
+		}
+		// ※（２／２）チケット履歴
+		TicketMemoListResponseDto memoRespDto = this.ticketService.getTicketMemoList(
+				TicketMemoListRequestDto.builder().ticket_id(ticketId).build());
+		assertNotNull("戻り値あり", memoRespDto);
+		List<TicketMemoDto> memoList = memoRespDto.getMemoList();
+		assertNotNull("メモ一覧あり", memoList);
+		assertEquals("メモ一覧一見あり", memoList.size(), 2);
+		TicketMemoDto memoDto = memoList.get(1);			// +1が変更履歴
+		Long memoId = this.ticketMemoDao.findMaxId(ticketId);
+		assertEquals("メモID", memoDto.getId(), memoId);
+		assertEquals("チケットID", memoDto.getTicket_id(), ticketId);
+		assertEquals("メモ内容", memoDto.getMemo(), "進捗を変更 【30%】 --> 【90%】¥n");
+		assertEquals("ルートメモID", memoDto.getRoot_memo_id(), memoId);
+		assertEquals("親メモID", memoDto.getParent_memo_id(), memoId);
+		assertEquals("作成者ID", memoDto.getCreateUserId(), userId);
+		assertNotNull("作成日時", memoDto.getCreateDate());
+		assertEquals("更新者ID", memoDto.getUpdateUserId(), userId);
+		assertEquals("バージョンNo", memoDto.getVersionNo(), Integer.valueOf(1));
+	}
+
+	/**
+	 * チケット更新確認（進捗未設定から設定）
+	 * @since 0.0.1
+	 */
+	@Test
+	@DatabaseSetup("classpath:TicketServiceTest_D07/")
+	public void test_updateTicket_progress_02() {
+		// 更新対象のチケットを登録する
+		Long userId = Long.valueOf(3105L);
+		LoginDto login = LoginDto.builder().id(userId).build();
+		TicketDto ticketSource = this.makeTicketDto();
+		ticketSource.setProgress_id(null);
+		Long ticketId = null;
+		try {
+			StatusResponseDto serviceResult =
+			this.ticketService.appendTicket(login, TicketAppendRequestDto.builder()
+					.ticket(ticketSource)
+					.build());
+			assertEquals("チケット登録結果", serviceResult.getStatus(), StatusResponseDto.SUCCESS);
+			ticketId = this.ticketDao.findMaxId();
+			ticketSource.setId(ticketId);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("チケット更新テスト失敗（準備）");
+		}
+
+		// テストデータの作成
+		ticketSource.setProgress_id(Long.valueOf(103L));
+		// テスト対象を呼び出す
+		try {
+			StatusResponseDto serviceResult = this.ticketService.updateTicket(login,
+					TicketUpdateRequestDto.builder().ticket(ticketSource).build());
+			assertEquals("チケット更新結果", serviceResult.getStatus(), StatusResponseDto.SUCCESS);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("チケット更新テスト失敗");
+		}
+
+		// 正しく更新が行われたかを確認する
+		// ※（１／２）チケット本体
+		try {
+			TicketResponseDto ticketRespDto = this.ticketService.getTicket(
+					TicketRequestDto.builder().id(ticketId).build());
+			assertNotNull("戻り値あり", ticketRespDto);
+			assertNotNull("チケットデータあり", ticketRespDto.getTicketDto());
+			TicketDto ticket = ticketRespDto.getTicketDto();
+			assertEquals("タイトル", ticket .getTitle(), ticketSource.getTitle());
+			assertEquals("説明", ticket.getDescription(), ticketSource.getDescription());
+			assertEquals("ステータスID", ticket.getStatus_id(), ticketSource.getStatus_id());
+			assertEquals("作業開始日", ticket.getStart_date(), ticketSource.getStart_date());
+			assertEquals("作業終了日", ticket.getFinish_date(), ticketSource.getFinish_date());
+			assertEquals("進捗ID", ticket.getProgress_id(), ticketSource.getProgress_id());
+			assertEquals("種類ID", ticket.getKind_id(), ticketSource.getKind_id());
+			assertEquals("優先順位ID", ticket.getPriority_id(), ticketSource.getPriority_id());
+			assertEquals("プロジェクトID", ticket.getProject_id(), ticketSource.getProject_id());
+			assertEquals("バージョンNo", ticket.getVersionNo(), Integer.valueOf(2));
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("更新チケットの取得失敗");
+		}
+		// ※（２／２）チケット履歴
+		TicketMemoListResponseDto memoRespDto = this.ticketService.getTicketMemoList(
+				TicketMemoListRequestDto.builder().ticket_id(ticketId).build());
+		assertNotNull("戻り値あり", memoRespDto);
+		List<TicketMemoDto> memoList = memoRespDto.getMemoList();
+		assertNotNull("メモ一覧あり", memoList);
+		assertEquals("メモ一覧一見あり", memoList.size(), 2);
+		TicketMemoDto memoDto = memoList.get(1);			// +1が変更履歴
+		Long memoId = this.ticketMemoDao.findMaxId(ticketId);
+		assertEquals("メモID", memoDto.getId(), memoId);
+		assertEquals("チケットID", memoDto.getTicket_id(), ticketId);
+		assertEquals("メモ内容", memoDto.getMemo(), "進捗を変更 【未設定】 --> 【90%】¥n");
+		assertEquals("ルートメモID", memoDto.getRoot_memo_id(), memoId);
+		assertEquals("親メモID", memoDto.getParent_memo_id(), memoId);
+		assertEquals("作成者ID", memoDto.getCreateUserId(), userId);
+		assertNotNull("作成日時", memoDto.getCreateDate());
+		assertEquals("更新者ID", memoDto.getUpdateUserId(), userId);
+		assertEquals("バージョンNo", memoDto.getVersionNo(), Integer.valueOf(1));
+	}
+
+	/**
+	 * チケット更新確認（進捗のクリア）
+	 * @since 0.0.1
+	 */
+	@Test
+	@DatabaseSetup("classpath:TicketServiceTest_D07/")
+	public void test_updateTicket_progress_03() {
+		// 更新対象のチケットを登録する
+		Long userId = Long.valueOf(3105L);
+		LoginDto login = LoginDto.builder().id(userId).build();
+		TicketDto ticketSource = this.makeTicketDto();
+		Long ticketId = null;
+		try {
+			StatusResponseDto serviceResult =
+			this.ticketService.appendTicket(login, TicketAppendRequestDto.builder()
+					.ticket(ticketSource)
+					.build());
+			assertEquals("チケット登録結果", serviceResult.getStatus(), StatusResponseDto.SUCCESS);
+			ticketId = this.ticketDao.findMaxId();
+			ticketSource.setId(ticketId);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("チケット更新テスト失敗（準備）");
+		}
+
+		// テストデータの作成
+		ticketSource.setProgress_id(null);
+		// テスト対象を呼び出す
+		try {
+			StatusResponseDto serviceResult = this.ticketService.updateTicket(login,
+					TicketUpdateRequestDto.builder().ticket(ticketSource).build());
+			assertEquals("チケット更新結果", serviceResult.getStatus(), StatusResponseDto.SUCCESS);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("チケット更新テスト失敗");
+		}
+
+		// 正しく更新が行われたかを確認する
+		// ※（１／２）チケット本体
+		try {
+			TicketResponseDto ticketRespDto = this.ticketService.getTicket(
+					TicketRequestDto.builder().id(ticketId).build());
+			assertNotNull("戻り値あり", ticketRespDto);
+			assertNotNull("チケットデータあり", ticketRespDto.getTicketDto());
+			TicketDto ticket = ticketRespDto.getTicketDto();
+			assertEquals("タイトル", ticket .getTitle(), ticketSource.getTitle());
+			assertEquals("説明", ticket.getDescription(), ticketSource.getDescription());
+			assertEquals("ステータスID", ticket.getStatus_id(), ticketSource.getStatus_id());
+			assertEquals("作業開始日", ticket.getStart_date(), ticketSource.getStart_date());
+			assertEquals("作業終了日", ticket.getFinish_date(), ticketSource.getFinish_date());
+			assertEquals("進捗ID", ticket.getProgress_id(), ticketSource.getProgress_id());
+			assertEquals("種類ID", ticket.getKind_id(), ticketSource.getKind_id());
+			assertEquals("優先順位ID", ticket.getPriority_id(), ticketSource.getPriority_id());
+			assertEquals("プロジェクトID", ticket.getProject_id(), ticketSource.getProject_id());
+			assertEquals("バージョンNo", ticket.getVersionNo(), Integer.valueOf(2));
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("更新チケットの取得失敗");
+		}
+		// ※（２／２）チケット履歴
+		TicketMemoListResponseDto memoRespDto = this.ticketService.getTicketMemoList(
+				TicketMemoListRequestDto.builder().ticket_id(ticketId).build());
+		assertNotNull("戻り値あり", memoRespDto);
+		List<TicketMemoDto> memoList = memoRespDto.getMemoList();
+		assertNotNull("メモ一覧あり", memoList);
+		assertEquals("メモ一覧一見あり", memoList.size(), 2);
+		TicketMemoDto memoDto = memoList.get(1);			// +1が変更履歴
+		Long memoId = this.ticketMemoDao.findMaxId(ticketId);
+		assertEquals("メモID", memoDto.getId(), memoId);
+		assertEquals("チケットID", memoDto.getTicket_id(), ticketId);
+		assertEquals("メモ内容", memoDto.getMemo(), "進捗を変更 【30%】 --> 【未設定】¥n");
+		assertEquals("ルートメモID", memoDto.getRoot_memo_id(), memoId);
+		assertEquals("親メモID", memoDto.getParent_memo_id(), memoId);
+		assertEquals("作成者ID", memoDto.getCreateUserId(), userId);
+		assertNotNull("作成日時", memoDto.getCreateDate());
+		assertEquals("更新者ID", memoDto.getUpdateUserId(), userId);
+		assertEquals("バージョンNo", memoDto.getVersionNo(), Integer.valueOf(1));
+	}
+
+	/**
+	 * チケット更新確認（優先順位の変更）
+	 * @since 0.0.1
+	 */
+	@Test
+	@DatabaseSetup("classpath:TicketServiceTest_D07/")
+	public void test_updateTicket_priority_01() {
+		// 更新対象のチケットを登録する
+		Long userId = Long.valueOf(3105L);
+		LoginDto login = LoginDto.builder().id(userId).build();
+		TicketDto ticketSource = this.makeTicketDto();
+		Long ticketId = null;
+		try {
+			StatusResponseDto serviceResult =
+			this.ticketService.appendTicket(login, TicketAppendRequestDto.builder()
+					.ticket(ticketSource)
+					.build());
+			assertEquals("チケット登録結果", serviceResult.getStatus(), StatusResponseDto.SUCCESS);
+			ticketId = this.ticketDao.findMaxId();
+			ticketSource.setId(ticketId);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("チケット更新テスト失敗（準備）");
+		}
+
+		// テストデータの作成
+		ticketSource.setPriority_id(Long.valueOf(103L));
+		// テスト対象を呼び出す
+		try {
+			StatusResponseDto serviceResult = this.ticketService.updateTicket(login,
+					TicketUpdateRequestDto.builder().ticket(ticketSource).build());
+			assertEquals("チケット更新結果", serviceResult.getStatus(), StatusResponseDto.SUCCESS);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("チケット更新テスト失敗");
+		}
+
+		// 正しく更新が行われたかを確認する
+		// ※（１／２）チケット本体
+		try {
+			TicketResponseDto ticketRespDto = this.ticketService.getTicket(
+					TicketRequestDto.builder().id(ticketId).build());
+			assertNotNull("戻り値あり", ticketRespDto);
+			assertNotNull("チケットデータあり", ticketRespDto.getTicketDto());
+			TicketDto ticket = ticketRespDto.getTicketDto();
+			assertEquals("タイトル", ticket .getTitle(), ticketSource.getTitle());
+			assertEquals("説明", ticket.getDescription(), ticketSource.getDescription());
+			assertEquals("ステータスID", ticket.getStatus_id(), ticketSource.getStatus_id());
+			assertEquals("作業開始日", ticket.getStart_date(), ticketSource.getStart_date());
+			assertEquals("作業終了日", ticket.getFinish_date(), ticketSource.getFinish_date());
+			assertEquals("進捗ID", ticket.getProgress_id(), ticketSource.getProgress_id());
+			assertEquals("種類ID", ticket.getKind_id(), ticketSource.getKind_id());
+			assertEquals("優先順位ID", ticket.getPriority_id(), ticketSource.getPriority_id());
+			assertEquals("プロジェクトID", ticket.getProject_id(), ticketSource.getProject_id());
+			assertEquals("バージョンNo", ticket.getVersionNo(), Integer.valueOf(2));
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("更新チケットの取得失敗");
+		}
+		// ※（２／２）チケット履歴
+		TicketMemoListResponseDto memoRespDto = this.ticketService.getTicketMemoList(
+				TicketMemoListRequestDto.builder().ticket_id(ticketId).build());
+		assertNotNull("戻り値あり", memoRespDto);
+		List<TicketMemoDto> memoList = memoRespDto.getMemoList();
+		assertNotNull("メモ一覧あり", memoList);
+		assertEquals("メモ一覧一見あり", memoList.size(), 2);
+		TicketMemoDto memoDto = memoList.get(1);			// +1が変更履歴
+		Long memoId = this.ticketMemoDao.findMaxId(ticketId);
+		assertEquals("メモID", memoDto.getId(), memoId);
+		assertEquals("チケットID", memoDto.getTicket_id(), ticketId);
+		assertEquals("メモ内容", memoDto.getMemo(), "優先順位を変更 【低】 --> 【即対応】¥n");
+		assertEquals("ルートメモID", memoDto.getRoot_memo_id(), memoId);
+		assertEquals("親メモID", memoDto.getParent_memo_id(), memoId);
+		assertEquals("作成者ID", memoDto.getCreateUserId(), userId);
+		assertNotNull("作成日時", memoDto.getCreateDate());
+		assertEquals("更新者ID", memoDto.getUpdateUserId(), userId);
+		assertEquals("バージョンNo", memoDto.getVersionNo(), Integer.valueOf(1));
+	}
+
+	/**
+	 * チケット更新確認（優先順位未設定から設定）
+	 * @since 0.0.1
+	 */
+	@Test
+	@DatabaseSetup("classpath:TicketServiceTest_D07/")
+	public void test_updateTicket_priority_02() {
+		// 更新対象のチケットを登録する
+		Long userId = Long.valueOf(3105L);
+		LoginDto login = LoginDto.builder().id(userId).build();
+		TicketDto ticketSource = this.makeTicketDto();
+		ticketSource.setPriority_id(null);
+		Long ticketId = null;
+		try {
+			StatusResponseDto serviceResult =
+			this.ticketService.appendTicket(login, TicketAppendRequestDto.builder()
+					.ticket(ticketSource)
+					.build());
+			assertEquals("チケット登録結果", serviceResult.getStatus(), StatusResponseDto.SUCCESS);
+			ticketId = this.ticketDao.findMaxId();
+			ticketSource.setId(ticketId);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("チケット更新テスト失敗（準備）");
+		}
+
+		// テストデータの作成
+		ticketSource.setPriority_id(Long.valueOf(103L));
+		// テスト対象を呼び出す
+		try {
+			StatusResponseDto serviceResult = this.ticketService.updateTicket(login,
+					TicketUpdateRequestDto.builder().ticket(ticketSource).build());
+			assertEquals("チケット更新結果", serviceResult.getStatus(), StatusResponseDto.SUCCESS);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("チケット更新テスト失敗");
+		}
+
+		// 正しく更新が行われたかを確認する
+		// ※（１／２）チケット本体
+		try {
+			TicketResponseDto ticketRespDto = this.ticketService.getTicket(
+					TicketRequestDto.builder().id(ticketId).build());
+			assertNotNull("戻り値あり", ticketRespDto);
+			assertNotNull("チケットデータあり", ticketRespDto.getTicketDto());
+			TicketDto ticket = ticketRespDto.getTicketDto();
+			assertEquals("タイトル", ticket .getTitle(), ticketSource.getTitle());
+			assertEquals("説明", ticket.getDescription(), ticketSource.getDescription());
+			assertEquals("ステータスID", ticket.getStatus_id(), ticketSource.getStatus_id());
+			assertEquals("作業開始日", ticket.getStart_date(), ticketSource.getStart_date());
+			assertEquals("作業終了日", ticket.getFinish_date(), ticketSource.getFinish_date());
+			assertEquals("進捗ID", ticket.getProgress_id(), ticketSource.getProgress_id());
+			assertEquals("種類ID", ticket.getKind_id(), ticketSource.getKind_id());
+			assertEquals("優先順位ID", ticket.getPriority_id(), ticketSource.getPriority_id());
+			assertEquals("プロジェクトID", ticket.getProject_id(), ticketSource.getProject_id());
+			assertEquals("バージョンNo", ticket.getVersionNo(), Integer.valueOf(2));
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("更新チケットの取得失敗");
+		}
+		// ※（２／２）チケット履歴
+		TicketMemoListResponseDto memoRespDto = this.ticketService.getTicketMemoList(
+				TicketMemoListRequestDto.builder().ticket_id(ticketId).build());
+		assertNotNull("戻り値あり", memoRespDto);
+		List<TicketMemoDto> memoList = memoRespDto.getMemoList();
+		assertNotNull("メモ一覧あり", memoList);
+		assertEquals("メモ一覧一見あり", memoList.size(), 2);
+		TicketMemoDto memoDto = memoList.get(1);			// +1が変更履歴
+		Long memoId = this.ticketMemoDao.findMaxId(ticketId);
+		assertEquals("メモID", memoDto.getId(), memoId);
+		assertEquals("チケットID", memoDto.getTicket_id(), ticketId);
+		assertEquals("メモ内容", memoDto.getMemo(), "優先順位を変更 【未設定】 --> 【即対応】¥n");
+		assertEquals("ルートメモID", memoDto.getRoot_memo_id(), memoId);
+		assertEquals("親メモID", memoDto.getParent_memo_id(), memoId);
+		assertEquals("作成者ID", memoDto.getCreateUserId(), userId);
+		assertNotNull("作成日時", memoDto.getCreateDate());
+		assertEquals("更新者ID", memoDto.getUpdateUserId(), userId);
+		assertEquals("バージョンNo", memoDto.getVersionNo(), Integer.valueOf(1));
+	}
+
+	/**
+	 * チケット更新確認（優先順位のクリア）
+	 * @since 0.0.1
+	 */
+	@Test
+	@DatabaseSetup("classpath:TicketServiceTest_D07/")
+	public void test_updateTicket_priority_03() {
+		// 更新対象のチケットを登録する
+		Long userId = Long.valueOf(3105L);
+		LoginDto login = LoginDto.builder().id(userId).build();
+		TicketDto ticketSource = this.makeTicketDto();
+		Long ticketId = null;
+		try {
+			StatusResponseDto serviceResult =
+			this.ticketService.appendTicket(login, TicketAppendRequestDto.builder()
+					.ticket(ticketSource)
+					.build());
+			assertEquals("チケット登録結果", serviceResult.getStatus(), StatusResponseDto.SUCCESS);
+			ticketId = this.ticketDao.findMaxId();
+			ticketSource.setId(ticketId);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("チケット更新テスト失敗（準備）");
+		}
+
+		// テストデータの作成
+		ticketSource.setPriority_id(null);
+		// テスト対象を呼び出す
+		try {
+			StatusResponseDto serviceResult = this.ticketService.updateTicket(login,
+					TicketUpdateRequestDto.builder().ticket(ticketSource).build());
+			assertEquals("チケット更新結果", serviceResult.getStatus(), StatusResponseDto.SUCCESS);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("チケット更新テスト失敗");
+		}
+
+		// 正しく更新が行われたかを確認する
+		// ※（１／２）チケット本体
+		try {
+			TicketResponseDto ticketRespDto = this.ticketService.getTicket(
+					TicketRequestDto.builder().id(ticketId).build());
+			assertNotNull("戻り値あり", ticketRespDto);
+			assertNotNull("チケットデータあり", ticketRespDto.getTicketDto());
+			TicketDto ticket = ticketRespDto.getTicketDto();
+			assertEquals("タイトル", ticket .getTitle(), ticketSource.getTitle());
+			assertEquals("説明", ticket.getDescription(), ticketSource.getDescription());
+			assertEquals("ステータスID", ticket.getStatus_id(), ticketSource.getStatus_id());
+			assertEquals("作業開始日", ticket.getStart_date(), ticketSource.getStart_date());
+			assertEquals("作業終了日", ticket.getFinish_date(), ticketSource.getFinish_date());
+			assertEquals("進捗ID", ticket.getProgress_id(), ticketSource.getProgress_id());
+			assertEquals("種類ID", ticket.getKind_id(), ticketSource.getKind_id());
+			assertEquals("優先順位ID", ticket.getPriority_id(), ticketSource.getPriority_id());
+			assertEquals("プロジェクトID", ticket.getProject_id(), ticketSource.getProject_id());
+			assertEquals("バージョンNo", ticket.getVersionNo(), Integer.valueOf(2));
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("更新チケットの取得失敗");
+		}
+		// ※（２／２）チケット履歴
+		TicketMemoListResponseDto memoRespDto = this.ticketService.getTicketMemoList(
+				TicketMemoListRequestDto.builder().ticket_id(ticketId).build());
+		assertNotNull("戻り値あり", memoRespDto);
+		List<TicketMemoDto> memoList = memoRespDto.getMemoList();
+		assertNotNull("メモ一覧あり", memoList);
+		assertEquals("メモ一覧一見あり", memoList.size(), 2);
+		TicketMemoDto memoDto = memoList.get(1);			// +1が変更履歴
+		Long memoId = this.ticketMemoDao.findMaxId(ticketId);
+		assertEquals("メモID", memoDto.getId(), memoId);
+		assertEquals("チケットID", memoDto.getTicket_id(), ticketId);
+		assertEquals("メモ内容", memoDto.getMemo(), "優先順位を変更 【低】 --> 【未設定】¥n");
+		assertEquals("ルートメモID", memoDto.getRoot_memo_id(), memoId);
+		assertEquals("親メモID", memoDto.getParent_memo_id(), memoId);
+		assertEquals("作成者ID", memoDto.getCreateUserId(), userId);
+		assertNotNull("作成日時", memoDto.getCreateDate());
+		assertEquals("更新者ID", memoDto.getUpdateUserId(), userId);
+		assertEquals("バージョンNo", memoDto.getVersionNo(), Integer.valueOf(1));
+	}
+
+	/**
+	 * チケット更新確認（作業開始日の変更、設定日変更）
+	 * @since 0.0.1
+	 */
+	@Test
+	public void test_updateTicket_start_date_01() {
+		// 更新対象のチケットを登録する
+		Long userId = Long.valueOf(3105L);
+		LoginDto login = LoginDto.builder().id(userId).build();
+		TicketDto ticketSource = this.makeTicketDto();
+		Long ticketId = null;
+		try {
+			StatusResponseDto serviceResult =
+			this.ticketService.appendTicket(login, TicketAppendRequestDto.builder()
+					.ticket(ticketSource)
+					.build());
+			assertEquals("チケット登録結果", serviceResult.getStatus(), StatusResponseDto.SUCCESS);
+			ticketId = this.ticketDao.findMaxId();
+			ticketSource.setId(ticketId);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("チケット更新テスト失敗（準備）");
+		}
+
+		// テストデータの作成
+		ticketSource.setStart_date("2018-11-10");
+		// テスト対象を呼び出す
+		try {
+			StatusResponseDto serviceResult = this.ticketService.updateTicket(login,
+					TicketUpdateRequestDto.builder().ticket(ticketSource).build());
+			assertEquals("チケット更新結果", serviceResult.getStatus(), StatusResponseDto.SUCCESS);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("チケット更新テスト失敗");
+		}
+
+		// 正しく更新が行われたかを確認する
+		// ※（１／２）チケット本体
+		try {
+			TicketResponseDto ticketRespDto = this.ticketService.getTicket(
+					TicketRequestDto.builder().id(ticketId).build());
+			assertNotNull("戻り値あり", ticketRespDto);
+			assertNotNull("チケットデータあり", ticketRespDto.getTicketDto());
+			TicketDto ticket = ticketRespDto.getTicketDto();
+			assertEquals("タイトル", ticket .getTitle(), ticketSource.getTitle());
+			assertEquals("説明", ticket.getDescription(), ticketSource.getDescription());
+			assertEquals("ステータスID", ticket.getStatus_id(), ticketSource.getStatus_id());
+			assertEquals("作業開始日", ticket.getStart_date(), ticketSource.getStart_date());
+			assertEquals("作業終了日", ticket.getFinish_date(), ticketSource.getFinish_date());
+			assertEquals("進捗ID", ticket.getProgress_id(), ticketSource.getProgress_id());
+			assertEquals("種類ID", ticket.getKind_id(), ticketSource.getKind_id());
+			assertEquals("優先順位ID", ticket.getPriority_id(), ticketSource.getPriority_id());
+			assertEquals("プロジェクトID", ticket.getProject_id(), ticketSource.getProject_id());
+			assertEquals("バージョンNo", ticket.getVersionNo(), Integer.valueOf(2));
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("更新チケットの取得失敗");
+		}
+		// ※（２／２）チケット履歴
+		TicketMemoListResponseDto memoRespDto = this.ticketService.getTicketMemoList(
+				TicketMemoListRequestDto.builder().ticket_id(ticketId).build());
+		assertNotNull("戻り値あり", memoRespDto);
+		List<TicketMemoDto> memoList = memoRespDto.getMemoList();
+		assertNotNull("メモ一覧あり", memoList);
+		assertEquals("メモ一覧一見あり", memoList.size(), 2);
+		TicketMemoDto memoDto = memoList.get(1);			// +1が変更履歴
+		Long memoId = this.ticketMemoDao.findMaxId(ticketId);
+		assertEquals("メモID", memoDto.getId(), memoId);
+		assertEquals("チケットID", memoDto.getTicket_id(), ticketId);
+		assertEquals("メモ内容", memoDto.getMemo(), "開始日を変更 【2018-11-01】 --> 【2018-11-10】¥n");
+		assertEquals("ルートメモID", memoDto.getRoot_memo_id(), memoId);
+		assertEquals("親メモID", memoDto.getParent_memo_id(), memoId);
+		assertEquals("作成者ID", memoDto.getCreateUserId(), userId);
+		assertNotNull("作成日時", memoDto.getCreateDate());
+		assertEquals("更新者ID", memoDto.getUpdateUserId(), userId);
+		assertEquals("バージョンNo", memoDto.getVersionNo(), Integer.valueOf(1));
+	}
+
+	/**
+	 * チケット更新確認（作業開始日なしから日付ありに変更）
+	 * @since 0.0.1
+	 */
+	@Test
+	public void test_updateTicket_start_date_02() {
+		// 更新対象のチケットを登録する
+		Long userId = Long.valueOf(3105L);
+		LoginDto login = LoginDto.builder().id(userId).build();
+		TicketDto ticketSource = this.makeTicketDto();
+		ticketSource.setStart_date(null);				// 作業開始日をなし
+		Long ticketId = null;
+		try {
+			StatusResponseDto serviceResult =
+			this.ticketService.appendTicket(login, TicketAppendRequestDto.builder()
+					.ticket(ticketSource)
+					.build());
+			assertEquals("チケット登録結果", serviceResult.getStatus(), StatusResponseDto.SUCCESS);
+			ticketId = this.ticketDao.findMaxId();
+			ticketSource.setId(ticketId);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("チケット更新テスト失敗（準備）");
+		}
+
+		// テストデータの作成
+		ticketSource.setStart_date("2018-11-10");
+		// テスト対象を呼び出す
+		try {
+			StatusResponseDto serviceResult = this.ticketService.updateTicket(login,
+					TicketUpdateRequestDto.builder().ticket(ticketSource).build());
+			assertEquals("チケット更新結果", serviceResult.getStatus(), StatusResponseDto.SUCCESS);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("チケット更新テスト失敗");
+		}
+
+		// 正しく更新が行われたかを確認する
+		// ※（１／２）チケット本体
+		try {
+			TicketResponseDto ticketRespDto = this.ticketService.getTicket(
+					TicketRequestDto.builder().id(ticketId).build());
+			assertNotNull("戻り値あり", ticketRespDto);
+			assertNotNull("チケットデータあり", ticketRespDto.getTicketDto());
+			TicketDto ticket = ticketRespDto.getTicketDto();
+			assertEquals("タイトル", ticket .getTitle(), ticketSource.getTitle());
+			assertEquals("説明", ticket.getDescription(), ticketSource.getDescription());
+			assertEquals("ステータスID", ticket.getStatus_id(), ticketSource.getStatus_id());
+			assertEquals("作業開始日", ticket.getStart_date(), ticketSource.getStart_date());
+			assertEquals("作業終了日", ticket.getFinish_date(), ticketSource.getFinish_date());
+			assertEquals("進捗ID", ticket.getProgress_id(), ticketSource.getProgress_id());
+			assertEquals("種類ID", ticket.getKind_id(), ticketSource.getKind_id());
+			assertEquals("優先順位ID", ticket.getPriority_id(), ticketSource.getPriority_id());
+			assertEquals("プロジェクトID", ticket.getProject_id(), ticketSource.getProject_id());
+			assertEquals("バージョンNo", ticket.getVersionNo(), Integer.valueOf(2));
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("更新チケットの取得失敗");
+		}
+		// ※（２／２）チケット履歴
+		TicketMemoListResponseDto memoRespDto = this.ticketService.getTicketMemoList(
+				TicketMemoListRequestDto.builder().ticket_id(ticketId).build());
+		assertNotNull("戻り値あり", memoRespDto);
+		List<TicketMemoDto> memoList = memoRespDto.getMemoList();
+		assertNotNull("メモ一覧あり", memoList);
+		assertEquals("メモ一覧一見あり", memoList.size(), 2);
+		TicketMemoDto memoDto = memoList.get(1);			// +1が変更履歴
+		Long memoId = this.ticketMemoDao.findMaxId(ticketId);
+		assertEquals("メモID", memoDto.getId(), memoId);
+		assertEquals("チケットID", memoDto.getTicket_id(), ticketId);
+		assertEquals("メモ内容", memoDto.getMemo(), "開始日を変更 【未設定】 --> 【2018-11-10】¥n");
+		assertEquals("ルートメモID", memoDto.getRoot_memo_id(), memoId);
+		assertEquals("親メモID", memoDto.getParent_memo_id(), memoId);
+		assertEquals("作成者ID", memoDto.getCreateUserId(), userId);
+		assertNotNull("作成日時", memoDto.getCreateDate());
+		assertEquals("更新者ID", memoDto.getUpdateUserId(), userId);
+		assertEquals("バージョンNo", memoDto.getVersionNo(), Integer.valueOf(1));
+	}
+
+	/**
+	 * チケット更新確認（作業開始日のクリア）
+	 * @since 0.0.1
+	 */
+	@Test
+	public void test_updateTicket_start_date_03() {
+		// 更新対象のチケットを登録する
+		Long userId = Long.valueOf(3105L);
+		LoginDto login = LoginDto.builder().id(userId).build();
+		TicketDto ticketSource = this.makeTicketDto();
+		Long ticketId = null;
+		try {
+			StatusResponseDto serviceResult =
+			this.ticketService.appendTicket(login, TicketAppendRequestDto.builder()
+					.ticket(ticketSource)
+					.build());
+			assertEquals("チケット登録結果", serviceResult.getStatus(), StatusResponseDto.SUCCESS);
+			ticketId = this.ticketDao.findMaxId();
+			ticketSource.setId(ticketId);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("チケット更新テスト失敗（準備）");
+		}
+
+		// テストデータの作成
+		ticketSource.setStart_date(null);
+		// テスト対象を呼び出す
+		try {
+			StatusResponseDto serviceResult = this.ticketService.updateTicket(login,
+					TicketUpdateRequestDto.builder().ticket(ticketSource).build());
+			assertEquals("チケット更新結果", serviceResult.getStatus(), StatusResponseDto.SUCCESS);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("チケット更新テスト失敗");
+		}
+
+		// 正しく更新が行われたかを確認する
+		// ※（１／２）チケット本体
+		try {
+			TicketResponseDto ticketRespDto = this.ticketService.getTicket(
+					TicketRequestDto.builder().id(ticketId).build());
+			assertNotNull("戻り値あり", ticketRespDto);
+			assertNotNull("チケットデータあり", ticketRespDto.getTicketDto());
+			TicketDto ticket = ticketRespDto.getTicketDto();
+			assertEquals("タイトル", ticket .getTitle(), ticketSource.getTitle());
+			assertEquals("説明", ticket.getDescription(), ticketSource.getDescription());
+			assertEquals("ステータスID", ticket.getStatus_id(), ticketSource.getStatus_id());
+			assertEquals("作業開始日", ticket.getStart_date(), ticketSource.getStart_date());
+			assertEquals("作業終了日", ticket.getFinish_date(), ticketSource.getFinish_date());
+			assertEquals("進捗ID", ticket.getProgress_id(), ticketSource.getProgress_id());
+			assertEquals("種類ID", ticket.getKind_id(), ticketSource.getKind_id());
+			assertEquals("優先順位ID", ticket.getPriority_id(), ticketSource.getPriority_id());
+			assertEquals("プロジェクトID", ticket.getProject_id(), ticketSource.getProject_id());
+			assertEquals("バージョンNo", ticket.getVersionNo(), Integer.valueOf(2));
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("更新チケットの取得失敗");
+		}
+		// ※（２／２）チケット履歴
+		TicketMemoListResponseDto memoRespDto = this.ticketService.getTicketMemoList(
+				TicketMemoListRequestDto.builder().ticket_id(ticketId).build());
+		assertNotNull("戻り値あり", memoRespDto);
+		List<TicketMemoDto> memoList = memoRespDto.getMemoList();
+		assertNotNull("メモ一覧あり", memoList);
+		assertEquals("メモ一覧一見あり", memoList.size(), 2);
+		TicketMemoDto memoDto = memoList.get(1);			// +1が変更履歴
+		Long memoId = this.ticketMemoDao.findMaxId(ticketId);
+		assertEquals("メモID", memoDto.getId(), memoId);
+		assertEquals("チケットID", memoDto.getTicket_id(), ticketId);
+		assertEquals("メモ内容", memoDto.getMemo(), "開始日を変更 【2018-11-01】 --> 【未設定】¥n");
+		assertEquals("ルートメモID", memoDto.getRoot_memo_id(), memoId);
+		assertEquals("親メモID", memoDto.getParent_memo_id(), memoId);
+		assertEquals("作成者ID", memoDto.getCreateUserId(), userId);
+		assertNotNull("作成日時", memoDto.getCreateDate());
+		assertEquals("更新者ID", memoDto.getUpdateUserId(), userId);
+		assertEquals("バージョンNo", memoDto.getVersionNo(), Integer.valueOf(1));
+	}
+
+	/**
+	 * チケット更新確認（作業終了日の変更、設定日変更）
+	 * @since 0.0.1
+	 */
+	@Test
+	public void test_updateTicket_finish_date_01() {
+		// 更新対象のチケットを登録する
+		Long userId = Long.valueOf(3105L);
+		LoginDto login = LoginDto.builder().id(userId).build();
+		TicketDto ticketSource = this.makeTicketDto();
+		Long ticketId = null;
+		try {
+			StatusResponseDto serviceResult =
+			this.ticketService.appendTicket(login, TicketAppendRequestDto.builder()
+					.ticket(ticketSource)
+					.build());
+			assertEquals("チケット登録結果", serviceResult.getStatus(), StatusResponseDto.SUCCESS);
+			ticketId = this.ticketDao.findMaxId();
+			ticketSource.setId(ticketId);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("チケット更新テスト失敗（準備）");
+		}
+
+		// テストデータの作成
+		ticketSource.setFinish_date("2018-11-10");
+		// テスト対象を呼び出す
+		try {
+			StatusResponseDto serviceResult = this.ticketService.updateTicket(login,
+					TicketUpdateRequestDto.builder().ticket(ticketSource).build());
+			assertEquals("チケット更新結果", serviceResult.getStatus(), StatusResponseDto.SUCCESS);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("チケット更新テスト失敗");
+		}
+
+		// 正しく更新が行われたかを確認する
+		// ※（１／２）チケット本体
+		try {
+			TicketResponseDto ticketRespDto = this.ticketService.getTicket(
+					TicketRequestDto.builder().id(ticketId).build());
+			assertNotNull("戻り値あり", ticketRespDto);
+			assertNotNull("チケットデータあり", ticketRespDto.getTicketDto());
+			TicketDto ticket = ticketRespDto.getTicketDto();
+			assertEquals("タイトル", ticket .getTitle(), ticketSource.getTitle());
+			assertEquals("説明", ticket.getDescription(), ticketSource.getDescription());
+			assertEquals("ステータスID", ticket.getStatus_id(), ticketSource.getStatus_id());
+			assertEquals("作業開始日", ticket.getStart_date(), ticketSource.getStart_date());
+			assertEquals("作業終了日", ticket.getFinish_date(), ticketSource.getFinish_date());
+			assertEquals("進捗ID", ticket.getProgress_id(), ticketSource.getProgress_id());
+			assertEquals("種類ID", ticket.getKind_id(), ticketSource.getKind_id());
+			assertEquals("優先順位ID", ticket.getPriority_id(), ticketSource.getPriority_id());
+			assertEquals("プロジェクトID", ticket.getProject_id(), ticketSource.getProject_id());
+			assertEquals("バージョンNo", ticket.getVersionNo(), Integer.valueOf(2));
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("更新チケットの取得失敗");
+		}
+		// ※（２／２）チケット履歴
+		TicketMemoListResponseDto memoRespDto = this.ticketService.getTicketMemoList(
+				TicketMemoListRequestDto.builder().ticket_id(ticketId).build());
+		assertNotNull("戻り値あり", memoRespDto);
+		List<TicketMemoDto> memoList = memoRespDto.getMemoList();
+		assertNotNull("メモ一覧あり", memoList);
+		assertEquals("メモ一覧一見あり", memoList.size(), 2);
+		TicketMemoDto memoDto = memoList.get(1);			// +1が変更履歴
+		Long memoId = this.ticketMemoDao.findMaxId(ticketId);
+		assertEquals("メモID", memoDto.getId(), memoId);
+		assertEquals("チケットID", memoDto.getTicket_id(), ticketId);
+		assertEquals("メモ内容", memoDto.getMemo(), "終了日を変更 【2018-11-04】 --> 【2018-11-10】¥n");
+		assertEquals("ルートメモID", memoDto.getRoot_memo_id(), memoId);
+		assertEquals("親メモID", memoDto.getParent_memo_id(), memoId);
+		assertEquals("作成者ID", memoDto.getCreateUserId(), userId);
+		assertNotNull("作成日時", memoDto.getCreateDate());
+		assertEquals("更新者ID", memoDto.getUpdateUserId(), userId);
+		assertEquals("バージョンNo", memoDto.getVersionNo(), Integer.valueOf(1));
+	}
+
+	/**
+	 * チケット更新確認（作業終了日なしから日付ありに変更）
+	 * @since 0.0.1
+	 */
+	@Test
+	public void test_updateTicket_finish_date_02() {
+		// 更新対象のチケットを登録する
+		Long userId = Long.valueOf(3105L);
+		LoginDto login = LoginDto.builder().id(userId).build();
+		TicketDto ticketSource = this.makeTicketDto();
+		ticketSource.setFinish_date(null);				// 作業終了日をなし
+		Long ticketId = null;
+		try {
+			StatusResponseDto serviceResult =
+			this.ticketService.appendTicket(login, TicketAppendRequestDto.builder()
+					.ticket(ticketSource)
+					.build());
+			assertEquals("チケット登録結果", serviceResult.getStatus(), StatusResponseDto.SUCCESS);
+			ticketId = this.ticketDao.findMaxId();
+			ticketSource.setId(ticketId);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("チケット更新テスト失敗（準備）");
+		}
+
+		// テストデータの作成
+		ticketSource.setFinish_date("2018-11-10");
+		// テスト対象を呼び出す
+		try {
+			StatusResponseDto serviceResult = this.ticketService.updateTicket(login,
+					TicketUpdateRequestDto.builder().ticket(ticketSource).build());
+			assertEquals("チケット更新結果", serviceResult.getStatus(), StatusResponseDto.SUCCESS);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("チケット更新テスト失敗");
+		}
+
+		// 正しく更新が行われたかを確認する
+		// ※（１／２）チケット本体
+		try {
+			TicketResponseDto ticketRespDto = this.ticketService.getTicket(
+					TicketRequestDto.builder().id(ticketId).build());
+			assertNotNull("戻り値あり", ticketRespDto);
+			assertNotNull("チケットデータあり", ticketRespDto.getTicketDto());
+			TicketDto ticket = ticketRespDto.getTicketDto();
+			assertEquals("タイトル", ticket .getTitle(), ticketSource.getTitle());
+			assertEquals("説明", ticket.getDescription(), ticketSource.getDescription());
+			assertEquals("ステータスID", ticket.getStatus_id(), ticketSource.getStatus_id());
+			assertEquals("作業開始日", ticket.getStart_date(), ticketSource.getStart_date());
+			assertEquals("作業終了日", ticket.getFinish_date(), ticketSource.getFinish_date());
+			assertEquals("進捗ID", ticket.getProgress_id(), ticketSource.getProgress_id());
+			assertEquals("種類ID", ticket.getKind_id(), ticketSource.getKind_id());
+			assertEquals("優先順位ID", ticket.getPriority_id(), ticketSource.getPriority_id());
+			assertEquals("プロジェクトID", ticket.getProject_id(), ticketSource.getProject_id());
+			assertEquals("バージョンNo", ticket.getVersionNo(), Integer.valueOf(2));
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("更新チケットの取得失敗");
+		}
+		// ※（２／２）チケット履歴
+		TicketMemoListResponseDto memoRespDto = this.ticketService.getTicketMemoList(
+				TicketMemoListRequestDto.builder().ticket_id(ticketId).build());
+		assertNotNull("戻り値あり", memoRespDto);
+		List<TicketMemoDto> memoList = memoRespDto.getMemoList();
+		assertNotNull("メモ一覧あり", memoList);
+		assertEquals("メモ一覧一見あり", memoList.size(), 2);
+		TicketMemoDto memoDto = memoList.get(1);			// +1が変更履歴
+		Long memoId = this.ticketMemoDao.findMaxId(ticketId);
+		assertEquals("メモID", memoDto.getId(), memoId);
+		assertEquals("チケットID", memoDto.getTicket_id(), ticketId);
+		assertEquals("メモ内容", memoDto.getMemo(), "終了日を変更 【未設定】 --> 【2018-11-10】¥n");
+		assertEquals("ルートメモID", memoDto.getRoot_memo_id(), memoId);
+		assertEquals("親メモID", memoDto.getParent_memo_id(), memoId);
+		assertEquals("作成者ID", memoDto.getCreateUserId(), userId);
+		assertNotNull("作成日時", memoDto.getCreateDate());
+		assertEquals("更新者ID", memoDto.getUpdateUserId(), userId);
+		assertEquals("バージョンNo", memoDto.getVersionNo(), Integer.valueOf(1));
+	}
+
+	/**
+	 * チケット更新確認（作業終了日のクリア）
+	 * @since 0.0.1
+	 */
+	@Test
+	public void test_updateTicket_finish_date_03() {
+		// 更新対象のチケットを登録する
+		Long userId = Long.valueOf(3105L);
+		LoginDto login = LoginDto.builder().id(userId).build();
+		TicketDto ticketSource = this.makeTicketDto();
+		Long ticketId = null;
+		try {
+			StatusResponseDto serviceResult =
+			this.ticketService.appendTicket(login, TicketAppendRequestDto.builder()
+					.ticket(ticketSource)
+					.build());
+			assertEquals("チケット登録結果", serviceResult.getStatus(), StatusResponseDto.SUCCESS);
+			ticketId = this.ticketDao.findMaxId();
+			ticketSource.setId(ticketId);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("チケット更新テスト失敗（準備）");
+		}
+
+		// テストデータの作成
+		ticketSource.setFinish_date(null);
+		// テスト対象を呼び出す
+		try {
+			StatusResponseDto serviceResult = this.ticketService.updateTicket(login,
+					TicketUpdateRequestDto.builder().ticket(ticketSource).build());
+			assertEquals("チケット更新結果", serviceResult.getStatus(), StatusResponseDto.SUCCESS);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("チケット更新テスト失敗");
+		}
+
+		// 正しく更新が行われたかを確認する
+		// ※（１／２）チケット本体
+		try {
+			TicketResponseDto ticketRespDto = this.ticketService.getTicket(
+					TicketRequestDto.builder().id(ticketId).build());
+			assertNotNull("戻り値あり", ticketRespDto);
+			assertNotNull("チケットデータあり", ticketRespDto.getTicketDto());
+			TicketDto ticket = ticketRespDto.getTicketDto();
+			assertEquals("タイトル", ticket .getTitle(), ticketSource.getTitle());
+			assertEquals("説明", ticket.getDescription(), ticketSource.getDescription());
+			assertEquals("ステータスID", ticket.getStatus_id(), ticketSource.getStatus_id());
+			assertEquals("作業開始日", ticket.getStart_date(), ticketSource.getStart_date());
+			assertEquals("作業終了日", ticket.getFinish_date(), ticketSource.getFinish_date());
+			assertEquals("進捗ID", ticket.getProgress_id(), ticketSource.getProgress_id());
+			assertEquals("種類ID", ticket.getKind_id(), ticketSource.getKind_id());
+			assertEquals("優先順位ID", ticket.getPriority_id(), ticketSource.getPriority_id());
+			assertEquals("プロジェクトID", ticket.getProject_id(), ticketSource.getProject_id());
+			assertEquals("バージョンNo", ticket.getVersionNo(), Integer.valueOf(2));
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail("更新チケットの取得失敗");
+		}
+		// ※（２／２）チケット履歴
+		TicketMemoListResponseDto memoRespDto = this.ticketService.getTicketMemoList(
+				TicketMemoListRequestDto.builder().ticket_id(ticketId).build());
+		assertNotNull("戻り値あり", memoRespDto);
+		List<TicketMemoDto> memoList = memoRespDto.getMemoList();
+		assertNotNull("メモ一覧あり", memoList);
+		assertEquals("メモ一覧一見あり", memoList.size(), 2);
+		TicketMemoDto memoDto = memoList.get(1);			// +1が変更履歴
+		Long memoId = this.ticketMemoDao.findMaxId(ticketId);
+		assertEquals("メモID", memoDto.getId(), memoId);
+		assertEquals("チケットID", memoDto.getTicket_id(), ticketId);
+		assertEquals("メモ内容", memoDto.getMemo(), "終了日を変更 【2018-11-04】 --> 【未設定】¥n");
 		assertEquals("ルートメモID", memoDto.getRoot_memo_id(), memoId);
 		assertEquals("親メモID", memoDto.getParent_memo_id(), memoId);
 		assertEquals("作成者ID", memoDto.getCreateUserId(), userId);

@@ -1,5 +1,6 @@
 package yks.ticket.lite.service;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import yks.ticket.lite.common.DateUtil;
 import yks.ticket.lite.common.TicketApConstatnt.TicketMessage;
 import yks.ticket.lite.dao.TicketDao;
+import yks.ticket.lite.dao.TicketHistoryDao;
 import yks.ticket.lite.dao.TicketKindDao;
 import yks.ticket.lite.dao.TicketMemoDao;
 import yks.ticket.lite.dao.TicketPriorityDao;
@@ -39,6 +41,7 @@ import yks.ticket.lite.dto.TicketRequestDto;
 import yks.ticket.lite.dto.TicketResponseDto;
 import yks.ticket.lite.dto.TicketStatusDto;
 import yks.ticket.lite.dto.TicketStatusSaveRequestDto;
+import yks.ticket.lite.dto.TicketUpdateRequestDto;
 import yks.ticket.lite.entity.TicketEntity;
 import yks.ticket.lite.entity.TicketKindEntity;
 import yks.ticket.lite.entity.TicketMemoEntity;
@@ -58,6 +61,8 @@ public class TicketService {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	/** チケットテーブルDao. */
 	@Autowired private TicketDao ticketDao;
+	/** チケット履歴テーブルDao. */
+	@Autowired private TicketHistoryDao ticketHistoryDao;
 	/** チケットメモテーブルDao. */
 	@Autowired private TicketMemoDao ticketMemoDao;
 	/** チケットステータスDao. */
@@ -173,12 +178,191 @@ public class TicketService {
 		memoEntity.setCreateUserId(userId);
 		// チケットコメントを登録
 		if (this.ticketMemoDao.append(memoEntity) != 1) {
-			logger.error("チケット登録失敗" + memoEntity.toString());
+			logger.error("チケットメモ登録失敗" + memoEntity.toString());
 			throw new Exception("チケット登録失敗");
 		}
 		return StatusResponseDto.builder()
 				.status(StatusResponseDto.SUCCESS)
 				.build();
+	}
+
+	/**
+	 * チケットの更新
+	 *
+	 * @param login ログイン情報
+	 * @param inDto チケット更新リクエストDto
+	 * @return 処理結果
+	 * @throws Exception 更新失敗
+	 * @since 0.0.1
+	 */
+	@Transactional(propagation = Propagation.REQUIRED, readOnly=false)
+	public StatusResponseDto updateTicket(LoginDto login, TicketUpdateRequestDto inDto) throws Exception {
+		TicketDto ticket = inDto.getTicket();
+		Long userId = login.getId();
+		Long ticketId = ticket.getId();
+		// 更新前を履歴に登録
+		if (this.ticketHistoryDao.copyToHistory(ticketId) != 1) {
+			logger.error("チケットの履歴登録に失敗");
+			throw new Exception("チケットの更新失敗");
+		}
+		// 変更前のチケット情報を名称付きで取得
+		TicketEntity beforeTicket = this.ticketDao.findByIdWithMaster(ticketId);
+		if (beforeTicket == null) {
+			logger.error("変更前のチケット情報の取得に失敗");
+			throw new Exception("チケットの更新失敗");
+		}
+		// チケットを更新
+		TicketEntity updateEntity = TicketEntity.builder()
+				.id(ticket.getId())
+				.title(ticket.getTitle())
+				.description(ticket.getDescription())
+				.status_id(ticket.getStatus_id())
+				.start_date(DateUtil.toSqlDate(ticket.getStart_date()))
+				.finish_date(DateUtil.toSqlDate(ticket.getFinish_date()))
+				.progress_id(ticket.getProgress_id())
+				.kind_id(ticket.getKind_id())
+				.priority_id(ticket.getPriority_id())
+				.project_id(ticket.getProject_id())
+				.build();
+		updateEntity.setUpdateUserId(userId);
+		if (this.ticketDao.update(updateEntity) != 1) {
+			logger.error("チケットの更新に失敗");
+			throw new Exception("チケットの更新失敗");
+		}
+		// 更新後のチケット情報を名称付きで取得
+		TicketEntity afterTicket = this.ticketDao.findByIdWithMaster(ticketId);
+		if (afterTicket == null) {
+			logger.error("変更後のチケット情報の取得に失敗");
+			throw new Exception("チケットの更新失敗");
+		}
+		// 更新の差分を編集
+		String diffString = this.diffTicket(beforeTicket, afterTicket);
+		// 差分をチケットメモに登録
+		Long ticketMemoId = this.ticketMemoDao.findMaxId(ticketId) + 1;
+		TicketMemoEntity ticketMemo = TicketMemoEntity.builder()
+				.id(ticketMemoId)
+				.ticket_id(ticketId)
+				.memo(diffString)
+				.root_memo_id(ticketMemoId)
+				.parent_memo_id(ticketMemoId)
+				.build();
+		ticketMemo.setCreateUserId(userId);
+		if (this.ticketMemoDao.append(ticketMemo) != 1) {
+			logger.error("チケットメモ登録失敗" + ticketMemo.toString());
+			throw new Exception("チケット更新失敗");
+		}
+
+		return StatusResponseDto.builder()
+				.status(StatusResponseDto.SUCCESS)
+				.build();
+	}
+
+	/**
+	 * チケットの差分を編集する.
+	 *
+	 * @param before 変更前チケット情報
+	 * @param after 変更後チケット情報
+	 * @return 差分を編集した文字列
+	 * @since 0.0.1
+	 */
+	private String diffTicket(TicketEntity before, TicketEntity after) {
+		StringBuffer diff = new StringBuffer();
+		// タイトルの確認
+		String n = this.diffItem(before.getTitle(), after.getTitle());
+		if (n != null) {
+			diff.append("タイトルを変更 ");
+			diff.append(n);
+			diff.append("¥n");
+		}
+		// 説明の確認
+		n = this.diffItem(before.getDescription(), after.getDescription());
+		if (n != null) {
+			diff.append("説明を変更 ");
+			diff.append(n);
+			diff.append("¥n");
+		}
+		// 状態の確認
+		TicketStatusEntity status = before.getStatus();
+		String beforeStatusName = (status == null) ? "未設定" : status.getName();
+		status = after.getStatus();
+		String afterStatusName = (status == null) ? "未設定" : status.getName();
+		n = this.diffItem(beforeStatusName, afterStatusName);
+		if (n != null) {
+			diff.append("状態を変更 ");
+			diff.append(n);
+			diff.append("¥n");
+		}
+		// 種類の確認
+		TicketKindEntity kind = before.getKind();
+		String beforeKindName = (kind == null) ? "未設定" : kind.getName();
+		kind = after.getKind();
+		String afterKindName = (kind == null) ? "未設定" : kind.getName();
+		n = this.diffItem(beforeKindName, afterKindName);
+		if (n != null) {
+			diff.append("種類を変更 ");
+			diff.append(n);
+			diff.append("¥n");
+		}
+		// 進捗の確認
+		TicketProgressEntity progress = before.getProgress();
+		String beforeProgressName = (progress == null) ? "未設定" : progress.getName();
+		progress = after.getProgress();
+		String afterProgressName = (progress == null) ? "未設定" : progress.getName();
+		n = this.diffItem(beforeProgressName, afterProgressName);
+		if (n != null) {
+			diff.append("進捗を変更 ");
+			diff.append(n);
+			diff.append("¥n");
+		}
+		// 優先順位の確認
+		TicketPriorityEntity priority = before.getPriority();
+		String beforePriorityName = (priority == null) ? "未設定" : priority.getName();
+		priority = after.getPriority();
+		String afterPriorityName = (priority == null) ? "未設定" : priority.getName();
+		n = this.diffItem(beforePriorityName, afterPriorityName);
+		if (n != null) {
+			diff.append("優先順位を変更 ");
+			diff.append(n);
+			diff.append("¥n");
+		}
+		// 作業開始日の確認
+		Date date = before.getStart_date();
+		String beforeStartDate = (date == null) ? "未設定" : DateUtil.toDateString(date);
+		date = after.getStart_date();
+		String afterStartDate = (date == null) ? "未設定" : DateUtil.toDateString(date);
+		n = this.diffItem(beforeStartDate, afterStartDate);
+		if (n != null) {
+			diff.append("開始日を変更 ");
+			diff.append(n);
+			diff.append("¥n");
+		}
+		// 作業終了日の確認
+		date = before.getFinish_date();
+		String beforeFinishDate = (date == null) ? "未設定" : DateUtil.toDateString(date);
+		date = after.getFinish_date();
+		String afterFinishDate = (date == null) ? "未設定" : DateUtil.toDateString(date);
+		n = this.diffItem(beforeFinishDate, afterFinishDate);
+		if (n != null) {
+			diff.append("終了日を変更 ");
+			diff.append(n);
+			diff.append("¥n");
+		}
+
+		return (diff.length() == 0) ? "変更なし" : diff.toString();
+	}
+
+	/**
+	 * オブジェクトの比較を行う.
+	 *
+	 * @param pa 比較対象１
+	 * @param pb 比較対象２
+	 * @return ２つのオブジェクトが同じの時、nullを戻す.
+	 * ２つのオブジェクトが異なる場合、差異を文字列で編集して戻す.
+	 */
+	private String diffItem(Object pa, Object pb) {
+		Object a = (pa == null) ? "未設定" : pa;
+		Object b = (pb == null) ? "未設定" : pb;
+		return a.equals(b) ? null : "【" + a.toString() + "】 --> 【" + b.toString() + "】";
 	}
 
 	/**

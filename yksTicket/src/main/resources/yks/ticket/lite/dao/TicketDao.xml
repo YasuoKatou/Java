@@ -4,6 +4,10 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="yks.ticket.lite.dao.TicketDao">
   <resultMap id="ticketResultMap" type="yks.ticket.lite.entity.TicketEntity" autoMapping="true">
+    <association property="status"   columnPrefix="st_" resultMap="yks.ticket.lite.dao.TicketStatusDao.ticketStatusResultMap"/>
+    <association property="progress" columnPrefix="pg_" resultMap="yks.ticket.lite.dao.TicketProgressDao.ticketProgressResultMap"/>
+    <association property="kind"     columnPrefix="kd_" resultMap="yks.ticket.lite.dao.TicketKindDao.ticketKindResultMap"/>
+    <association property="priority" columnPrefix="pr_" resultMap="yks.ticket.lite.dao.TicketPriorityDao.ticketPriorityResultMap"/>
   </resultMap>
 
   <sql id="ticketAllColumns">
@@ -39,6 +43,29 @@
     where T1.id = #{id}
   </select>
 
+  <select id="findByIdWithMaster" resultMap="ticketResultMap">
+    select
+    <include refid="ticketAllColumns"/>
+    , M1.name st_name  --ステータス名
+    , M2.name pg_name  --進捗名
+    , M3.name kd_name  --種類名
+    , M4.name pr_name  --優先順位名
+    from t_ticket T1
+    left join t_ticket_stat M1
+       on M1.project_id = T1.project_id
+      and M1.id = T1.status_id
+    left join t_ticket_progress M2
+       on M2.project_id = T1.project_id
+      and M2.id = T1.progress_id
+    left join t_ticket_kind M3
+       on M3.project_id = T1.project_id
+      and M3.id = T1.kind_id
+    left join t_ticket_priority M4
+       on M4.project_id = T1.project_id
+      and M4.id = T1.priority_id
+    where T1.id = #{id}
+  </select>
+
   <select id="findMaxId" resultType="Long">
     select coalesce(max(T1.id), 0)
     from t_ticket T1
@@ -62,15 +89,32 @@
         #{id}
       , #{title}
       , #{description}
-      , #{status_id}
-      , #{start_date}
-      , #{finish_date}
-      , #{progress_id}
-      , #{kind_id}
-      , #{priority_id}
+      , #{status_id,javaType=Long,jdbcType=NUMERIC}
+      , #{start_date,javaType=java.sql.Date,jdbcType=DATE}
+      , #{finish_date,javaType=java.sql.Date,jdbcType=DATE}
+      , #{progress_id,javaType=Long,jdbcType=NUMERIC}
+      , #{kind_id,javaType=Long,jdbcType=NUMERIC}
+      , #{priority_id,javaType=Long,jdbcType=NUMERIC}
       , #{project_id}
       , #{createUserId}
       , #{createUserId}
     )
   </insert>
+
+  <update id="update">
+    update t_ticket set
+        title = #{title}
+      , description = #{description}
+      , status_id = #{status_id,javaType=Long,jdbcType=NUMERIC}
+      , start_date  = #{start_date,javaType=java.sql.Date,jdbcType=DATE}
+      , finish_date = #{finish_date,javaType=java.sql.Date,jdbcType=DATE}
+      , progress_id = #{progress_id,javaType=Long,jdbcType=NUMERIC}
+      , kind_id = #{kind_id,javaType=Long,jdbcType=NUMERIC}
+      , priority_id = #{priority_id,javaType=Long,jdbcType=NUMERIC}
+      , project_id = #{project_id}
+      , updateDate = CURRENT_TIMESTAMP
+      , updateUserId = #{updateUserId}
+      , versionNo = versionNo + 1
+    where id = #{id}
+  </update>
 </mapper>

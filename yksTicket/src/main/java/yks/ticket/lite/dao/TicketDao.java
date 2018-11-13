@@ -25,11 +25,20 @@ public interface TicketDao {
 	/**
 	 * チケットIDでチケットを取得する.
 	 *
-	 * @param id チケットID
+	 * @param id 取得するチケットID
 	 * @return チケットエンティティ
 	 * @since 0.0.1
 	 */
 	TicketEntity findById(@Param("id") Long id);
+
+	/**
+	 * チケットIDでチケットを取得する（関連マスタの名称付き）.
+	 *
+	 * @param id 取得するチケットID
+	 * @return チケットエンティティ
+	 * @since 0.0.1
+	 */
+	TicketEntity findByIdWithMaster(@Param("id") Long id);
 
 	/**
 	 * 最大のチケットIDを取得する.
@@ -47,4 +56,13 @@ public interface TicketDao {
 	 * @since 0.0.1
 	 */
 	int append(TicketEntity entity);
+
+	/**
+	 * チケットを更新する.
+	 *
+	 * @param entity チケットエンティティ
+	 * @return 1（更新件数）
+	 * @since 0.0.1
+	 */
+	int update(TicketEntity entity);
 }

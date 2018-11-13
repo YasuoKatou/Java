@@ -15,7 +15,7 @@
 			, createUserId bigint not null								--作成者ID
 			, updateDate TIMESTAMP not null default CURRENT_TIMESTAMP	--更新日時
 			, updateUserId bigint not null								--更新者ID
-			, versionNo	int not null default 1							--バージョンNo
+			, versionNo int not null default 1							--バージョンNo
 		)
 	</insert>
 	<delete id="dropProjectMaster">
@@ -35,7 +35,7 @@
 			, createUserId bigint not null								--作成者ID
 			, updateDate TIMESTAMP not null default CURRENT_TIMESTAMP	--更新日時
 			, updateUserId bigint not null								--更新者ID
-			, versionNo	int not null default 1							--バージョンNo
+			, versionNo int not null default 1							--バージョンNo
 		)
 	</insert>
 	<delete id="dropUserMaster">
@@ -52,7 +52,7 @@
 			, createUserId bigint not null								--作成者ID
 			, updateDate TIMESTAMP not null default CURRENT_TIMESTAMP	--更新日時
 			, updateUserId bigint not null								--更新者ID
-			, versionNo	int not null default 1							--バージョンNo
+			, versionNo int not null default 1							--バージョンNo
 		)
 	</insert>
 	<delete id="dropLanguageMaster">
@@ -67,7 +67,7 @@
 			, createUserId bigint not null								--作成者ID
 			, updateDate TIMESTAMP not null default CURRENT_TIMESTAMP	--更新日時
 			, updateUserId bigint not null								--更新者ID
-			, versionNo	int not null default 1							--バージョンNo
+			, versionNo int not null default 1							--バージョンNo
 		)
 	</insert>
 	<delete id="dropRollGroupMaster">
@@ -83,7 +83,7 @@
 			, createUserId bigint not null								--作成者ID
 			, updateDate TIMESTAMP not null default CURRENT_TIMESTAMP	--更新日時
 			, updateUserId bigint not null								--更新者ID
-			, versionNo	int not null default 1							--バージョンNo
+			, versionNo int not null default 1							--バージョンNo
 		)
 	</insert>
 	<delete id="dropRollItemMaster">
@@ -98,7 +98,7 @@
 			, createUserId bigint not null								--作成者ID
 			, updateDate TIMESTAMP not null default CURRENT_TIMESTAMP	--更新日時
 			, updateUserId bigint not null								--更新者ID
-			, versionNo	int not null default 1							--バージョンNo
+			, versionNo int not null default 1							--バージョンNo
 		)
 	</insert>
 	<delete id="dropSessionTran">
@@ -114,7 +114,7 @@
 			, createUserId bigint not null								--作成者ID
 			, updateDate TIMESTAMP not null default CURRENT_TIMESTAMP	--更新日時
 			, updateUserId bigint not null								--更新者ID
-			, versionNo	int not null default 1							--バージョンNo
+			, versionNo int not null default 1							--バージョンNo
 		)
 	</insert>
 	<delete id="dropRollNameTran">
@@ -129,7 +129,7 @@
 			, createUserId bigint not null								--作成者ID
 			, updateDate TIMESTAMP not null default CURRENT_TIMESTAMP	--更新日時
 			, updateUserId bigint not null								--更新者ID
-			, versionNo	int not null default 1							--バージョンNo
+			, versionNo int not null default 1							--バージョンNo
 			, primary key(roll_name_id, roll_item_id)
 		)
 	</insert>
@@ -153,7 +153,7 @@
 			, createUserId bigint not null								--作成者ID
 			, updateDate TIMESTAMP not null default CURRENT_TIMESTAMP	--更新日時
 			, updateUserId bigint not null								--更新者ID
-			, versionNo	int not null default 1							--バージョンNo
+			, versionNo int not null default 1							--バージョンNo
 		)
 	</insert>
 	<delete id="dropTicketTran">
@@ -171,7 +171,7 @@
 			, createUserId bigint not null								--作成者ID
 			, updateDate TIMESTAMP not null default CURRENT_TIMESTAMP	--更新日時
 			, updateUserId bigint not null								--更新者ID
-			, versionNo	int not null default 1							--バージョンNo
+			, versionNo int not null default 1							--バージョンNo
 			, primary key(ticket_id, id)
 		)
 	</insert>
@@ -195,7 +195,7 @@
 			, createUserId bigint not null								--作成者ID
 			, updateDate TIMESTAMP not null default CURRENT_TIMESTAMP	--更新日時
 			, updateUserId bigint not null								--更新者ID
-			, versionNo	int not null default 1							--バージョンNo
+			, versionNo int not null default 1							--バージョンNo
 			, primary key(id, versionNo)
 		)
 	</insert>
@@ -214,7 +214,7 @@
 			, createUserId bigint not null								--作成者ID
 			, updateDate TIMESTAMP not null default CURRENT_TIMESTAMP	--更新日時
 			, updateUserId bigint not null								--更新者ID
-			, versionNo	int not null default 1							--バージョンNo
+			, versionNo int not null default 1							--バージョンNo
 			, primary key(id, ticket_id, versionNo)
 		)
 	</insert>
@@ -233,7 +233,7 @@
 			, createUserId bigint not null								--作成者ID
 			, updateDate TIMESTAMP not null default CURRENT_TIMESTAMP	--更新日時
 			, updateUserId bigint not null								--更新者ID
-			, versionNo	int not null default 1							--バージョンNo
+			, versionNo int not null default 1							--バージョンNo
 			, primary key(project_id, id)
 		)
 	</insert>
@@ -252,7 +252,7 @@
 			, createUserId bigint not null								--作成者ID
 			, updateDate TIMESTAMP not null default CURRENT_TIMESTAMP	--更新日時
 			, updateUserId bigint not null								--更新者ID
-			, versionNo	int not null default 1							--バージョンNo
+			, versionNo int not null default 1							--バージョンNo
 			, primary key(project_id, id)
 		)
 	</insert>
@@ -271,7 +271,7 @@
 			, createUserId bigint not null								--作成者ID
 			, updateDate TIMESTAMP not null default CURRENT_TIMESTAMP	--更新日時
 			, updateUserId bigint not null								--更新者ID
-			, versionNo	int not null default 1							--バージョンNo
+			, versionNo int not null default 1							--バージョンNo
 			, primary key(project_id, id)
 		)
 	</insert>
@@ -290,7 +290,7 @@
 			, createUserId bigint not null								--作成者ID
 			, updateDate TIMESTAMP not null default CURRENT_TIMESTAMP	--更新日時
 			, updateUserId bigint not null								--更新者ID
-			, versionNo	int not null default 1							--バージョンNo
+			, versionNo int not null default 1							--バージョンNo
 			, primary key(project_id, id)
 		)
 	</insert>
@@ -309,7 +309,7 @@
 			, createUserId bigint not null								--作成者ID
 			, updateDate TIMESTAMP not null default CURRENT_TIMESTAMP	--更新日時
 			, updateUserId bigint not null								--更新者ID
-			, versionNo	int not null default 1							--バージョンNo
+			, versionNo int not null default 1							--バージョンNo
 			, primary key(project_id, id)
 		)
 	</insert>
